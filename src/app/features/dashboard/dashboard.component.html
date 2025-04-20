@@ -66,9 +66,12 @@
      </div>
      <div class="col-12 col-md-2 d-flex align-items-center justify-content-center add-group-column"
         [ngClass]="{ 'show': hoveredCategory === category.id, 'hide': hoveredCategory !== category.id }">
-        <button class="btn btn-outline-light w-100 h-100" style="border: 1px dashed;" (click)="openLinkGroupDialog()">
-        <i class="bi bi-plus-lg"></i> Add or Reorder Groups
-        </button>
+        <button 
+            class="btn btn-outline-light w-100 h-100" 
+            style="border: 1px dashed;" 
+            (click)="openLinkGroupDialog(category.id)">
+            <i class="bi bi-plus-lg"></i> Add or Reorder Groups
+            </button>
      </div>
   </div>
   </div>
