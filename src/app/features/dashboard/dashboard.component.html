@@ -1,0 +1,114 @@
+<mat-tab-group class="custom-tab-group">
+  <mat-tab *ngFor="let category of categories" [label]="category.name">
+  <div class="container mt-3" style="padding-left: 0px !important; padding-right: 0px !important; overflow-x: hidden;">
+     <div class="row g-3"
+     (mouseenter)="hoveredCategory = category.id"
+     (mouseleave)="hoveredCategory = null"
+     >
+     <div *ngFor="let group of category.groups; trackBy: trackByGroupId" class="col-12 col-md-2">
+        <div class="card h-100">
+           <div class="card-header d-flex align-items-center">
+              <span class="group-title-wrapper d-flex align-items-center">
+              <span class="group-name-text" style="cursor: default;">{{ group.name }}</span>
+              </span>
+              <span class="flex-grow-1"></span>
+              <i class="bi bi-list" style="cursor: pointer; position: relative; left: 7px;" [matMenuTriggerFor]="groupMenu">
+              </i>
+              <mat-menu #groupMenu="matMenu">
+               <button mat-menu-item (click)="openAddLinkDialog(group.id)">
+                  <i class="bi bi-plus-lg me-2"></i> New Link...
+                </button>
+                <button mat-menu-item (click)="openEditGroupDialog(group.id)">
+                  <i class="bi bi-box-seam me-2"></i> Edit Group...
+                </button>
+                <button mat-menu-item (click)="openLinkDialog(category.id, group.id)">
+                  <i class="bi bi-link-45deg me-2"></i> Edit Links...
+                </button>
+                <button mat-menu-item class="text-danger">
+                  <i class="bi bi-x-lg me-2"></i> Delete Group...
+                </button>
+              </mat-menu>              
+           </div>
+           <div class="card-body">
+              <ul *ngIf="group.links?.length; else noLinks" class="list-unstyled">
+                 <li *ngFor="let link of group.links; trackBy: trackByLinkId" class="link-row-wrapper">
+                    <a [href]="link.url" target="_blank" class="custom-hover w-100">{{ link.name }}</a>
+                    <i class="bi bi-three-dots-vertical link-edit-icon"
+                    [matMenuTriggerFor]="linkMenu"
+                    (click)="selectedLink = link"
+                    title="More actions"
+                    style="position: relative; left: 10px; cursor: pointer;">
+                    </i>
+                    <mat-menu #linkMenu="matMenu">
+                       <button mat-menu-item (click)="openEditLinkDialog(link.id)">
+                       <i class="bi bi-link-45deg me-2"></i> Edit Link...
+                       </button>
+                       <button mat-menu-item 
+                       [matMenuTriggerFor]="moveMenu"
+                       (click)="selectedMoveCategory = null">
+                       <i class="bi bi-arrow-right me-2"></i> Move Link...
+                       </button>
+                       <button mat-menu-item (click)="confirmDeleteLink(link.id)" class="text-danger">
+                       <i class="bi bi-x-lg me-2"></i> Delete Link...
+                       </button>
+                    </mat-menu>
+                 </li>
+              </ul>
+              <ng-template #noLinks>
+                 <p class="mb-0">No links in this group. 
+                    <span (click)="openLinkDialog(category.id, group.id)">
+                    <u style="cursor: pointer;">Click here</u> to add links.
+                    </span>
+                 </p>
+              </ng-template>
+           </div>
+        </div>
+     </div>
+     <div class="col-12 col-md-2 d-flex align-items-center justify-content-center add-group-column"
+        [ngClass]="{ 'show': hoveredCategory === category.id, 'hide': hoveredCategory !== category.id }">
+        <button class="btn btn-outline-light w-100 h-100" style="border: 1px dashed;" (click)="openLinkGroupDialog()">
+        <i class="bi bi-plus-lg"></i> Add or Reorder Groups
+        </button>
+     </div>
+  </div>
+  </div>
+  </mat-tab>
+</mat-tab-group>
+<!-- Shared move menu -->
+<mat-menu #moveMenu="matMenu">
+  <span class="w-100 text-center">
+    <h5>Categories</h5>
+  </span>
+  <mat-divider></mat-divider>
+  <ng-container *ngFor="let cat of categories">
+     <button mat-menu-item 
+     (mouseenter)="selectedMoveCategory = cat"
+     [matMenuTriggerFor]="groupMenuShared">
+     {{ cat.name }}
+     </button>
+  </ng-container>
+</mat-menu>
+<!-- Shared group submenu -->
+<mat-menu #groupMenuShared="matMenu">
+  <span class="w-100 text-center">
+    <h5>Groups</h5>
+  </span>
+  <mat-divider></mat-divider>
+  <ng-container *ngIf="selectedMoveCategory?.groups?.length > 0; else noGroups">
+     <button mat-menu-item *ngFor="let group of selectedMoveCategory.groups"
+     (click)="moveLinkToGroup(selectedLink.id, group.id)"
+     [disabled]="group.id === selectedLink?.group?.id">
+     {{ group.name || 'Unnamed Group' }}
+     </button>
+  </ng-container>
+  <ng-template #noGroups>
+     <button mat-menu-item disabled class="text-muted fst-italic">
+     No groups in this category yet.
+     </button>
+  </ng-template>
+</mat-menu>
+<div class="text-white mt-5">
+  <a (click)="openCategoryDialog()" class="d-block" style="cursor: pointer;">Add/Edit Group Categories</a>
+  <a (click)="openLinkGroupDialog()" class="d-block" style="cursor: pointer;">Add/Edit Link Groups</a>
+  <a (click)="openLinkDialog()" class="d-block" style="cursor: pointer;">Add/Edit Links</a>
+</div>

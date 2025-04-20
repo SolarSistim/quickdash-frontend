@@ -1,0 +1,81 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogRef, MatDialogContent, MatDialogActions, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DashboardService } from '../../features/dashboard/dashboard.service';
+
+@Component({
+  selector: 'app-dialog-edit-single-group',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatDialogContent,
+    MatDialogActions
+  ],
+  templateUrl: './dialog-edit-single-group.component.html',
+  styleUrls: ['./dialog-edit-single-group.component.css']
+})
+export class DialogEditSingleGroupComponent implements OnInit {
+  group: any = { id: null, name: '' };
+  originalName = '';
+  loading = true;
+
+  constructor(
+    private dialogRef: MatDialogRef<DialogEditSingleGroupComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { groupId: number },
+    private dashboardService: DashboardService
+  ) {}
+
+  ngOnInit() {
+    this.dashboardService.getFullDashboard().subscribe((categories) => {
+      for (const cat of categories) {
+        const match = cat.groups.find((g: any) => g.id === this.data.groupId);
+        if (match) {
+          this.group = { ...match };
+          this.originalName = match.name;
+          break;
+        }
+      }
+      this.loading = false;
+    });
+  }
+
+  save() {
+    this.dashboardService.updateLinkGroup(this.group.id, { name: this.group.name }).subscribe({
+      next: () => {
+        console.log('Group updated successfully');
+        this.originalName = this.group.name;
+        this.dialogRef.close(true); // ✅ signal that an update occurred
+      },
+      error: (err) => {
+        console.error('Update failed', err);
+        alert('Failed to update group.');
+      }
+    });
+  }
+
+  delete() {
+    if (confirm(`Are you sure you want to delete "${this.group.name}"?`)) {
+      this.dashboardService.deleteLinkGroup(this.group.id).subscribe({
+        next: () => {
+          this.dialogRef.close(true); // ✅ signal that a deletion occurred
+        },
+        error: (err) => {
+          console.error('Delete failed', err);
+          alert('Failed to delete group.');
+        }
+      });
+    }
+  }
+
+  cancel() {
+    this.dialogRef.close();
+  }
+}

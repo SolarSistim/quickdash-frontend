@@ -1,1 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.cdk-drag-preview {
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    border-radius: 6px;
+  }
+
+  a, a:visited, a:hover, a:active {
+    color: inherit;
+    text-decoration: none;
+  }

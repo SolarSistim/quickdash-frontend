@@ -1,0 +1,46 @@
+<mat-dialog-content style="display: flex; flex-direction: column; height: 100%; position: relative;">
+  <h3 mat-dialog-title class="pb-2">Add New Link</h3>
+  <i class="bi bi-x-lg close-icon" title="Close" (click)="cancel()"></i>
+
+  <form (ngSubmit)="save()">
+    <label>&nbsp;Display Name</label>
+    <input
+      type="text"
+      class="form-control mb-2"
+      name="newLinkName"
+      placeholder="Display Name"
+      [(ngModel)]="newLinkName"
+    />
+
+    <label>&nbsp;Link URL</label>
+    <input
+      type="text"
+      class="form-control mb-2"
+      name="newLinkUrl"
+      placeholder="https://example.com"
+      [(ngModel)]="newLinkUrl"
+    />
+
+    <label>&nbsp;Link Description</label>
+    <div class="input-group mb-3">
+      <input
+        type="text"
+        class="form-control"
+        name="newLinkDescription"
+        placeholder="Optional description"
+        [(ngModel)]="newLinkDescription"
+      />
+      <button
+        class="btn btn-outline-primary"
+        type="submit"
+        [disabled]="!newLinkName.trim() || !newLinkUrl.trim()"
+      >
+        Add Link
+      </button>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end" style="margin-right: 8px; margin-left: 8px;">
+  <button mat-button (click)="cancel()">Close</button>
+</mat-dialog-actions>

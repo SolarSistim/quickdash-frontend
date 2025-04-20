@@ -1,0 +1,83 @@
+<mat-dialog-content style="display: flex; flex-direction: column; height: 100%; position: relative;">
+  <h3 mat-dialog-title class="pb-2">Manage Categories</h3>
+
+      <i
+      class="bi bi-x-lg close-icon"
+      title="Close"
+      (click)="closeDialog()"
+    ></i>
+  <div *ngIf="showAddForm" style="margin-bottom: 20px;">
+   <form (ngSubmit)="addCategory()">
+     <div class="input-group mb-1 mt-2">
+       <input
+         type="text"
+         class="form-control"
+         [(ngModel)]="newCategoryName"
+         name="newCategoryName"
+         placeholder="Add New Category"
+         #categoryInput
+       />
+       <button
+         class="btn btn-outline-secondary"
+         type="button"
+         (click)="showAddForm = false; newCategoryName = ''"
+       >
+         ✕
+       </button>
+       <button
+         class="btn btn-outline-secondary"
+         type="submit"
+         [disabled]="!newCategoryName.trim()"
+       >
+         Add Category
+       </button>
+     </div>
+   </form>
+ </div>
+ 
+  <div *ngIf="!showAddForm" class="mt-2 mb-3">
+     <span style="cursor: pointer;" (click)="showAddForm = true">[+] Add New Category</span>
+  </div>
+
+
+
+  <!-- Scrollable List -->
+  <div 
+     cdkDropList 
+     (cdkDropListDropped)="drop($event)"
+     style="max-height: 400px; overflow-y: auto; padding-right: 8px;"
+     >
+     <div *ngFor="let cat of editableCategories" 
+     cdkDrag 
+     class="category-row" 
+     style="align-items: center; display: flex; gap: 10px;"
+     [class.cdk-drag-animating]="true">
+     <span cdkDragHandle style="cursor: grab;">
+     <i class="bi bi-list" style="font-size: 1.2rem;"></i>
+     </span>
+     <i class="bi bi-pencil" (click)="enableEdit(cat)" *ngIf="!cat.isEditing" style="cursor: pointer;"></i>
+     <span *ngIf="!cat.isEditing">{{ cat.name }}</span>
+     <!-- ✅ Spacer to push the X to the right -->
+     <span style="flex: 1 1 auto;"></span>
+     <!-- Edit input (overrides everything else) -->
+     <div class="input-group mb-3 mt-3" *ngIf="cat.isEditing" style="flex: 1 1 auto;">
+        <input type="text" class="form-control" [(ngModel)]="cat.name">
+        <button class="btn btn-outline-secondary" type="button" (click)="cancelEdit(cat)">Cancel</button>
+        <button class="btn btn-outline-secondary" type="button" (click)="saveEdit(cat)">Save</button>
+     </div>
+     <i class="bi bi-x-lg" 
+     (click)="deleteCategory(cat)" 
+     *ngIf="!cat.isEditing" 
+     style="color: red; cursor: pointer;"></i>
+  </div>
+  </div>
+
+  <div *ngIf="editableCategories.length === 0" class="text-muted mb-3 ps-1">
+    No categories yet. Click <strong>"Add New Category"</strong> to add one.
+  </div>
+
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-flat-button (click)="saveOrder()" [disabled]="!hasOrderChanged">Save Order</button>
+  <button mat-button (click)="closeDialog()">Close</button>
+</mat-dialog-actions>

@@ -1,0 +1,97 @@
+::ng-deep .custom-tab-group .mdc-tab__text-label {
+  color: var(--tab-category-font-color) !important;
+}
+
+.card {
+  background-color: var(--group-body-bg-color);
+  color: var(--group-body-font-color);
+}
+
+.card-header {
+  background-color: var(--group-title-bg-color) !important;
+  color: var(--group-title-font-color);
+}
+
+ul {
+  margin-bottom: 0px;
+}
+
+.add-group-column {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.5s ease, transform 1s ease;
+  pointer-events: none; /* Prevent clicks when hidden */
+}
+
+.add-group-column.show {
+  opacity: 0.3;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.add-group-column.hide {
+  opacity: 0;
+  transform: translateY(0);
+  pointer-events: none;
+}
+
+.add-group-column .btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: #fff;
+}
+
+.custom-hover {
+  display: inline-block;
+  transition: transform 0.5s ease, text-decoration 0.5s ease;
+  text-decoration: none;
+  color: inherit; /* Optional: inherit surrounding font color */
+}
+
+.custom-hover:hover {
+  transform: translateX(5px);
+  text-decoration: underline;
+}
+
+.group-title-wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 100%; /* Don't grow too far */
+  overflow: hidden;
+}
+
+.group-name-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px; /* ✅ You can adjust this value */
+  display: inline-block;
+}
+
+
+
+.link-row-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 4px;
+  gap: 8px;
+  position: relative;
+}
+
+.link-edit-icon {
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.link-row-wrapper:hover .link-edit-icon {
+  opacity: 1;
+}
+
+.delete-group-item:hover {
+  background-color: #dc3545 !important; /* red background */
+  color: #fff !important;               /* white text */
+}
