@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
@@ -24,6 +24,8 @@ import { DashboardService } from '../../features/dashboard/dashboard.service';
 })
 export class DialogAddLinkComponent {
 
+  @Output() linkAdded = new EventEmitter<void>();
+
   dashboardService = inject(DashboardService);
   dialogRef = inject(MatDialogRef<DialogAddLinkComponent>);
 
@@ -41,9 +43,9 @@ export class DialogAddLinkComponent {
     const name = this.newLinkName.trim();
     const url = this.newLinkUrl.trim();
     const description = this.newLinkDescription.trim();
-
+  
     if (!name || !url || !this.selectedGroupId) return;
-
+  
     const payload = {
       name,
       url,
@@ -51,10 +53,13 @@ export class DialogAddLinkComponent {
       description,
       groupId: this.selectedGroupId
     };
-
+  
     this.dashboardService.createLink(payload).subscribe({
-      next: (created: any) => {
-        this.dialogRef.close(created); // return created link
+      next: () => {
+        this.linkAdded.emit(); // Refresh the dashboard
+        this.newLinkName = '';
+        this.newLinkUrl = '';
+        this.newLinkDescription = '';
       },
       error: (err) => {
         console.error('Failed to create link', err);
@@ -62,6 +67,7 @@ export class DialogAddLinkComponent {
       }
     });
   }
+  
 
   cancel() {
     this.dialogRef.close();

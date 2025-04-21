@@ -14,19 +14,11 @@
         [(ngModel)]="group.name"
         placeholder="Group Name"
       />
-  
-      <button
-        class="btn btn-outline-secondary"
-        type="button"
-        (click)="save()"
-        [disabled]="!group.name.trim() || group.name === originalName">
-        Save
-      </button>
     </div>
   </mat-dialog-content>
   
   <mat-dialog-actions class="justify-content-between">
     <button mat-button color="warn" (click)="delete()">Delete Group</button>
-    <button mat-button (click)="cancel()">Close</button>
+    <button mat-button (click)="save()">Save & Close</button>
   </mat-dialog-actions>
   

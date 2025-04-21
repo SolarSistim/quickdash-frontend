@@ -95,3 +95,25 @@ ul {
   background-color: #dc3545 !important; /* red background */
   color: #fff !important;               /* white text */
 }
+
+.tab-hover-zone {
+  position: relative;
+}
+
+.add-category-icon {
+  position: absolute;
+  top: 8px;
+  right: -10px; /* previously -30px might push it outside container */
+  font-size: 1.3rem;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.add-category-icon.visible {
+  opacity: 0.3;
+  pointer-events: auto;
+}

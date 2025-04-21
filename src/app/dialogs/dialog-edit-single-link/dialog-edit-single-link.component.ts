@@ -97,4 +97,25 @@ export class DialogEditSingleLinkComponent implements OnInit {
       this.link.description === this.original.description
     );
   }
+
+  saveAndClose() {
+    const { name, url, description } = this.link;
+  
+    if (!name.trim() || !url.trim() || this.isUnchanged) {
+      this.dialogRef.close(false); // Nothing to save, just close
+      return;
+    }
+  
+    this.dashboardService.updateLink(this.link.id, { name, url, description }).subscribe({
+      next: () => {
+        this.linkWasUpdated = true;
+        this.dialogRef.close(true); // Close and signal update occurred
+      },
+      error: (err) => {
+        console.error('Failed to update link', err);
+        alert('Failed to update link.');
+      }
+    });
+  }
+
 }

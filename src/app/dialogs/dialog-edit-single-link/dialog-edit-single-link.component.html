@@ -32,20 +32,12 @@
           placeholder="Description"
           [(ngModel)]="link.description"
         />
-      
-        <button
-          class="btn btn-outline-secondary"
-          type="button"
-          (click)="save()"
-          [disabled]="!link.name.trim() || !link.url.trim() || isUnchanged">
-          Save
-        </button>
       </div>
 
   </mat-dialog-content>
   
   <mat-dialog-actions class="justify-content-between" style="margin-right: 8px; margin-left: 8px;">
     <button mat-button color="warn" (click)="delete()">Delete Link</button>
-    <button mat-button (click)="cancel()">Close</button>
+    <button mat-button (click)="saveAndClose()">Save & Close</button>
   </mat-dialog-actions>
   

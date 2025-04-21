@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, ViewChild, ElementRef, Inject, Optional } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, ElementRef, Inject, Optional, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
@@ -29,6 +29,7 @@ import { DashboardService } from '../../features/dashboard/dashboard.service';
 export class DialogManageLinksComponent implements OnInit {
 
   @ViewChild('linkNameInput') linkNameInputRef!: ElementRef;
+  @Output() linkAdded = new EventEmitter<void>();
 
   private dashboardService = inject(DashboardService);
   private dialogRef = inject(MatDialogRef<DialogManageLinksComponent>);
@@ -92,11 +93,12 @@ export class DialogManageLinksComponent implements OnInit {
         this.editableLinks.push(created);
         this.editableLinks.sort((a, b) => a.position - b.position);
         this.originalOrder = this.editableLinks.map(link => link.id);
-
+    
         this.newLinkName = '';
         this.newLinkUrl = '';
         this.newLinkDescription = '';
-
+        this.linkAdded.emit(); // 🔥 Notify the parent
+    
         setTimeout(() => {
           this.linkNameInputRef.nativeElement.focus();
         });
@@ -106,6 +108,7 @@ export class DialogManageLinksComponent implements OnInit {
         alert('Failed to create link.');
       }
     });
+    
   }
 
   cancelAddLink() {
