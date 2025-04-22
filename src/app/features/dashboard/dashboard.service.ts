@@ -7,7 +7,7 @@ import { forkJoin, map, switchMap } from 'rxjs';
 })
 export class DashboardService {
   
-  private baseUrl = 'http://localhost:3000';
+  private baseUrl = 'http://localhost:3692';
 
   constructor(private http: HttpClient) {}
 

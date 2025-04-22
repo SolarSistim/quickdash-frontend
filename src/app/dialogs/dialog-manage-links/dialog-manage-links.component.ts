@@ -30,6 +30,7 @@ export class DialogManageLinksComponent implements OnInit {
 
   @ViewChild('linkNameInput') linkNameInputRef!: ElementRef;
   @Output() linkAdded = new EventEmitter<void>();
+  @Output() groupNameUpdated = new EventEmitter<void>();
 
   private dashboardService = inject(DashboardService);
   private dialogRef = inject(MatDialogRef<DialogManageLinksComponent>);
@@ -44,10 +45,15 @@ export class DialogManageLinksComponent implements OnInit {
   newLinkDescription = '';
   newLinkName = '';
   newLinkUrl = '';
+  groupName = '';
+  originalGroupName = '';
+  showGroupEditor = false;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) @Optional() public data: { categoryId?: number, groupId?: number }
-  ) {}
+    @Inject(MAT_DIALOG_DATA) @Optional() public data: { categoryId?: number, groupId?: number, showGroupEditor?: boolean }
+  ) {
+    this.showGroupEditor = data?.showGroupEditor ?? false;
+  }
 
   ngOnInit() {
     this.dashboardService.getFullDashboard().subscribe(categories => {
@@ -67,10 +73,13 @@ export class DialogManageLinksComponent implements OnInit {
     const selectedCat = this.categories.find(c => +c.id === +this.selectedCategoryId!);
     this.filteredGroups = selectedCat?.groups || [];
     this.editableLinks = [];
-
+  
     if (this.filteredGroups.length > 0) {
-      callback?.();
+      this.selectedGroupId = this.filteredGroups[0].id; // 👈 set first group as default
+      this.onGroupChange();
     }
+  
+    callback?.();
   }
 
   addLink() {
@@ -125,7 +134,38 @@ export class DialogManageLinksComponent implements OnInit {
         .map(link => ({ ...link, isEditing: false }));
       this.originalOrder = this.editableLinks.map(link => link.id);
     });
+  
+    const selectedGroup = this.filteredGroups.find(g => g.id === this.selectedGroupId);
+    if (selectedGroup) {
+      this.groupName = selectedGroup.name;
+      this.originalGroupName = selectedGroup.name;
+    }
   }
+
+  saveGroupName() {
+    if (!this.selectedGroupId || this.groupName.trim() === this.originalGroupName) return;
+  
+    this.dashboardService.updateLinkGroup(this.selectedGroupId, { name: this.groupName.trim() }).subscribe({
+      next: () => {
+        const group = this.filteredGroups.find(g => g.id === this.selectedGroupId);
+        if (group) group.name = this.groupName.trim();
+  
+        const cat = this.categories.find(c => c.id === this.selectedCategoryId);
+        const fullGroup = cat?.groups.find((g: { id: number | null; }) => g.id === this.selectedGroupId);
+        if (fullGroup) fullGroup.name = this.groupName.trim();
+  
+        this.originalGroupName = this.groupName.trim();
+  
+        this.groupNameUpdated.emit(); // 🔥 notify parent to refresh
+      },
+      error: (err) => {
+        console.error('Failed to update group name', err);
+        alert('Failed to update group name.');
+      }
+    });
+  }
+  
+  
 
   get hasOrderChanged(): boolean {
     return !this.originalOrder.every((id, idx) => id === this.editableLinks[idx]?.id);

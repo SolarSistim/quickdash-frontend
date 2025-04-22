@@ -16,15 +16,20 @@ import { DialogEditSingleLinkComponent } from '../../dialogs/dialog-edit-single-
 import { DialogAddLinkComponent } from '../../dialogs/dialog-add-link/dialog-add-link.component';
 import { DialogAddGroupComponent } from '../../dialogs/dialog-add-group/dialog-add-group.component';
 import { DialogAddCategoryComponent } from '../../dialogs/dialog-add-category/dialog-add-category.component';
+import { DialogConfirmComponent } from '../../dialogs/dialog-confirm/dialog-confirm.component';
+import { UiLinkGroupComponent } from "../../ui-components/ui-link-group/ui-link-group.component";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatCardModule,MatGridListModule,MatMenuModule,MatDividerModule],
+  imports: [CommonModule, MatTabsModule, MatCardModule, MatGridListModule, MatMenuModule, MatDividerModule, UiLinkGroupComponent],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+handleMoveLinkRequest($event: Event) {
+throw new Error('Method not implemented.');
+}
 
   categories: any[] = [];
   tabFontColor = '#ffffff';
@@ -91,19 +96,23 @@ export class DashboardComponent implements OnInit {
     });
   }
   
-  openLinkDialog(categoryId?: number, groupId?: number) {
+  openLinkDialog(categoryId?: number, groupId?: number, showGroupEditor: boolean = false) {
     const dialogRef = this.dialog.open(DialogManageLinksComponent, {
       width: '500px',
       maxHeight: '70vh',
-      data: { categoryId, groupId }
+      data: { categoryId, groupId, showGroupEditor }
     });
   
     dialogRef.componentInstance.linkAdded.subscribe(() => {
-      this.refreshDashboard(); // 🔄 refresh on link add
+      this.refreshDashboard();
+    });
+  
+    dialogRef.componentInstance.groupNameUpdated.subscribe(() => {
+      this.refreshDashboard(); // 🔁 refresh when group name is updated
     });
   
     dialogRef.afterClosed().subscribe(() => {
-      this.refreshDashboard(); // 🔄 final refresh on close
+      this.refreshDashboard(); // 🔁 final refresh on close
     });
   }
 
@@ -148,21 +157,21 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  confirmDeleteLink(linkId: number) {
-    const confirmed = confirm('Are you sure you want to delete this link?');
+  // confirmDeleteLink(linkId: number) {
+  //   const confirmed = confirm('Are you sure you want to delete this link?');
   
-    if (confirmed) {
-      this.dashboardService.deleteLink(linkId).subscribe({
-        next: () => {
-          this.refreshDashboard();
-        },
-        error: (err) => {
-          console.error('Failed to delete link', err);
-          alert('Failed to delete link.');
-        }
-      });
-    }
-  }
+  //   if (confirmed) {
+  //     this.dashboardService.deleteLink(linkId).subscribe({
+  //       next: () => {
+  //         this.refreshDashboard();
+  //       },
+  //       error: (err) => {
+  //         console.error('Failed to delete link', err);
+  //         alert('Failed to delete link.');
+  //       }
+  //     });
+  //   }
+  // }
 
   moveLinkToGroup(linkId: number, groupId: number) {
     this.dashboardService.updateLink(linkId, { groupId }).subscribe({
@@ -213,21 +222,21 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  confirmDeleteGroup(groupId: number) {
-    const confirmed = confirm('Are you sure you want to delete this group?');
+  // confirmDeleteGroup(groupId: number) {
+  //   const confirmed = confirm('Are you sure you want to delete this group?');
   
-    if (confirmed) {
-      this.dashboardService.deleteLinkGroup(groupId).subscribe({
-        next: () => {
-          this.refreshDashboard();
-        },
-        error: (err) => {
-          console.error('Failed to delete group', err);
-          alert('Failed to delete group.');
-        }
-      });
-    }
-  }
+  //   if (confirmed) {
+  //     this.dashboardService.deleteLinkGroup(groupId).subscribe({
+  //       next: () => {
+  //         this.refreshDashboard();
+  //       },
+  //       error: (err) => {
+  //         console.error('Failed to delete group', err);
+  //         alert('Failed to delete group.');
+  //       }
+  //     });
+  //   }
+  // }
   
 
   onAddCategoryClick() {
@@ -242,6 +251,38 @@ export class DashboardComponent implements OnInit {
   
     dialogRef.afterClosed().subscribe(() => {
       this.refreshDashboard();
+    });
+  }
+
+  confirmDeleteGroup(groupId: number) {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '350px',
+      data: {
+        title: 'Delete Group',
+        message: 'Are you sure you want to delete this group? All links within this group will be deleted as'
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.dashboardService.deleteLinkGroup(groupId).subscribe(() => this.refreshDashboard());
+      }
+    });
+  }
+  
+  confirmDeleteLink(linkId: number) {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      width: '350px',
+      data: {
+        title: 'Delete Link',
+        message: 'Are you sure you want to delete this link?'
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.dashboardService.deleteLink(linkId).subscribe(() => this.refreshDashboard());
+      }
     });
   }
 

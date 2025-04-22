@@ -43,7 +43,6 @@ export class DialogAddCategoryComponent {
         next: () => {
           this.categoryAdded.emit();
           this.newCategoryName = '';
-          this.dialogRef.close();
         },
         error: (err) => {
           console.error('Failed to create category', err);

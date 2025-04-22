@@ -1,0 +1,56 @@
+
+    <div class="card h-100">
+      <div class="card-header d-flex align-items-center">
+        <span class="group-title-wrapper d-flex align-items-center">
+          <span class="group-name-text" style="cursor: default;">{{ group.name }}</span>
+        </span>
+        <span class="flex-grow-1"></span>
+        <i class="bi bi-list" style="cursor: pointer; position: relative; left: 7px;" [matMenuTriggerFor]="groupMenu"></i>
+        <mat-menu #groupMenu="matMenu">
+          <button mat-menu-item (click)="addLink.emit(group.id)">
+            <i class="bi bi-plus-lg me-2"></i> New Link...
+          </button>
+          <button mat-menu-item (click)="editGroup.emit({ categoryId, groupId: group.id })">
+            <i class="bi bi-link-45deg me-2"></i> Edit Group...
+          </button>
+          <button mat-menu-item class="text-danger" (click)="deleteGroup.emit(group.id)">
+            <i class="bi bi-x-lg me-2"></i> Delete Group...
+          </button>
+        </mat-menu>
+      </div>
+      <div class="card-body">
+        <ul *ngIf="group.links?.length; else noLinks" class="list-unstyled">
+          <li *ngFor="let link of group.links; trackBy: trackByLinkId" class="link-row-wrapper">
+            <a [href]="link.url" target="_blank" class="custom-hover w-100">{{ link.name }}</a>
+            <i
+              class="bi bi-three-dots-vertical link-edit-icon"
+              [matMenuTriggerFor]="linkMenu"
+              (click)="setSelectedLink.emit(link)"
+              title="More actions"
+              style="position: relative; left: 10px; cursor: pointer;"
+            ></i>
+            <mat-menu #linkMenu="matMenu">
+              <button mat-menu-item (click)="editLink.emit(link.id)">
+                <i class="bi bi-link-45deg me-2"></i> Edit Link...
+              </button>
+              <button mat-menu-item [matMenuTriggerFor]="sharedMoveMenu" (click)="resetMoveCategory.emit()">
+                <i class="bi bi-arrow-right me-2"></i> Move Link...
+              </button>
+              <button mat-menu-item class="text-danger" (click)="deleteLink.emit(link.id)">
+                <i class="bi bi-x-lg me-2"></i> Delete Link...
+              </button>
+            </mat-menu>
+          </li>
+        </ul>
+        <ng-template #noLinks>
+          <p class="mb-0">
+            No links in this group.
+            <span (click)="addLink.emit(group.id)">
+              <u style="cursor: pointer;">Click here</u> to add a link.
+            </span>
+          </p>
+        </ng-template>
+      </div>
+    </div>
+
+  

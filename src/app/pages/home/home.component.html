@@ -1,3 +1,22 @@
+<i 
+  class="bi bi-list top-left-icon"
+  [matMenuTriggerFor]="mainMenu"
+  title="Menu"
+></i>
+
+<!-- Mat Menu -->
+<mat-menu #mainMenu="matMenu">
+  <button mat-menu-item (click)="openCategoryDialog()">
+    <i class="bi bi-box-seam me-2"></i> Manage Categories
+  </button>
+  <button mat-menu-item (click)="openLinkGroupDialog()">
+    <i class="bi bi-diagram-3 me-2"></i> Manage Groups
+  </button>
+  <button mat-menu-item (click)="openLinkDialog()">
+    <i class="bi bi-link-45deg me-2"></i> Manage Links
+  </button>
+</mat-menu>
+
 <div class="container" style="background-color: transparent;">
     <app-search></app-search>
 <app-dashboard></app-dashboard>

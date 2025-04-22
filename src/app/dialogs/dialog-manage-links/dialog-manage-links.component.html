@@ -32,6 +32,29 @@
 
   </div></div>
 
+  <div *ngIf="showGroupEditor">
+  <label for="groupName" >&nbsp;Group Name</label>
+  <div class="input-group mb-4 mt-0">
+    
+    <input
+      type="text"
+      id="groupName"
+      class="form-control"
+      [(ngModel)]="groupName"
+      placeholder="Group Name"
+    />
+    <button
+      class="btn btn-outline-secondary"
+      type="button"
+      id="button-addon2"
+      (click)="saveGroupName()"
+      [disabled]="groupName.trim() === originalGroupName.trim() || !groupName.trim()"
+    >
+      Save
+    </button>
+  </div>
+</div>
+
   <div *ngIf="showAddForm" style="margin-bottom: 20px;">
     <form (ngSubmit)="addLink()">
       <div class="input-group mb-1 mt-2">
