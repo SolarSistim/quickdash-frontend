@@ -20,7 +20,7 @@ export class UiLinkGroupComponent {
   @Input() selectedMoveCategory: any;
 
   @Output() addLink = new EventEmitter<number>();
-  @Output() editGroup = new EventEmitter<{ categoryId: number, groupId: number }>();
+  @Output() editGroup = new EventEmitter<{ categoryId: number; groupId: number; showGroupEditor?: boolean }>();
   @Output() deleteGroup = new EventEmitter<number>();
   @Output() editLink = new EventEmitter<number>();
   @Output() deleteLink = new EventEmitter<number>();

@@ -10,7 +10,8 @@
           <button mat-menu-item (click)="addLink.emit(group.id)">
             <i class="bi bi-plus-lg me-2"></i> New Link...
           </button>
-          <button mat-menu-item (click)="editGroup.emit({ categoryId, groupId: group.id })">
+          <button mat-menu-item (click)="editGroup.emit({ categoryId, groupId: group.id, showGroupEditor: true })">
+
             <i class="bi bi-link-45deg me-2"></i> Edit Group...
           </button>
           <button mat-menu-item class="text-danger" (click)="deleteGroup.emit(group.id)">

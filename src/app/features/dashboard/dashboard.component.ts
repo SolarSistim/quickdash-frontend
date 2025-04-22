@@ -108,13 +108,14 @@ throw new Error('Method not implemented.');
     });
   
     dialogRef.componentInstance.groupNameUpdated.subscribe(() => {
-      this.refreshDashboard(); // 🔁 refresh when group name is updated
+      this.refreshDashboard();
     });
   
     dialogRef.afterClosed().subscribe(() => {
-      this.refreshDashboard(); // 🔁 final refresh on close
+      this.refreshDashboard();
     });
   }
+  
 
   refreshDashboard() {
     this.dashboardService.getFullDashboard().subscribe(categories => {
@@ -136,7 +137,7 @@ throw new Error('Method not implemented.');
   }
 
   openEditGroupDialog(groupId: number) {
-    this.dialog.open(DialogEditSingleGroupComponent, {
+    this.dialog.open(DialogManageLinksComponent, {
       data: { groupId },
       width: '400px'
     }).afterClosed().subscribe((updated) => {
