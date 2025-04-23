@@ -59,6 +59,13 @@ export class DashboardService {
     return this.http.put(`${this.baseUrl}/link-groups/reorder`, data);
   }
 
+  reorderGroups(categoryId: number, groups: { id: number; position: number }[]) {
+    return this.http.post(`${this.baseUrl}/link-groups/reorder`, {
+      categoryId,
+      groups
+    });
+  }
+
   // LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS 
   // LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS 
   // LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS LINKS 

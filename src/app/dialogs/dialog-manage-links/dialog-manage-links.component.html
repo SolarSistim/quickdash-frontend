@@ -37,6 +37,7 @@
   <div class="input-group mb-4 mt-0">
     
     <input
+    autocomplete="off"
       type="text"
       id="groupName"
       class="form-control"
@@ -59,6 +60,7 @@
     <form (ngSubmit)="addLink()">
       <div class="input-group mb-1 mt-2">
         <input
+        autocomplete="off"
           #linkNameInput
           type="text"
           class="form-control"
@@ -67,6 +69,7 @@
           [(ngModel)]="newLinkName"
         />
         <input
+        autocomplete="off"
           type="text"
           class="form-control"
           name="newLinkUrl"
@@ -77,6 +80,7 @@
   
       <div class="input-group mb-1 mt-2">
         <input
+        autocomplete="off"
           type="text"
           class="form-control"
           name="newLinkDescription"
@@ -124,12 +128,12 @@
 
         <div *ngIf="link.isEditing" class="w-100 mt-2">
           <label for="linkName">&nbsp;Link Name</label>
-          <input class="form-control mb-1" [(ngModel)]="link.name" placeholder="Name" id="linkName"/>
-          <label for="linkUrl">&nbsp;Link URL</label>
-          <input class="form-control mb-1" [(ngModel)]="link.url" placeholder="URL" id="linkUrl"/>
+          <input class="form-control mb-1" autocomplete="off" [(ngModel)]="link.name" placeholder="Name" id="linkName"/>
+          <label autocomplete="off" for="linkUrl">&nbsp;Link URL</label>
+          <input autocomplete="off" class="form-control mb-1" [(ngModel)]="link.url" placeholder="URL" id="linkUrl"/>
           <label for="linkDescription">&nbsp;Link Description</label>
         <div class="input-group mb-2" style="flex-wrap: wrap;">
-          <input class="form-control" [(ngModel)]="link.description" placeholder="Description" id="linkDescription"/>
+          <input autocomplete="off" class="form-control" [(ngModel)]="link.description" placeholder="Description" id="linkDescription"/>
             <button class="btn btn-outline-secondary" (click)="cancelEdit(link)">Cancel</button>
             <button class="btn btn-outline-secondary" (click)="saveEdit(link)">Save</button>
           </div>

@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogContent, MatDialogActions, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
   selector: 'app-dialog-manage-links',
@@ -33,6 +34,7 @@ export class DialogManageLinksComponent implements OnInit {
   @Output() groupNameUpdated = new EventEmitter<void>();
 
   private dashboardService = inject(DashboardService);
+  private dropService = inject(DashboardDropService);
   private dialogRef = inject(MatDialogRef<DialogManageLinksComponent>);
 
   categories: any[] = [];
@@ -145,17 +147,16 @@ export class DialogManageLinksComponent implements OnInit {
   saveGroupName() {
     if (!this.selectedGroupId || this.groupName.trim() === this.originalGroupName) return;
   
-    this.dashboardService.updateLinkGroup(this.selectedGroupId, { name: this.groupName.trim() }).subscribe({
+    this.dropService.updateGroup(this.selectedGroupId, { name: this.groupName.trim() }).subscribe({
       next: () => {
         const group = this.filteredGroups.find(g => g.id === this.selectedGroupId);
         if (group) group.name = this.groupName.trim();
   
         const cat = this.categories.find(c => c.id === this.selectedCategoryId);
-        const fullGroup = cat?.groups.find((g: { id: number | null; }) => g.id === this.selectedGroupId);
+        const fullGroup = cat?.groups.find((g: { id: number | null }) => g.id === this.selectedGroupId);
         if (fullGroup) fullGroup.name = this.groupName.trim();
   
         this.originalGroupName = this.groupName.trim();
-  
         this.groupNameUpdated.emit(); // 🔥 notify parent to refresh
       },
       error: (err) => {

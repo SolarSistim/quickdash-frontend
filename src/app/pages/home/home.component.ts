@@ -4,11 +4,12 @@ import { DashboardComponent } from '../../features/dashboard/dashboard.component
 import { SearchComponent } from '../../features/search/search.component';
 import { SettingsService } from '../../features/settings/settings.service';
 import { MatMenuModule } from '@angular/material/menu';
+import { DashboardDropComponent } from '../../features/dashboard-drop/dashboard-drop.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [DashboardComponent, SearchComponent,CommonModule,MatMenuModule],
+  imports: [DashboardComponent, SearchComponent,CommonModule,MatMenuModule,DashboardDropComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

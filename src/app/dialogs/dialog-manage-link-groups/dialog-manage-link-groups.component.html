@@ -28,6 +28,7 @@
    <form (ngSubmit)="addGroup()">
      <div class="input-group mb-4 mt-2">
        <input
+       autocomplete="off"
          type="text"
          class="form-control"
          id="addLinkGroup"
@@ -73,7 +74,7 @@
      <span *ngIf="!group.isEditing">{{ group.name }}</span>
      <span style="flex: 1 1 auto;"></span>
      <div class="input-group mb-3 mt-3" *ngIf="group.isEditing">
-        <input type="text" class="form-control" [(ngModel)]="group.name">
+        <input type="text" class="form-control" autocomplete="off" [(ngModel)]="group.name">
         <button class="btn btn-outline-secondary" type="button" (click)="cancelEdit(group)">Cancel</button>
         <button class="btn btn-outline-secondary" type="button" (click)="saveEdit(group)">Save</button>
      </div>

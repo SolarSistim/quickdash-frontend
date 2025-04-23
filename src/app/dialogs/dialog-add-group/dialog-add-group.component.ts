@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
   selector: 'app-dialog-add-group',
@@ -27,6 +28,7 @@ export class DialogAddGroupComponent {
   @Output() groupAdded = new EventEmitter<void>();
 
   dashboardService = inject(DashboardService);
+  dashboardDropService = inject(DashboardDropService);
   dialogRef = inject(MatDialogRef<DialogAddGroupComponent>);
 
   newGroupName = '';
@@ -42,20 +44,21 @@ export class DialogAddGroupComponent {
   
     if (!name || !this.selectedCategoryId) return;
   
-    this.dashboardService.getFullDashboard().subscribe(categories => {
+    this.dashboardDropService.fetchCategories().subscribe(categories => {
       const category = categories.find(c => c.id === this.selectedCategoryId);
       const currentGroupCount = category?.groups?.length || 0;
   
       const payload = {
         name,
         categoryId: this.selectedCategoryId,
-        position: currentGroupCount // Append to end
+        position: currentGroupCount
       };
   
-      this.dashboardService.createLinkGroup(payload).subscribe({
+      this.dashboardDropService.createLinkGroup(payload).subscribe({
         next: () => {
-          this.groupAdded.emit();
-          this.newGroupName = '';
+          console.log('Group added.');
+          this.groupAdded.emit();       // ⬅️ tell parent to refresh
+          this.newGroupName = '';       // ⬅️ reset form field
         },
         error: (err) => {
           console.error('Failed to create group', err);
@@ -64,6 +67,7 @@ export class DialogAddGroupComponent {
       });
     });
   }
+  
 
   cancel() {
     this.dialogRef.close();
