@@ -5,7 +5,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogRef, MatDialogContent, MatDialogActions, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
   selector: 'app-dialog-edit-single-group',
@@ -30,11 +30,11 @@ export class DialogEditSingleGroupComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<DialogEditSingleGroupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { groupId: number },
-    private dashboardService: DashboardService
+    private dashboardDropService: DashboardDropService
   ) {}
 
   ngOnInit() {
-    this.dashboardService.getFullDashboard().subscribe((categories) => {
+    this.dashboardDropService.fetchCategories().subscribe((categories) => {
       for (const cat of categories) {
         const match = cat.groups.find((g: any) => g.id === this.data.groupId);
         if (match) {
@@ -48,11 +48,11 @@ export class DialogEditSingleGroupComponent implements OnInit {
   }
 
   save() {
-    this.dashboardService.updateLinkGroup(this.group.id, { name: this.group.name }).subscribe({
+    this.dashboardDropService.updateGroup(this.group.id, { name: this.group.name }).subscribe({
       next: () => {
         console.log('Group updated successfully');
         this.originalName = this.group.name;
-        this.dialogRef.close(true); // ✅ signal that an update occurred
+        this.dialogRef.close(true); // ✅ signal update
       },
       error: (err) => {
         console.error('Update failed', err);
@@ -63,9 +63,9 @@ export class DialogEditSingleGroupComponent implements OnInit {
 
   delete() {
     if (confirm(`Are you sure you want to delete "${this.group.name}"?`)) {
-      this.dashboardService.deleteLinkGroup(this.group.id).subscribe({
+      this.dashboardDropService.deleteGroup(this.group.id).subscribe({
         next: () => {
-          this.dialogRef.close(true); // ✅ signal that a deletion occurred
+          this.dialogRef.close(true); // ✅ signal delete
         },
         error: (err) => {
           console.error('Delete failed', err);

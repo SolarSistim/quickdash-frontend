@@ -6,15 +6,15 @@ import { DashboardDropService } from './dashboard-drop.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogConfirmComponent } from '../../dialogs/dialog-confirm/dialog-confirm.component';
-import { DialogManageLinksComponent } from '../../dialogs/dialog-manage-links/dialog-manage-links.component';
-import { DialogEditSingleLinkComponent } from '../../dialogs/dialog-edit-single-link/dialog-edit-single-link.component';
-import { DialogAddGroupComponent } from '../../dialogs/dialog-add-group/dialog-add-group.component';
-import { DialogAddLinkComponent } from '../../dialogs/dialog-add-link/dialog-add-link.component';
+import { DialogAddCategoryComponent } from '../../dialogs/dialog-add-category/dialog-add-category.component';
+import { DialogEditSingleCategoryComponent } from '../../dialogs/dialog-edit-single-category/dialog-edit-single-category.component';
+import { DialogManageCategoriesComponent } from '../../dialogs/dialog-manage-categories/dialog-manage-categories.component';
+import { UiLinkGroupComponent } from '../../ui-components/ui-link-group/ui-link-group.component';
 
 @Component({
   selector: 'app-dashboard-drop',
   standalone: true,
-  imports: [CommonModule, CdkDropList, CdkDrag, MatTabsModule,MatMenuModule],
+  imports: [CommonModule, MatTabsModule,MatMenuModule,UiLinkGroupComponent],
   templateUrl: './dashboard-drop.component.html',
   styleUrls: ['./dashboard-drop.component.css']
 })
@@ -90,179 +90,15 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   getConnectedDropLists(category: any): string[] {
     return category.groups.map((group: any) => `group-list-${group.id}`);
   }
-
-  dropLink(event: CdkDragDrop<any[]>, targetGroup: any, category: any) {
-  const prevGroup = category.groups.find((g: any) => g.links.includes(event.item.data));
-  const movedLink = event.item.data;
-
-  // If moved within same group
-  if (event.previousContainer === event.container) {
-    moveItemInArray(targetGroup.links, event.previousIndex, event.currentIndex);
-  } else {
-    // Remove from previous group
-    const prevLinks = event.previousContainer.data as any[];
-    prevLinks.splice(event.previousIndex, 1);
-
-    // Add to new group
-    targetGroup.links.splice(event.currentIndex, 0, movedLink);
-
-    // Update the groupId
-    movedLink.group = targetGroup;
-  }
-
-  // Recompute positions in both groups
-  const reordered = targetGroup.links.map((link: any, index: number) => ({
-    id: link.id,
-    position: index
-  }));
-
-  this.dropService.reorderLinks(reordered).subscribe({
-    next: () => console.log('Link reorder saved'),
-    error: err => console.error('Error saving link reorder', err)
-  });
-
-  // Optional: Update group for moved link in backend
-  if (event.previousContainer !== event.container) {
-    this.dropService.updateLinkGroup(movedLink.id, targetGroup.id).subscribe({
-      next: () => console.log('Link group updated'),
-      error: err => console.error('Failed to update link group', err)
-    });
-  }
-}
-
-
-  dropGroup(event: CdkDragDrop<any[]>, category: any) {
-    moveItemInArray(category.groups, event.previousIndex, event.currentIndex);
-
-    const reordered = category.groups.map((group: any, index: number) => ({
-      id: group.id,
-      position: index
-    }));
-
-    this.dropService.reorderGroups(category.id, reordered).subscribe({
-      next: () => console.log('Group reorder saved'),
-      error: err => console.error('Error saving group reorder', err)
-    });
-  }
-
-  moveGroupToCategory(group: any, newCategoryId: number): void {
-    const targetCategory = this.categories.find(c => c.id === newCategoryId);
-    const nextPosition = targetCategory?.groups?.length || 0;
-  
-    this.dropService.updateGroup(group.id, {
-      categoryId: newCategoryId,
-      position: nextPosition
-    }).subscribe({
-      next: () => {
-        console.log('Group moved to new category at end');
-        this.refreshCategories();
-      },
-      error: err => console.error('Failed to move group', err)
-    });
-  }
   
 
   refreshCategories(): void {
     this.dropService.fetchCategories().subscribe({
       next: (data: any[]) => {
-        data.forEach(category => {
-          category.groups.forEach((group: any) => {
-            group.links.sort((a: any, b: any) => a.position - b.position);
-          });
-        });
-        this.categories = data;
+        console.log('Fetched categories from backend:', data); // 🔍 debug this
+        this.categories = [...data]; // force change detection
       },
       error: (err: any) => console.error('Error loading categories', err)
-    });
-  }
-
-  deleteLink(link: any): void {
-    const dialogRef = this.dialog.open(DialogConfirmComponent, {
-      data: {
-        title: 'Delete Link',
-        message: `Are you sure you want to delete the link "${link.name}"?`
-      }
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.dropService.deleteLink(link.id).subscribe({
-          next: () => {
-            console.log('Link deleted');
-            this.refreshCategories();
-          },
-          error: err => console.error('Failed to delete link', err)
-        });
-      }
-    });
-  }
-
-  openEditLinksDialog(categoryId: number, groupId: number): void {
-    const dialogRef = this.dialog.open(DialogManageLinksComponent, {
-      width: '700px',
-      data: {
-        categoryId,
-        groupId,
-        showGroupEditor: true
-      }
-    });
-  
-    const instance = dialogRef.componentInstance;
-    instance.groupNameUpdated.subscribe(() => {
-      this.refreshCategories(); // 👈 refresh on group rename
-    });
-  
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCategories(); // 👈 refresh on dialog close too
-    });
-  }
-  
-  deleteGroup(group: any): void {
-    const dialogRef = this.dialog.open(DialogConfirmComponent, {
-      data: {
-        title: 'Delete Group',
-        message: `Are you sure you want to delete the group "${group.name}"? This will also delete all links in the group.`
-      }
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.dropService.deleteGroup(group.id).subscribe({
-          next: () => {
-            console.log('Group deleted');
-            this.refreshCategories();
-          },
-          error: err => console.error('Failed to delete group', err)
-        });
-      }
-    });
-  }
-
-  editLink(link: any): void {
-    const dialogRef = this.dialog.open(DialogEditSingleLinkComponent, {
-      width: '600px',
-      data: { linkId: link.id } // ✅ pass just the link ID
-    });
-  
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.refreshCategories(); // refresh if link was updated or deleted
-      }
-    });
-  }
-
-  openAddGroupDialog(categoryId: number): void {
-    const dialogRef = this.dialog.open(DialogAddGroupComponent, {
-      width: '400px',
-      data: { categoryId }
-    });
-  
-    dialogRef.componentInstance.groupAdded.subscribe(() => {
-      this.refreshCategories(); // ⬅️ refresh dashboard without closing dialog
-    });
-  
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshCategories();
     });
   }
   
@@ -271,20 +107,69 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
       this.categories = data;
     });
   }
-
-  openAddLinkDialog(groupId: number): void {
-    const dialogRef = this.dialog.open(DialogAddLinkComponent, {
-      width: '500px',
-      data: { groupId }
-    });
   
-    dialogRef.componentInstance.linkAdded.subscribe(() => {
-      this.refreshCategories(); // ⬅️ Refresh after adding
+  
+
+  openEditCategoryDialog(category: any): void {
+    const dialogRef = this.dialog.open(DialogEditSingleCategoryComponent, {
+      width: '500px',
+      data: { categoryId: category.id }
     });
   
     dialogRef.afterClosed().subscribe(() => {
-      this.refreshCategories();
+      this.refreshCategories(); // refresh if updated
+    });
+  }
+
+  openManageCategoriesDialog(): void {
+    const dialogRef = this.dialog.open(DialogManageCategoriesComponent, {
+      width: '600px',
+      data: {
+        categories: this.categories // ✅ Pass current categories
+      }
+    });
+  
+    // Handle emitted event
+    const instance = dialogRef.componentInstance;
+    instance.categoriesUpdated.subscribe(() => {
+      this.refreshCategories(); // 🔄 Refresh when a category is added, edited, or deleted
+    });
+  
+    // Also refresh when dialog closes
+    dialogRef.afterClosed().subscribe(() => {
+      this.refreshCategories(); // 🔄 Refresh on close
+    });
+  }
+
+  deleteCategory(category: any): void {
+    const dialogRef = this.dialog.open(DialogConfirmComponent, {
+      data: {
+        title: 'Delete Category',
+        message: `Are you sure you want to delete the category "${category.name}"? This will also delete all groups and links in this category.`
+      }
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.dropService.deleteCategory(category.id).subscribe({
+          next: () => {
+            console.log('Category deleted');
+            this.refreshCategories();
+          },
+          error: err => console.error('Failed to delete category', err)
+        });
+      }
     });
   }
   
+  openAddCategoryDialog(): void {
+    const dialogRef = this.dialog.open(DialogAddCategoryComponent, {
+      width: '500px'
+    });
+  
+    dialogRef.componentInstance.categoryAdded.subscribe(() => {
+      this.refreshCategories();
+    });
+  }
+
 }

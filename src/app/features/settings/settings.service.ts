@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class SettingsService {
 
-  private baseUrl = 'http://localhost:3692';
+  private baseUrl = 'http://192.168.86.43:3692';
   private settings: any = {};
 
   constructor(private http: HttpClient) {}

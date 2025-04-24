@@ -4,7 +4,7 @@
 
 .group-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 15px;
   margin-top: 15px;
   min-height: 60px;
@@ -276,5 +276,43 @@
 .tab-menu-trigger:hover {
   color: #fff;
 }
+
+.link-name-container {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  max-width: 100%; /* Optional, constrain width if needed */
+}
+
+.link-name-container {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 14px; /* or whatever your standard is */
+}
+
+.link-item.cdk-drag-preview .link-name-container,
+.link-item.cdk-drag-placeholder .link-name-container {
+  font-size: 14px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.empty-drop-placeholder {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.1; /* optional: slightly visible */
+  border: 1px dashed #555; /* optional: visual cue */
+}
+
 
 

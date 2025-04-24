@@ -4,20 +4,15 @@
   title="Menu"
 ></i> -->
 
-<!-- Mat Menu -->
-<mat-menu #mainMenu="matMenu">
-  <button mat-menu-item (click)="openCategoryDialog()">
-    <i class="bi bi-box-seam me-2"></i> Manage Categories
-  </button>
-  <button mat-menu-item (click)="openLinkGroupDialog()">
-    <i class="bi bi-diagram-3 me-2"></i> Manage Groups
-  </button>
-  <button mat-menu-item (click)="openLinkDialog()">
-    <i class="bi bi-link-45deg me-2"></i> Manage Links
-  </button>
-</mat-menu>
-
 <div class="container" style="background-color: transparent;">
     <app-search></app-search>
     <app-dashboard-drop></app-dashboard-drop>
 </div>
+
+
+<!-- <div style="position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 2000;">
+  <button (click)="testStatus('loading')">Show Loading</button>
+  <button (click)="testStatus('success')">Show Success</button>
+  <button (click)="testStatus('error')">Show Error</button>
+</div> -->
+<app-ui-status></app-ui-status>

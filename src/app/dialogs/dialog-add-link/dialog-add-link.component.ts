@@ -5,7 +5,7 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent, MatDialogActions } fro
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
   selector: 'app-dialog-add-link',
@@ -26,7 +26,7 @@ export class DialogAddLinkComponent {
 
   @Output() linkAdded = new EventEmitter<void>();
 
-  dashboardService = inject(DashboardService);
+  dropService = inject(DashboardDropService);
   dialogRef = inject(MatDialogRef<DialogAddLinkComponent>);
 
   newLinkName = '';
@@ -54,14 +54,14 @@ export class DialogAddLinkComponent {
       groupId: this.selectedGroupId
     };
   
-    this.dashboardService.createLink(payload).subscribe({
+    this.dropService.createLink(payload).subscribe({
       next: () => {
         this.linkAdded.emit(); // Refresh the dashboard
         this.newLinkName = '';
         this.newLinkUrl = '';
         this.newLinkDescription = '';
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to create link', err);
         alert('Failed to create link.');
       }

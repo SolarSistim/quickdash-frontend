@@ -5,7 +5,6 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogContent, MatDialogActions } fro
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
@@ -27,7 +26,6 @@ export class DialogAddGroupComponent {
 
   @Output() groupAdded = new EventEmitter<void>();
 
-  dashboardService = inject(DashboardService);
   dashboardDropService = inject(DashboardDropService);
   dialogRef = inject(MatDialogRef<DialogAddGroupComponent>);
 

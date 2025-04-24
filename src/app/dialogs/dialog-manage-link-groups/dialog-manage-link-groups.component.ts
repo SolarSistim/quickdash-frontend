@@ -9,7 +9,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialogContent, MatDialogActions, MatDialogRef } from '@angular/material/dialog';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 interface EditableGroup {
   id: number;
@@ -43,11 +43,8 @@ export class DialogManageLinkGroupsComponent implements OnInit {
 
   @ViewChild('groupInput') groupInputRef!: ElementRef;
   
-  private dashboardService = inject(DashboardService);
+  private dropService = inject(DashboardDropService);
   private dialogRef = inject(MatDialogRef<DialogManageLinkGroupsComponent>);
-
-  tooltipGroupId: number | null = null;
-  tooltipMessage = '';
 
   newGroupName = '';
   showAddLinkGroup = false;
@@ -58,37 +55,12 @@ export class DialogManageLinkGroupsComponent implements OnInit {
   editableGroups: EditableGroup[] = [];
 
   ngOnInit() {
-    this.dashboardService.getFullDashboard().subscribe((categories) => {
+    this.dropService.getFullDashboard().subscribe((categories) => {
       this.categories = categories;
   
       const initialCategoryId = this.data?.categoryId ?? categories[0]?.id;
       if (initialCategoryId) {
         this.selectCategory(initialCategoryId);
-  
-        setTimeout(() => {
-          const groupIdToEdit = this.data?.groupId;
-          if (groupIdToEdit) {
-            const groupToEdit = this.editableGroups.find(g => g.id === groupIdToEdit);
-            if (groupToEdit) {
-              this.enableEdit(groupToEdit);
-  
-              // Scroll the row into view and highlight it
-              const el = document.getElementById(`group-${groupIdToEdit}`);
-              if (el) {
-                el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                el.classList.add('scroll-focus');
-                setTimeout(() => el.classList.remove('scroll-focus'), 2000);
-              }
-  
-              // Show tooltip under the selected group
-              this.tooltipGroupId = groupIdToEdit;
-              this.tooltipMessage = `Edit "${groupToEdit.name}" group here`;
-              setTimeout(() => {
-                this.tooltipGroupId = null;
-              }, 3000);
-            }
-          }
-        });
       }
     });
   }
@@ -135,7 +107,7 @@ export class DialogManageLinkGroupsComponent implements OnInit {
   }
 
   saveEdit(group: any) {
-    this.dashboardService.updateLinkGroup(group.id, { name: group.name }).subscribe({
+    this.dropService.updateGroup(group.id, { name: group.name }).subscribe({
       next: () => {
         group.isEditing = false;
       },
@@ -148,12 +120,12 @@ export class DialogManageLinkGroupsComponent implements OnInit {
 
   deleteGroup(group: any) {
     if (confirm(`Are you sure you want to delete "${group.name}"?`)) {
-      this.dashboardService.deleteLinkGroup(group.id).subscribe({
+      this.dropService.deleteGroup(group.id).subscribe({
         next: () => {
           this.editableGroups = this.editableGroups.filter(g => g.id !== group.id);
           this.originalOrder = this.editableGroups.map(g => g.id);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Failed to delete group', err);
           alert('Failed to delete group.');
         }
@@ -167,7 +139,7 @@ export class DialogManageLinkGroupsComponent implements OnInit {
   
     const position = this.editableGroups.length;
   
-    this.dashboardService.createLinkGroup({
+    this.dropService.createLinkGroup({
       name,
       categoryId: this.selectedCategoryId,
       position
@@ -196,10 +168,12 @@ export class DialogManageLinkGroupsComponent implements OnInit {
       position: index
     }));
   
-    this.dashboardService.reorderLinkGroups(reordered).subscribe({
+    if (!this.selectedCategoryId) return;
+  
+    this.dropService.reorderGroups(this.selectedCategoryId, reordered).subscribe({
       next: () => {
         console.log('Reorder saved');
-        this.originalOrder = this.editableGroups.map(g => g.id); // reset tracking
+        this.originalOrder = this.editableGroups.map(g => g.id);
       },
       error: (err) => {
         console.error('Failed to save reorder', err);
@@ -207,5 +181,6 @@ export class DialogManageLinkGroupsComponent implements OnInit {
       }
     });
   }
+  
 
 }

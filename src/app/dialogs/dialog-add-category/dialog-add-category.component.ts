@@ -5,7 +5,7 @@ import { MatDialogRef, MatDialogContent, MatDialogActions } from '@angular/mater
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
   selector: 'app-dialog-add-category',
@@ -25,7 +25,7 @@ import { DashboardService } from '../../features/dashboard/dashboard.service';
 export class DialogAddCategoryComponent {
   @Output() categoryAdded = new EventEmitter<void>();
 
-  dashboardService = inject(DashboardService);
+  dashboardDropService = inject(DashboardDropService);
   dialogRef = inject(MatDialogRef<DialogAddCategoryComponent>);
 
   newCategoryName = '';
@@ -33,16 +33,16 @@ export class DialogAddCategoryComponent {
   save() {
     const name = this.newCategoryName.trim();
     if (!name) return;
-
-    this.dashboardService.getFullDashboard().subscribe(categories => {
+  
+    this.dashboardDropService.fetchCategories().subscribe(categories => {
       const position = categories.length;
-
+  
       const payload = { name, position };
-
-      this.dashboardService.createCategory(payload).subscribe({
+  
+      this.dashboardDropService.createCategory(payload).subscribe({
         next: () => {
-          this.categoryAdded.emit();
-          this.newCategoryName = '';
+          this.categoryAdded.emit();       // 🔄 Tell parent to refresh
+          this.newCategoryName = '';       // 🧼 Clear form
         },
         error: (err) => {
           console.error('Failed to create category', err);
@@ -51,8 +51,10 @@ export class DialogAddCategoryComponent {
       });
     });
   }
+ 
 
   cancel() {
-    this.dialogRef.close();
+    this.categoryAdded.emit();  // 🔄 Trigger refresh on close
+    this.dialogRef.close();     // ❌ Close the dialog
   }
 }

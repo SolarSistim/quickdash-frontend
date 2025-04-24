@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogContent, MatDialogActions, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
@@ -33,7 +32,6 @@ export class DialogManageLinksComponent implements OnInit {
   @Output() linkAdded = new EventEmitter<void>();
   @Output() groupNameUpdated = new EventEmitter<void>();
 
-  private dashboardService = inject(DashboardService);
   private dropService = inject(DashboardDropService);
   private dialogRef = inject(MatDialogRef<DialogManageLinksComponent>);
 
@@ -58,9 +56,9 @@ export class DialogManageLinksComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dashboardService.getFullDashboard().subscribe(categories => {
+    this.dropService.fetchCategories().subscribe(categories => {
       this.categories = categories;
-
+    
       if (categories.length > 0) {
         this.selectedCategoryId = this.data?.categoryId ?? categories[0].id;
         this.onCategoryChange(() => {
@@ -99,7 +97,7 @@ export class DialogManageLinksComponent implements OnInit {
       groupId: this.selectedGroupId
     };
 
-    this.dashboardService.createLink(payload).subscribe({
+    this.dropService.createLink(payload).subscribe({
       next: (created: any) => {
         this.editableLinks.push(created);
         this.editableLinks.sort((a, b) => a.position - b.position);
@@ -108,7 +106,7 @@ export class DialogManageLinksComponent implements OnInit {
         this.newLinkName = '';
         this.newLinkUrl = '';
         this.newLinkDescription = '';
-        this.linkAdded.emit(); // 🔥 Notify the parent
+        this.linkAdded.emit();
     
         setTimeout(() => {
           this.linkNameInputRef.nativeElement.focus();
@@ -120,6 +118,7 @@ export class DialogManageLinksComponent implements OnInit {
       }
     });
     
+    
   }
 
   cancelAddLink() {
@@ -130,7 +129,7 @@ export class DialogManageLinksComponent implements OnInit {
   }
 
   onGroupChange() {
-    this.dashboardService.getAllLinks().subscribe((links) => {
+    this.dropService.getAllLinks().subscribe((links) => {
       this.editableLinks = links
         .filter(link => link.group?.id === this.selectedGroupId)
         .map(link => ({ ...link, isEditing: false }));
@@ -182,7 +181,7 @@ export class DialogManageLinksComponent implements OnInit {
       position: idx
     }));
 
-    this.dashboardService.reorderLinks(reordered).subscribe({
+    this.dropService.reorderLinks(reordered).subscribe({
       next: () => {
         this.originalOrder = this.editableLinks.map(l => l.id);
       },
@@ -195,7 +194,7 @@ export class DialogManageLinksComponent implements OnInit {
 
   deleteLink(link: any) {
     if (confirm(`Delete link "${link.name}"?`)) {
-      this.dashboardService.deleteLink(link.id).subscribe({
+      this.dropService.deleteLink(link.id).subscribe({
         next: () => {
           this.editableLinks = this.editableLinks.filter(l => l.id !== link.id);
           this.originalOrder = this.editableLinks.map(l => l.id);
@@ -229,11 +228,11 @@ export class DialogManageLinksComponent implements OnInit {
       description: link.description,
     };
 
-    this.dashboardService.updateLink(link.id, updatePayload).subscribe({
+    this.dropService.updateLink(link.id, updatePayload).subscribe({
       next: () => {
         link.isEditing = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Failed to update link', err);
         alert('Failed to save changes.');
       }

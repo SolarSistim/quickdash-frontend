@@ -10,7 +10,7 @@ import {
   MatDialogActions,
   MAT_DIALOG_DATA
 } from '@angular/material/dialog';
-import { DashboardService } from '../../features/dashboard/dashboard.service';
+import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
 
 @Component({
   selector: 'app-dialog-edit-single-link',
@@ -37,11 +37,11 @@ export class DialogEditSingleLinkComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<DialogEditSingleLinkComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { linkId: number },
-    private dashboardService: DashboardService
+    private dropService: DashboardDropService
   ) {}
 
   ngOnInit() {
-    this.dashboardService.getFullDashboard().subscribe((categories) => {
+    this.dropService.getFullDashboard().subscribe((categories) => {
       for (const cat of categories) {
         for (const group of cat.groups) {
           const match = group.links.find((l: any) => l.id === this.data.linkId);
@@ -58,7 +58,7 @@ export class DialogEditSingleLinkComponent implements OnInit {
 
   save() {
     const { name, url, description } = this.link;
-    this.dashboardService.updateLink(this.link.id, { name, url, description }).subscribe({
+    this.dropService.updateLink(this.link.id, { name, url, description }).subscribe({
       next: () => {
         console.log('Link updated successfully');
         this.original = { ...this.link };
@@ -74,7 +74,7 @@ export class DialogEditSingleLinkComponent implements OnInit {
 
   delete() {
     if (confirm(`Are you sure you want to delete "${this.link.name}"?`)) {
-      this.dashboardService.deleteLink(this.link.id).subscribe({
+      this.dropService.deleteLink(this.link.id).subscribe({
         next: () => {
           this.dialogRef.close(true); // ✅ signal deletion occurred
         },
@@ -106,7 +106,7 @@ export class DialogEditSingleLinkComponent implements OnInit {
       return;
     }
   
-    this.dashboardService.updateLink(this.link.id, { name, url, description }).subscribe({
+    this.dropService.updateLink(this.link.id, { name, url, description }).subscribe({
       next: () => {
         this.linkWasUpdated = true;
         this.dialogRef.close(true); // Close and signal update occurred
