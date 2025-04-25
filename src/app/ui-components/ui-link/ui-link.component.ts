@@ -17,9 +17,13 @@ import { DashboardDropService } from '../../features/dashboard-drop/dashboard-dr
   styleUrls: ['./ui-link.component.css']
 })
 export class UiLinkComponent {
+
   @Input() group: any;
   @Input() category: any;
   @Input() isLinkDraggable = true;
+  @Input() showHandles = false;
+
+  readonly defaultIconUrl = '../../../assets/icons/trakt.png';
 
   constructor(private dialog: MatDialog, private dropService: DashboardDropService) {}
 

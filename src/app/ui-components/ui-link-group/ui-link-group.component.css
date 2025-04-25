@@ -99,8 +99,14 @@
   }
 
     
+  .group-box:hover .icon-row {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
   .group-box:hover .group-menu-icon {
-    opacity: 1; /* Fade in the menu icon on group-box hover */
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .link-list {
@@ -191,15 +197,33 @@
     opacity: 0.2
   }
   
-  .add-group-box:hover {
-    background-color: rgba(255, 255, 255, 0.05); /* Subtle hover effect */
-    border-color: #ccc; /* Lighten dashed border on hover */
-    color: #aaa;
+  .add-group-box {
+    cursor: pointer;
+    min-height: 100px;
+    display: flex;               /* already there, but ensure it */
+    align-items: center;         /* vertical centering */
+    justify-content: center;     /* horizontal centering */
+    border: 2px dashed #888;
+    background-color: transparent;
+    color: #888;
+    border-radius: 6px;
+    font-weight: 500;
+    opacity: 0.2;
+    transition: background-color 0.2s, border-color 0.2s;
   }
   
-  
-  .add-group-box.static {
-    pointer-events: auto !important;
+  .add-group-box:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #ccc;
+    color: #aaa;
+  }
+
+  .add-group-box .group-header {
+    margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .group-menu-icon {
@@ -212,4 +236,28 @@
   
   .group-menu-icon:hover {
     color: #a1a1a1;
+  }
+
+  .group-box {
+    position: relative;
+    padding-bottom: 2.5rem; /* give space for the icons */
+  }
+  
+  .icon-row {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 3px;
+    background: #2e3a46; /* Light: 3b4d59, dark: #2e3a46 */
+    color: gray;
+    opacity: 0;
+    pointer-events: none;        /* so it doesn’t accidentally catch clicks */
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  .icon-row .bi {
+    cursor: pointer;
   }

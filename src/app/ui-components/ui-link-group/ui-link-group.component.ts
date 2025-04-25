@@ -25,6 +25,9 @@ export class UiLinkGroupComponent {
   @Input() isGroupDraggable = true;
   @Input() isLinkDraggable = true;
 
+  @Input() group!: any;
+  @Output() linkAdded = new EventEmitter<void>();
+
   @Output() moveGroup = new EventEmitter<{ group: any, newCategoryId: number }>();
   @Output() openEditLinks = new EventEmitter<{ categoryId: number, groupId: number }>();
   @Output() openManageGroups = new EventEmitter<{ categoryId: number, groupId: number }>();
@@ -32,6 +35,8 @@ export class UiLinkGroupComponent {
   @Output() groupMoved = new EventEmitter<void>();
   @Output() refreshRequested = new EventEmitter<void>();
   @Output() refreshCategories = new EventEmitter<void>();
+
+  showHandles = false;
 
   constructor(private dropService: DashboardDropService, private dialog: MatDialog) {}
 
@@ -45,6 +50,10 @@ export class UiLinkGroupComponent {
 
   trackLinkById(index: number, item: any): number {
     return item.id;
+  }
+
+  toggleHandles() {
+    this.showHandles = !this.showHandles;
   }
 
   openAddGroupDialog(categoryId: number): void {
@@ -68,13 +77,11 @@ export class UiLinkGroupComponent {
       data: { groupId }
     });
   
-    dialogRef.componentInstance.linkAdded.subscribe(() => {
-      this.refreshRequested.emit();
-    });
+    dialogRef.componentInstance.linkAdded
+    .subscribe(() => this.refreshGroups());
   
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshRequested.emit();
-    });
+    dialogRef.afterClosed()
+    .subscribe(() => this.refreshGroups());
   }
   
   openEditLinksDialog(categoryId: number, groupId: number): void {

@@ -12,12 +12,12 @@
   >
     <div class="group-header d-flex align-items-center justify-content-between">
       <i
-        class="bi bi-list group-drag-handle"
-        cdkDragHandle
-        title="Drag group"
-        (mouseover)="allowGroupDrag()"
-        (mouseout)="preventGroupDrag()"
-      ></i>
+      *ngIf="showHandles"
+      class="bi bi-list group-drag-handle"
+      cdkDragHandle
+      title="Drag group"
+      (mouseover)="allowGroupDrag()"
+      (mouseout)="preventGroupDrag()"></i>
 
       <div class="group-name-container d-flex align-items-center" #groupNameContainer>
         <div class="group-name">{{ group.name }}</div>
@@ -55,16 +55,27 @@
       </mat-menu>
     </div>
 
-    <app-ui-link
-    [group]="group"
-    [category]="category"
-    [isLinkDraggable]="isLinkDraggable">
-    </app-ui-link>
+        <app-ui-link
+        [group]="group"
+        [category]="category"
+        [isLinkDraggable]="isLinkDraggable"
+        [showHandles]="showHandles">
+        </app-ui-link>
+
+    <div class="icon-row">
+      <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>
+      <i class="bi bi-pencil-square" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
+      <i class="bi bi-three-dots-vertical" [matMenuTriggerFor]="groupMenu" title="Menu"></i>
+    </div>
+
   </div>
 
-  <div class="group-box add-group-box static" (click)="openAddGroupDialog(category.id)">
-    <div class="group-header d-flex align-items-center justify-content-center">
-      <i class="bi bi-plus-circle me-2"></i> Add Group
-    </div>
-  </div>
+  <div
+  class="group-box add-group-box static d-flex align-items-center justify-content-center"
+  (click)="openAddGroupDialog(category.id)">
+  <div style="margin-top: 15%;">
+  <i class="bi bi-plus-circle me-2"></i>Add Group
+</div>
+</div>
+
 </div>

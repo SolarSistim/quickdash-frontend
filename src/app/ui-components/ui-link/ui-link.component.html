@@ -16,14 +16,21 @@
       cdkDrag
       [cdkDragData]="link"
       [cdkDragDisabled]="isLinkDraggable"
+      [class.handles-visible]="showHandles"
     >
-      <i
-        class="bi bi-list link-drag-handle"
-        cdkDragHandle
-        title="Drag link"
-        (mouseover)="allowLinkDrag()"
-        (mouseout)="preventLinkDrag()"
-      ></i>
+     <i
+       *ngIf="showHandles"
+       class="bi bi-list link-drag-handle"
+       cdkDragHandle
+       title="Drag link"
+       (mouseover)="allowLinkDrag()"
+       (mouseout)="preventLinkDrag()"
+     ></i>
+
+     <img
+      class="link-icon"
+      src="/assets/icons/www.png"
+      alt="icon"/>
 
       <div
         class="link-name-container"
