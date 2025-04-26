@@ -1,0 +1,129 @@
+<mat-dialog-content style="display: flex; flex-direction: column; height: 100%; position: relative;">
+    <i class="bi bi-x-lg close-icon" title="Close" (click)="closeDialog()" *ngIf="!editingIconId"></i>
+
+    <h3 mat-dialog-title class="pb-2">Icon Manager</h3>
+    <div class="upload-section" *ngIf="!editingIconId">
+       <span *ngIf="!previewUrl && !editingIconId">
+       <button mat-button color="primary" (click)="openFileExplorer()"><i class="bi bi-cloud-upload"></i>&nbsp;Upload Icon</button>
+       </span>
+       <div *ngIf="previewUrl" class="row">
+          <div class="col-lg-4 mb-3">
+             <img [src]="previewUrl" alt="Preview" class="preview-image" />
+          </div>
+          <div class="col-lg-8">
+             <label for="iconTitle">Icon Title</label>
+             <input matInput id="iconTitle" type="text" class="form-control" placeholder="Icon Title" [(ngModel)]="title">
+             <label for="description">Description</label>
+             <input matInput id="iconDescription" type="text" class="form-control" placeholder="Icon Description" [(ngModel)]="description">
+             <div class="filename-text mt-2 mb-2">
+                &nbsp;<b>Filename:</b> {{ selectedFile?.name }}
+             </div>
+             <div class="filename-warning mt-2" *ngIf="filenameExists" [class.blink]="blinking">
+                🚫 Icon filename already exists.
+              </div>
+          </div>
+          <div class="confirm-button-container mt-3 d-flex align-items-end flex-column">
+            <ng-container *ngIf="!filenameExists; else showResetButton">
+              <button mat-button color="accent" (click)="uploadIcon()" [disabled]="uploading || !title.trim()">
+                <i class="bi bi-check-lg"></i> {{ uploading ? 'Uploading...' : 'Confirm Upload' }}
+              </button>
+            </ng-container>
+          
+            <ng-template #showResetButton>
+              <button mat-button color="warn" (click)="resetUpload()">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset Upload
+              </button>
+            </ng-template>
+          </div>
+       </div>
+    </div>
+    <div class="icon-grid-container">
+
+        <!-- ✏️ Edit Panel (only show when editingIconId is set) -->
+        <div *ngIf="editingIconId" class="edit-icon-panel">
+          <div class="row">
+      
+            <!-- Left: Icon preview -->
+            <div class="col-lg-4 mb-3">
+              <img [src]="'/assets/icons/' + getEditingIcon()?.filename" alt="Preview" class="preview-image" />
+            </div>
+      
+            <!-- Right: Edit fields -->
+            <div class="col-lg-8">
+              <label for="editTitle">Icon Title</label>
+              <input matInput id="editTitle" type="text" class="form-control mb-2" placeholder="Icon Title" [(ngModel)]="editedTitle">
+      
+              <label for="editDescription">Description</label>
+              <input matInput id="editDescription" type="text" class="form-control mb-2" placeholder="Icon Description" [(ngModel)]="editedDescription">
+      
+              <div class="filename-text mt-2 mb-2">
+                &nbsp;<b>Filename:</b> {{ getEditingIcon()?.filename }}
+              </div>
+      
+              <div class="confirm-button-container">
+
+                <button mat-button color="warn" (click)="confirmDeleteDuringEdit(getEditingIcon())">
+                  <span class="delete-text"><i class="bi bi-trash"></i> Delete</span>
+                </button>
+              
+                <div class="action-buttons">
+                  <button mat-button color="accent"
+                          (click)="saveEditedIcon(getEditingIcon())"
+                          [disabled]="!editedTitle.trim() || !hasChanges()">
+                    <i class="bi bi-check-lg"></i> Save
+                  </button>
+                  <button mat-button color="warn" (click)="cancelEditing()">
+                    <i class="bi bi-x-lg"></i> Cancel
+                  </button>
+                </div>
+              
+              </div>
+              
+            </div>
+      
+          </div>
+        </div>
+      
+        <!-- 🖼️ Icon Grid (only show when not editing) -->
+        <input
+            *ngIf="!editingIconId"
+            type="text"
+            aria-label="Filter Icons"
+            class="form-control mb-3"
+            placeholder="Start typing to filter icons"
+            [(ngModel)]="filterText">
+        <div *ngIf="!editingIconId" class="icon-grid">
+
+          <div *ngFor="let icon of filteredIcons" class="icon-item">
+            <div class="icon-wrapper"
+                 matTooltip="{{ icon.title }}&#10;{{ icon.description }}"
+                 matTooltipPosition="above"
+                 matTooltipShowDelay="0">
+      
+              <img [src]="'/assets/icons/' + icon.filename" [alt]="icon.title" />
+      
+              <button mat-icon-button [matMenuTriggerFor]="menuForIcon" class="menu-button">
+                <i class="bi bi-list"></i>
+              </button>
+      
+              <mat-menu #menuForIcon="matMenu">
+                <button mat-menu-item (click)="startEditingIcon(icon)">
+                  <i class="bi bi-pencil me-2"></i> Edit
+                </button>
+                <button mat-menu-item (click)="confirmDelete(icon)">
+                  <i class="bi bi-trash me-2"></i> Delete
+                </button>
+              </mat-menu>
+      
+            </div>
+          </div>
+        </div>
+      
+      </div>
+      
+      
+ </mat-dialog-content>
+ <mat-dialog-actions class="justify-content-end" style="margin-right: 8px; margin-left: 8px;" *ngIf="!editingIconId">
+    <button mat-button (click)="closeDialog()">Close</button>
+  </mat-dialog-actions>
+  

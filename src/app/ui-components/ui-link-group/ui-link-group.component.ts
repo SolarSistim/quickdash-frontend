@@ -133,7 +133,7 @@ export class UiLinkGroupComponent {
       position: index
     }));
 
-    this.dropService.reorderGroups(category.id, reordered).subscribe({
+    this.dropService.reorderGroups(this.category.id, reordered).subscribe({
       next: () => console.log('Group reorder saved'),
       error: err => console.error('Error saving group reorder', err)
     });

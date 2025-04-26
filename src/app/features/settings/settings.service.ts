@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SettingsService {
 
-  private baseUrl = 'http://192.168.86.43:3692';
+  private readonly base = environment.apiUrl;
   private settings: any = {};
 
   constructor(private http: HttpClient) {}
@@ -20,7 +21,7 @@ export class SettingsService {
   }
 
   fetchAllSettings() {
-    return this.http.get<any[]>(`${this.baseUrl}/settings`);
+    return this.http.get<any[]>(`${this.base}/settings`);
   }
 
   applyCssVariablesFromSettings(settings: any[]) {

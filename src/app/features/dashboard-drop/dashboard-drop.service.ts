@@ -1,62 +1,64 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DashboardDropService {
-  private readonly apiUrl = 'http://192.168.86.43:3692/link-categories';
+
+  private readonly base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
   fetchCategories(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<any[]>(`${this.base}/link-categories`);
   }
 
   reorderGroups(categoryId: number, groups: { id: number; position: number }[]) {
-    return this.http.post('http://192.168.86.43:3692/link-groups/reorder', {
+    return this.http.post(`${this.base}/link-groups/reorder`, {
       categoryId,
       groups
     });
   }
 
   reorderLinks(links: { id: number; position: number }[]) {
-    return this.http.put('http://192.168.86.43:3692/links/reorder', links);
+    return this.http.put(`${this.base}/links/reorder`, links);
   }
 
   updateLinkGroup(linkId: number, groupId: number) {
-    return this.http.put(`http://192.168.86.43:3692/links/${linkId}`, {
+    return this.http.put(`${this.base}/links/${linkId}`, {
       groupId
     });
   }
 
   updateGroup(groupId: number, data: any) {
-    return this.http.put(`http://192.168.86.43:3692/link-groups/${groupId}`, data);
+    return this.http.put(`${this.base}/link-groups/${groupId}`, data);
   }
 
   deleteLink(linkId: number) {
-    return this.http.delete(`http://192.168.86.43:3692/links/${linkId}`);
+    return this.http.delete(`${this.base}/links/${linkId}`);
   }
 
   deleteGroup(groupId: number) {
-    return this.http.delete(`http://192.168.86.43:3692/link-groups/${groupId}`);
+    return this.http.delete(`${this.base}/link-groups/${groupId}`);
   }
 
   createLinkGroup(payload: { name: string; categoryId: number; position: number }) {
-    return this.http.post('http://192.168.86.43:3692/link-groups', payload);
+    return this.http.post(`${this.base}/link-groups`, payload);
   }
 
   deleteCategory(categoryId: number) {
-    return this.http.delete(`http://192.168.86.43:3692/link-categories/${categoryId}`);
+    return this.http.delete(`${this.base}/link-categories/${categoryId}`);
   }
 
   updateCategory(categoryId: number, data: any) {
-    return this.http.put(`http://192.168.86.43:3692/link-categories/${categoryId}`, data);
+    return this.http.put(`${this.base}/link-categories/${categoryId}`, data);
   }
   
   createCategory(payload: { name: string }) {
-    return this.http.post('http://192.168.86.43:3692/link-categories', payload);
+    return this.http.post(`${this.base}/link-categories`, payload);
   }
 
   createLink(data: {
@@ -68,7 +70,7 @@ export class DashboardDropService {
     tags?: string[];
     position?: number;
   }) {
-    return this.http.post('http://192.168.86.43:3692/links', data);
+    return this.http.post(`${this.base}/links`, data);
   }
 
   updateLink(id: number, data: {
@@ -79,23 +81,23 @@ export class DashboardDropService {
     groupId?: number | null;
     tags?: string[];
   }) {
-    return this.http.put(`http://192.168.86.43:3692/links/${id}`, data);
+    return this.http.put(`${this.base}/links/${id}`, data);
   }
 
   reorderCategories(data: { id: number, position: number }[]) {
-    return this.http.put('http://192.168.86.43:3692/link-categories/reorder', data);
+    return this.http.put(`${this.base}/link-categories/reorder`, data);
   }
 
   reorderLinkGroups(groups: { id: number; position: number }[]) {
-    return this.http.post('http://192.168.86.43:3692/link-groups/reorder', groups);
+    return this.http.post(`${this.base}/link-groups/reorder`, groups);
   }
 
   getAllLinks() {
-    return this.http.get<any[]>('http://192.168.86.43:3692/links');
+    return this.http.get<any[]>(`${this.base}/links`);
   }
 
   getFullDashboard(): Observable<any[]> {
-    return this.http.get<any[]>(`http://192.168.86.43:3692/link-categories`);
+    return this.http.get<any[]>(`${this.base}/link-categories`);
   }
   
 }

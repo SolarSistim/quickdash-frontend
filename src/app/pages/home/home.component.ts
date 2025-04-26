@@ -2,12 +2,15 @@ import { Component, OnInit, inject, ViewChild } from '@angular/core';
 import { catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
 import { SearchComponent } from '../../features/search/search.component';
 import { SettingsService } from '../../features/settings/settings.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { DashboardDropComponent } from '../../features/dashboard-drop/dashboard-drop.component';
 import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
+import { DialogManageIconsComponent } from '../../dialogs/dialog-manage-icons/dialog-manage-icons.component';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +26,7 @@ export class HomeComponent implements OnInit {
   backgroundColor = '#212529';
   
   constructor(
-    private statusService: StatusMessageService
+    private statusService: StatusMessageService, private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -49,5 +52,14 @@ export class HomeComponent implements OnInit {
     this.statusService.show(`Test: ${type}`, type);
   }
 
-  
+    openEditIconsDialog(): void {
+      const dialogRef = this.dialog.open(DialogManageIconsComponent, {
+        width: '700px'
+      });
+    
+      dialogRef.afterClosed().subscribe(() => {
+        console.log('Icons dialog closed.')
+      });
+    }
+
 }
