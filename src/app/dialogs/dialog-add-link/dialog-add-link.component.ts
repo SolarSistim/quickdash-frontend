@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
+import { IconSelectorComponent } from '../dialog-manage-icons/icon-selector/icon-selector.component';
 
 @Component({
   selector: 'app-dialog-add-link',
@@ -17,7 +18,8 @@ import { DashboardDropService } from '../../features/dashboard-drop/dashboard-dr
     MatButtonModule,
     MatIconModule,
     MatDialogContent,
-    MatDialogActions
+    MatDialogActions,
+    IconSelectorComponent
   ],
   templateUrl: './dialog-add-link.component.html',
   styleUrls: ['./dialog-add-link.component.css']
@@ -26,6 +28,8 @@ export class DialogAddLinkComponent {
 
   @Output() linkAdded = new EventEmitter<void>();
 
+  selectedIcon = 'default.png';
+
   dropService = inject(DashboardDropService);
   dialogRef = inject(MatDialogRef<DialogAddLinkComponent>);
 
@@ -33,6 +37,7 @@ export class DialogAddLinkComponent {
   newLinkUrl = '';
   newLinkDescription = '';
   selectedGroupId!: number;
+  isSelectingIcon = false;
 
   constructor() {
     const data = inject(MAT_DIALOG_DATA) as { groupId: number };
@@ -43,23 +48,91 @@ export class DialogAddLinkComponent {
     const name = this.newLinkName.trim();
     const url = this.newLinkUrl.trim();
     const description = this.newLinkDescription.trim();
-  
+    
     if (!name || !url || !this.selectedGroupId) return;
   
     const payload = {
       name,
       url,
-      icon: 'default.png',
+      icon: this.selectedIcon,   // ⬅️ use selected icon
       description,
       groupId: this.selectedGroupId
     };
   
     this.dropService.createLink(payload).subscribe({
       next: () => {
-        this.linkAdded.emit(); // Refresh the dashboard
+        this.linkAdded.emit();
+        this.dialogRef.close();  // I recommend closing after save
+      },
+      error: (err: any) => {
+        console.error('Failed to create link', err);
+        alert('Failed to create link.');
+      }
+    });
+  }
+  
+  cancel() {
+    this.dialogRef.close();
+  }
+
+  startSelectingIcon() {
+    this.isSelectingIcon = true;
+  }
+  
+  stopSelectingIcon() {
+    this.isSelectingIcon = false;
+  }
+
+  saveAndAddAnother() {
+    const name = this.newLinkName.trim();
+    const url = this.newLinkUrl.trim();
+    const description = this.newLinkDescription.trim();
+  
+    if (!name || !url || !this.selectedGroupId) return;
+  
+    const payload = {
+      name,
+      url,
+      icon: this.selectedIcon,
+      description,
+      groupId: this.selectedGroupId
+    };
+  
+    this.dropService.createLink(payload).subscribe({
+      next: () => {
+        this.linkAdded.emit();
+        // 🔥 Reset form after saving
         this.newLinkName = '';
         this.newLinkUrl = '';
         this.newLinkDescription = '';
+        this.selectedIcon = 'default.png';
+      },
+      error: (err: any) => {
+        console.error('Failed to create link', err);
+        alert('Failed to create link.');
+      }
+    });
+  }
+  
+  saveAndClose() {
+    const name = this.newLinkName.trim();
+    const url = this.newLinkUrl.trim();
+    const description = this.newLinkDescription.trim();
+  
+    if (!name || !url || !this.selectedGroupId) return;
+  
+    const payload = {
+      name,
+      url,
+      icon: this.selectedIcon,
+      description,
+      groupId: this.selectedGroupId
+    };
+  
+    this.dropService.createLink(payload).subscribe({
+      next: () => {
+        this.linkAdded.emit();
+        this.dialogRef.close(); // ✅ Close after save
       },
       error: (err: any) => {
         console.error('Failed to create link', err);
@@ -69,7 +142,4 @@ export class DialogAddLinkComponent {
   }
   
 
-  cancel() {
-    this.dialogRef.close();
-  }
 }

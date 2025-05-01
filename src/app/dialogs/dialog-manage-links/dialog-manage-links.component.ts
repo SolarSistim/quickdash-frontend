@@ -165,6 +165,41 @@ export class DialogManageLinksComponent implements OnInit {
     });
   }
   
+  get isUnchanged(): boolean {
+    const groupNameSame = this.groupName.trim() === this.originalGroupName.trim();
+    const orderSame = this.originalOrder.every((id, idx) => id === this.editableLinks[idx]?.id);
+    return groupNameSame && orderSame;
+  }
+
+  saveChanges() {
+    const updates: Promise<any>[] = [];
+  
+    if (this.groupName.trim() !== this.originalGroupName.trim()) {
+      updates.push(this.dropService.updateGroup(this.selectedGroupId!, { name: this.groupName.trim() }).toPromise());
+    }
+  
+    if (!this.originalOrder.every((id, idx) => id === this.editableLinks[idx]?.id)) {
+      const reordered = this.editableLinks.map((link, idx) => ({ id: link.id, position: idx }));
+      updates.push(this.dropService.reorderLinks(reordered).toPromise());
+    }
+  
+    Promise.all(updates)
+      .then(() => {
+        this.originalGroupName = this.groupName.trim();
+        this.originalOrder = this.editableLinks.map(l => l.id);
+        console.log('Changes saved.');
+      })
+      .catch((err) => {
+        console.error('Failed to save changes', err);
+        alert('Failed to save changes.');
+      });
+  }
+  
+  saveAndClose() {
+    this.saveChanges();
+    this.dialogRef.close(true);  // ✅ After saving, close dialog
+  }
+  
   
 
   get hasOrderChanged(): boolean {

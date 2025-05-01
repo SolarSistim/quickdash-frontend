@@ -71,6 +71,10 @@ export class DialogEditSingleCategoryComponent implements OnInit {
     }
   }
 
+  get isUnchanged(): boolean {
+    return this.category.name === this.originalName;
+  }
+
   cancel() {
     this.dialogRef.close();
   }

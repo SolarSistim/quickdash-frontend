@@ -314,5 +314,37 @@
   border: 1px dashed #555; /* optional: visual cue */
 }
 
+::ng-deep .custom-dialog-container .mat-dialog-container {
+  padding: 0;
+  overflow-y: hidden;
+}
+
+.dashboard-wrapper {
+
+}
+
+/* Ensure mat-tab-group stretches */
+mat-tab-group {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* Center and pin button at bottom */
+.settings-button {
+  position: absolute;
+  bottom: 25px; /* adjust padding from bottom */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2; /* stay above tabs content if needed */
+}
+
+::ng-deep .mat-mdc-menu-item {
+  min-height: 30px !important;
+}
+
+::ng-deep .mat-mdc-menu-panel {
+  min-width: 50px !important;
+}
+
 
 

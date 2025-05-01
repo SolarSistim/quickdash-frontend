@@ -10,11 +10,12 @@ import { DialogAddCategoryComponent } from '../../dialogs/dialog-add-category/di
 import { DialogEditSingleCategoryComponent } from '../../dialogs/dialog-edit-single-category/dialog-edit-single-category.component';
 import { DialogManageCategoriesComponent } from '../../dialogs/dialog-manage-categories/dialog-manage-categories.component';
 import { UiLinkGroupComponent } from '../../ui-components/ui-link-group/ui-link-group.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-dashboard-drop',
   standalone: true,
-  imports: [CommonModule, MatTabsModule,MatMenuModule,UiLinkGroupComponent],
+  imports: [CommonModule, MatTabsModule,MatMenuModule,UiLinkGroupComponent,MatButtonModule],
   templateUrl: './dashboard-drop.component.html',
   styleUrls: ['./dashboard-drop.component.css']
 })
@@ -33,7 +34,21 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.refreshCategories();
+    this.dropService.fetchSimpleCategories().subscribe({
+      next: (data) => {
+        this.categories = data.map(c => ({
+          ...c,
+          groups: [],
+          loaded: false
+        }));
+  
+        // 👇 Immediately load first category after basic categories are fetched
+        if (this.categories.length > 0) {
+          this.loadCategoryGroups(this.categories[0]);
+        }
+      },
+      error: (err) => console.error('Error loading categories', err)
+    });
   }
 
   ngAfterViewChecked(): void {
@@ -44,6 +59,24 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
         this.truncateGroupName(groupNameElement, container.offsetWidth);
       }
     });
+  }
+
+  loadCategoryGroups(category: any): void {
+    if (category && !category.loaded) {
+      this.dropService.fetchFullCategory(category.id).subscribe({
+        next: (fullData) => {
+          category.groups = fullData.groups || [];
+          category.loaded = true;
+        },
+        error: (err) => console.error('Error loading full category', err)
+      });
+    }
+  }
+
+  onTabChange(event: any): void {
+    const index = event.index;
+    const category = this.categories[index];
+    this.loadCategoryGroups(category);
   }
 
   truncateGroupName(element: HTMLElement, availableWidth: number): void {

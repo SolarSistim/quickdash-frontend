@@ -47,6 +47,10 @@ export class DialogEditSingleGroupComponent implements OnInit {
     });
   }
 
+  get isUnchanged(): boolean {
+    return this.group.name.trim() === this.originalName.trim();
+  }
+
   save() {
     this.dashboardDropService.updateGroup(this.group.id, { name: this.group.name }).subscribe({
       next: () => {

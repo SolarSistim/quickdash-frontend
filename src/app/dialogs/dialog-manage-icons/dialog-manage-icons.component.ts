@@ -10,6 +10,7 @@ import { environment } from '../../../environment/environment';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { ManageIconsService } from './manage-icons.service';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
   selector: 'app-dialog-manage-icons',
@@ -23,7 +24,8 @@ import { ManageIconsService } from './manage-icons.service';
     MatDialogContent,
     MatDialogActions,
     MatTooltipModule,
-    MatMenuModule
+    MatMenuModule,
+    MatTabsModule
   ],
   templateUrl: './dialog-manage-icons.component.html',
   styleUrl: './dialog-manage-icons.component.css'
@@ -47,10 +49,16 @@ export class DialogManageIconsComponent {
   editedTitle: string = '';
   editedDescription: string = '';
   filterText: string = '';
+  showIconNote = true;
+  allowEdit = true;
+  editedFilename: string = '';
+  selectedTabIndex = 0;
 
   constructor(private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
+    const savedSetting = localStorage.getItem('showIconNote');
+    this.showIconNote = savedSetting !== 'false';
     setTimeout(() => {
       this.fetchIcons();
     });
@@ -71,7 +79,7 @@ export class DialogManageIconsComponent {
 
   fetchIcons() {
     this.iconService.fetchIcons().subscribe((data) => {
-      this.icons = data;
+      this.icons = [...data]; // 🔥 Important: replace with new array reference
       this.cdr.detectChanges();
     });
   }
@@ -142,8 +150,8 @@ export class DialogManageIconsComponent {
     ).subscribe({
       next: () => {
         this.uploading = false;
-        this.resetUpload();
-        this.fetchIcons();
+        this.resetUpload(); // still good
+        this.fetchIcons();  // this will fix the "missing uploaded icon" issue
       },
       error: (err) => {
         console.error(err);
@@ -161,6 +169,7 @@ export class DialogManageIconsComponent {
     this.editingIconId = icon.id;
     this.editedTitle = icon.title;
     this.editedDescription = icon.description;
+    this.editedFilename = icon.filename;  // 🛠 NEW
   }
   
   cancelEditing() {
@@ -172,11 +181,15 @@ export class DialogManageIconsComponent {
   getEditingIcon() {
     return this.icons.find(icon => icon.id === this.editingIconId) || null;
   }
+
+  clearFilter() {
+    this.filterText = '';
+  }
   
   saveEditedIcon(icon: any) {
-    if (!this.editedTitle.trim()) return;
+    if (!this.editedTitle.trim() || !this.editedFilename.trim()) return;
   
-    this.iconService.updateIcon(icon.id, this.editedTitle.trim(), this.editedDescription.trim())
+    this.iconService.updateIcon(icon.id, this.editedTitle.trim(), this.editedDescription.trim(), this.editedFilename.trim())
       .subscribe({
         next: () => {
           this.cancelEditing();
@@ -187,8 +200,6 @@ export class DialogManageIconsComponent {
         }
       });
   }
-  
-  
  
   hasChanges(): boolean {
     const editingIcon = this.getEditingIcon();
@@ -196,9 +207,11 @@ export class DialogManageIconsComponent {
   
     return (
       editingIcon.title !== this.editedTitle.trim() ||
-      editingIcon.description !== this.editedDescription.trim()
+      editingIcon.description !== this.editedDescription.trim() ||
+      editingIcon.filename !== this.editedFilename.trim()
     );
   }
+  
 
   confirmDeleteDuringEdit(icon: any) {
     if (!icon) {
@@ -220,5 +233,86 @@ export class DialogManageIconsComponent {
       });
     }
   }
+
+  showNote() {
+    this.showIconNote = true;
+    localStorage.setItem('showIconNote', 'true');
+  }
+  
+  dontShowAgain() {
+    this.showIconNote = false;
+    localStorage.setItem('showIconNote', 'false');
+  }
+
+  multiUploadFiles: {
+  file: File;
+  previewUrl: string;
+  title: string;
+  description: string;
+}[] = [];
+
+duplicateFiles: {
+  file: File;
+  previewUrl: string;
+  title: string;
+  description: string;
+}[] = [];
+
+handleMultiIconSelect(event: any) {
+  const files: FileList = event.target.files;
+  this.multiUploadFiles = [];
+  this.duplicateFiles = [];
+
+  const existingFilenames = this.icons.map(icon => icon.filename.toLowerCase());
+
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const previewUrl = URL.createObjectURL(file);
+    const title = file.name.replace(/\.[^/.]+$/, '');
+    const isDuplicate = existingFilenames.includes(file.name.toLowerCase());
+
+    const iconData = {
+      file,
+      previewUrl,
+      title,
+      description: ''
+    };
+
+    if (isDuplicate) {
+      this.duplicateFiles.push(iconData);
+    } else {
+      this.multiUploadFiles.push(iconData);
+    }
+  }
+}
+
+uploadMultipleIcons() {
+  this.uploading = true;
+
+  const uploads = this.multiUploadFiles.map(icon =>
+    this.iconService.uploadIcon(icon.file, icon.title, icon.description)
+  );
+
+  Promise.all(uploads.map(req => req.toPromise()))
+    .then(() => {
+      this.uploading = false;
+      this.resetMultiUpload();     // ←🔥 Reset the tab here
+      this.fetchIcons();
+    })
+    .catch(err => {
+      console.error('Failed to upload one or more icons:', err);
+      this.uploading = false;
+    });
+}
+
+onTabChange(index: number) {
+  this.selectedTabIndex = index;
+}
+
+resetMultiUpload() {
+  this.multiUploadFiles = [];
+  this.duplicateFiles = [];
+}
+
 
 }

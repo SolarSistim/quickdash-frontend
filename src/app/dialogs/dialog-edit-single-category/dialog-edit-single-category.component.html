@@ -5,7 +5,7 @@
       class="bi bi-x-lg close-icon"
       title="Close"
       (click)="cancel()"
-      style="position: absolute; top: 8px; right: 8px; cursor: pointer;"
+      style="position: absolute; top: 16px; right: 16px; cursor: pointer;"
     ></i>
   
     <div class="input-group mb-4 mt-2">
@@ -20,7 +20,11 @@
   </mat-dialog-content>
   
   <mat-dialog-actions class="justify-content-between">
-    <button mat-button color="warn" (click)="delete()">Delete Category</button>
-    <button mat-button (click)="save()">Save & Close</button>
+    <button mat-button color="warn" (click)="delete()">
+      Delete Category
+    </button>
+    <button mat-button (click)="save()" [disabled]="isUnchanged">
+      Save & Close
+    </button>
   </mat-dialog-actions>
   

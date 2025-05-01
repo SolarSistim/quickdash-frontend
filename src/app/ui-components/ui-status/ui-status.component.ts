@@ -23,15 +23,19 @@ export class UiStatusComponent implements OnDestroy {
   ) {
     this.sub.add(
       this.statusService.message$.subscribe((msg) => {
-        this.message = msg;
-        setTimeout(() => this.cdr.detectChanges(), 0); // <-- defer to next tick
+        setTimeout(() => {
+          this.message = msg;
+          this.cdr.detectChanges();
+        }, 0);
       })
     );
-
+  
     this.sub.add(
       this.statusService.status$.subscribe((st) => {
-        this.status = st;
-        setTimeout(() => this.cdr.detectChanges(), 0); // <-- defer to next tick
+        setTimeout(() => {
+          this.status = st;
+          this.cdr.detectChanges();
+        }, 0);
       })
     );
   }

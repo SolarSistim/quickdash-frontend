@@ -37,7 +37,7 @@ export class DialogAddGroupComponent {
     this.selectedCategoryId = data.categoryId;
   }
 
-  save() {
+  private save(closeAfterSave: boolean) {
     const name = this.newGroupName.trim();
   
     if (!name || !this.selectedCategoryId) return;
@@ -55,8 +55,15 @@ export class DialogAddGroupComponent {
       this.dashboardDropService.createLinkGroup(payload).subscribe({
         next: () => {
           console.log('Group added.');
-          this.groupAdded.emit();       // ⬅️ tell parent to refresh
-          this.newGroupName = '';       // ⬅️ reset form field
+          
+          // ✅ emit groupAdded immediately after successful save
+          this.groupAdded.emit(); 
+  
+          if (closeAfterSave) {
+            this.dialogRef.close(); // no need to pass anything now
+          } else {
+            this.newGroupName = '';
+          }
         },
         error: (err) => {
           console.error('Failed to create group', err);
@@ -66,8 +73,19 @@ export class DialogAddGroupComponent {
     });
   }
   
+  
+  
 
   cancel() {
     this.dialogRef.close();
   }
+
+  saveAndAdd() {
+    this.save(false); // don't close
+  }
+  
+  saveAndClose() {
+    this.save(true);  // close after save
+  }
+
 }

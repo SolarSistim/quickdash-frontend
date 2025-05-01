@@ -19,7 +19,7 @@
   }
   
   .upload-section {
-    margin-bottom: 20px;
+    margin-bottom: 5px;
   }
   
   .preview-section {
@@ -39,41 +39,6 @@
     padding: 10px;
   }
   
-  .icon-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-    gap: 2px;
-  }
-  
-  .icon-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .icon-grid-container {
-    flex-grow: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-top: 10px;
-    padding-right: 3px; /* optional for nice right margin */
-  }
-  
-  .icon-item img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    border: 1px solid #ccc;
-    border-radius: 2px;
-  }
-  
-  .icon-title {
-    font-size: 0.8rem;
-    margin-top: 4px;
-    text-align: center;
-    color: #555;
-  }
-
   .preview-section {
     margin-top: 10px;
     display: flex;
@@ -125,34 +90,6 @@
     animation: blinkAnimation 1.8s linear;
   }
   
-  .icon-wrapper {
-    position: relative;
-  }
-  
-  .menu-button {
-    position: absolute;
-    bottom: 4px;
-    right: 4px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 2px;
-    font-size: 18px;
-    height: 22px;
-    width: 22px;
-    min-width: 22px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-  }
-  
-  .menu-button i {
-    pointer-events: none;
-  }
-
-  .icon-wrapper:hover .menu-button {
-    opacity: 1;
-    pointer-events: auto;
-  }
-  
   .edit-mode {
     grid-column: 1 / -1; /* Span full width of the grid */
     width: 100%;
@@ -192,5 +129,123 @@
     gap: 8px;
     justify-content: flex-end;
     flex-grow: 1;
+  }
+
+  .icon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 0px;
+    margin-bottom: 25px;
+  }
+  
+  .icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .icon-grid-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 10px;
+    padding-right: 3px;
+  }
+  
+  .icon-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+  }
+  
+  .icon-title {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    text-align: center;
+    color: #555;
+  }
+
+  .icon-wrapper {
+    position: relative;
+  }
+  
+  .menu-button {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 2px;
+    font-size: 18px;
+    height: 22px;
+    width: 22px;
+    min-width: 22px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .menu-button i {
+    pointer-events: none;
+  }
+
+  .icon-wrapper:hover .menu-button {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .icon-grid-container {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-top: 10px;
+    padding-right: 3px;
+  }
+
+  .icon-grid-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* <-- Here */
+  }
+  
+  .scrollable-icon-grid {
+    flex-grow: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 8px; /* optional, scrollbar room */
+    margin-top: 8px;
+    padding-bottom: 25px;
+    max-height: 260px;
+  }
+
+  :host ::ng-deep .mdc-tab__text-label {
+    color: black !important;
+  }
+
+  .multi-preview-list {
+    overflow: auto;
+    max-height: 350px;
+  }
+
+  .multi-icon-preview {
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgb(236, 236, 236);
+  }
+
+  .multi-icon-preview-duplicate {
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgb(255, 199, 199);
+  }
+
+  .duplicate-preview-list {
+    border: 1px solid gray;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgb(255, 214, 214);
   }
   

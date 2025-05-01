@@ -11,6 +11,8 @@ import {
   MAT_DIALOG_DATA
 } from '@angular/material/dialog';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
+import { IconSelectorComponent } from '../dialog-manage-icons/icon-selector/icon-selector.component';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-dialog-edit-single-link',
@@ -22,7 +24,8 @@ import { DashboardDropService } from '../../features/dashboard-drop/dashboard-dr
     MatButtonModule,
     MatIconModule,
     MatDialogContent,
-    MatDialogActions
+    MatDialogActions,
+    IconSelectorComponent
   ],
   templateUrl: './dialog-edit-single-link.component.html',
   styleUrls: ['./dialog-edit-single-link.component.css']
@@ -33,11 +36,16 @@ export class DialogEditSingleLinkComponent implements OnInit {
   link: any = { id: null, name: '', url: '', description: '' };
   original: any = {};
   loading = true;
+  selectedIcon = 'default.png';
+  isSelectingIcon = false;
+  uploadInProgress = false;
+  previewActive = false; // 👈 NEW
 
   constructor(
     private dialogRef: MatDialogRef<DialogEditSingleLinkComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { linkId: number },
-    private dropService: DashboardDropService
+    private dropService: DashboardDropService,
+    private cdr: ChangeDetectorRef        // 👈 inject here
   ) {}
 
   ngOnInit() {
@@ -48,21 +56,32 @@ export class DialogEditSingleLinkComponent implements OnInit {
           if (match) {
             this.link = { ...match };
             this.original = { ...match };
+            this.selectedIcon = match.icon || 'default.png'; // ✅ load icon
             break;
           }
         }
       }
       this.loading = false;
+  
+      this.cdr.detectChanges(); // ✅ fix ExpressionChangedAfterItHasBeenCheckedError
     });
+  }
+
+  handleUploadInProgress(isUploading: boolean) {
+    this.uploadInProgress = isUploading;
+  }
+  
+  handlePreviewActive(isPreviewing: boolean) {
+    this.previewActive = isPreviewing;
   }
 
   save() {
     const { name, url, description } = this.link;
-    this.dropService.updateLink(this.link.id, { name, url, description }).subscribe({
+    this.dropService.updateLink(this.link.id, { name, url, description, icon: this.selectedIcon }).subscribe({
       next: () => {
         console.log('Link updated successfully');
         this.original = { ...this.link };
-        this.linkWasUpdated = true; // ✅ mark that a change occurred
+        this.linkWasUpdated = true;
       },
       error: (err) => {
         console.error('Failed to update link', err);
@@ -71,6 +90,13 @@ export class DialogEditSingleLinkComponent implements OnInit {
     });
   }
   
+  startSelectingIcon() {
+    this.isSelectingIcon = true;
+  }
+  
+  stopSelectingIcon() {
+    this.isSelectingIcon = false;
+  }
 
   delete() {
     if (confirm(`Are you sure you want to delete "${this.link.name}"?`)) {
@@ -94,7 +120,8 @@ export class DialogEditSingleLinkComponent implements OnInit {
     return (
       this.link.name === this.original.name &&
       this.link.url === this.original.url &&
-      this.link.description === this.original.description
+      this.link.description === this.original.description &&
+      this.selectedIcon === (this.original.icon || 'default.png')  // 👈 Add this line
     );
   }
 
@@ -106,7 +133,12 @@ export class DialogEditSingleLinkComponent implements OnInit {
       return;
     }
   
-    this.dropService.updateLink(this.link.id, { name, url, description }).subscribe({
+    this.dropService.updateLink(this.link.id, {
+      name,
+      url,
+      description,
+      icon: this.selectedIcon    // 👈 ADD THIS
+    }).subscribe({
       next: () => {
         this.linkWasUpdated = true;
         this.dialogRef.close(true); // Close and signal update occurred
@@ -118,5 +150,29 @@ export class DialogEditSingleLinkComponent implements OnInit {
     });
   }
   
+  saveOnly() {
+    const { name, url, description } = this.link;
+  
+    if (!name.trim() || !url.trim() || this.isUnchanged) {
+      return; // Nothing to save
+    }
+  
+    this.dropService.updateLink(this.link.id, {
+      name,
+      url,
+      description,
+      icon: this.selectedIcon
+    }).subscribe({
+      next: () => {
+        console.log('Link updated successfully');
+        this.original = { ...this.link, icon: this.selectedIcon }; // ✅ Update original
+        this.linkWasUpdated = true;
+      },
+      error: (err) => {
+        console.error('Failed to update link', err);
+        alert('Failed to update link.');
+      }
+    });
+  }
 
 }

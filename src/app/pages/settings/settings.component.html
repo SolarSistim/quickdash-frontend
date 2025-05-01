@@ -1,0 +1,47 @@
+<div class="custom-container" [class.example-is-mobile]="isMobile()">
+    <mat-toolbar class="custom-toolbar">
+      <button mat-icon-button (click)="snav.toggle()">
+        <mat-icon style="color: white !important;">menu</mat-icon>
+      </button>
+      <h1 class="example-app-name">Settings</h1>
+    </mat-toolbar>
+  
+    <mat-sidenav-container class="custom-sidenav-container" [style.marginTop.px]="isMobile() ? 56 : 0">
+        <mat-sidenav #snav
+        [mode]="isMobile() ? 'over' : 'side'"
+        [opened]="!isMobile()"
+        [fixedInViewport]="isMobile()"
+        fixedTopGap="56">
+        <mat-nav-list class="p-3">
+            <button mat-button class="nav-button mb-2" (click)="selectedPanel.set('app settings')">App Settings</button>
+            <button mat-button class="nav-button mb-2" (click)="selectedPanel.set('icons')">Icons</button>
+            <button mat-button class="nav-button mb-2" (click)="selectedPanel.set('themes')">Themes</button>
+            <button mat-button class="nav-button mb-2" (click)="selectedPanel.set('themes')">Import/Export</button>
+            <button mat-button class="nav-button mb-2" (click)="selectedPanel.set('about')">About</button>
+            <mat-divider></mat-divider>
+            <button mat-button class="nav-button mb-2 mt-2" routerLink="">Return</button>
+          </mat-nav-list>
+      </mat-sidenav>
+  
+      <mat-sidenav-content>
+
+        <ng-container *ngIf="selectedPanel() === 'icons'">
+        <app-icon-manager></app-icon-manager>
+        </ng-container>
+
+        <ng-container *ngIf="selectedPanel() === 'app settings'">
+        <app-app-settings></app-app-settings>
+        </ng-container>
+
+        <ng-container *ngIf="selectedPanel() === 'themes'">
+        <app-themes></app-themes>
+        </ng-container>
+
+        <ng-container *ngIf="selectedPanel() === 'about'">
+        <app-about></app-about>
+        </ng-container>
+        
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </div>
+  

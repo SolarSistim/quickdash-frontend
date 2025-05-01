@@ -1,4 +1,4 @@
-<mat-tab-group *ngIf="categories.length" dynamicHeight>
+<mat-tab-group *ngIf="categories.length" (selectedTabChange)="onTabChange($event)" dynamicHeight animationDuration="125ms" style="margin-bottom: 25px;">
   <mat-tab *ngFor="let category of categories" [label]="category.name">
 
     <ng-template mat-tab-label>
@@ -40,6 +40,8 @@
     (refreshRequested)="refreshCategories()"
   ></app-ui-link-group>
 
-
   </mat-tab>
+
+
+
 </mat-tab-group>

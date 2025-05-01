@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { forkJoin } from 'rxjs';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatMenuModule } from '@angular/material/menu';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
@@ -10,6 +11,7 @@ import { DialogConfirmComponent } from '../../dialogs/dialog-confirm/dialog-conf
 import { DialogManageLinkGroupsComponent } from '../../dialogs/dialog-manage-link-groups/dialog-manage-link-groups.component';
 import { DialogAddGroupComponent } from '../../dialogs/dialog-add-group/dialog-add-group.component';
 import { UiLinkComponent } from '../ui-link/ui-link.component';
+import { StatusMessageService } from '../ui-status/ui-status.service';
 
 @Component({
   selector: 'app-ui-link-group',
@@ -38,7 +40,11 @@ export class UiLinkGroupComponent {
 
   showHandles = false;
 
-  constructor(private dropService: DashboardDropService, private dialog: MatDialog) {}
+  constructor(
+    private dropService: DashboardDropService,
+    private dialog: MatDialog,
+    private statusService: StatusMessageService  // <-- add this
+  ) {}
 
   allowGroupDrag(): void {
     this.isGroupDraggable = false;
@@ -54,6 +60,13 @@ export class UiLinkGroupComponent {
 
   toggleHandles() {
     this.showHandles = !this.showHandles;
+  
+    if (this.showHandles) {
+      this.statusService.show('Drag and drop enabled', 'success', true); // persistent
+    } else {
+      this.statusService.clearPersistent();
+      this.statusService.clear();
+    }
   }
 
   openAddGroupDialog(categoryId: number): void {
@@ -62,12 +75,97 @@ export class UiLinkGroupComponent {
       data: { categoryId }
     });
   
-    dialogRef.componentInstance.groupAdded.subscribe(() => {
-      this.refreshRequested.emit();
+    const instance = dialogRef.componentInstance;
+  
+    instance.groupAdded.subscribe(() => {
+      this.refreshGroups();  // ✅ ACTUALLY refresh the data now
     });
   
     dialogRef.afterClosed().subscribe(() => {
-      this.refreshRequested.emit();
+      this.refreshGroups(); // ✅ optional: refresh again after closing
+    });
+  }
+  
+  dropLink(event: CdkDragDrop<any[]>, group: any) {
+    const prevContainer = event.previousContainer;
+    const currContainer = event.container;
+  
+    if (prevContainer === currContainer) {
+      // 🔹 Moved within the same group, just reorder
+      moveItemInArray(group.links, event.previousIndex, event.currentIndex);
+  
+      const reorderedLinks = group.links.map((link: any, index: number) => ({
+        id: link.id,
+        position: index
+      }));
+  
+      this.dropService.reorderLinks(reorderedLinks).subscribe({
+        next: () => console.log('Links reordered within group'),
+        error: (err) => console.error('Failed to reorder links', err)
+      });
+    } else {
+      // 🔥 Moved to a different group
+      const movedLink = prevContainer.data[event.previousIndex];
+  
+      // Remove from previous group
+      prevContainer.data.splice(event.previousIndex, 1);
+  
+      // Add into the new group
+      currContainer.data.splice(event.currentIndex, 0, movedLink);
+  
+      // 🛠 Update link's groupId
+      this.dropService.updateLinkGroup(movedLink.id, group.id).subscribe({
+        next: () => {
+          console.log('Link moved to new group successfully');
+  
+          // Now optionally reorder links in the new group too
+          const reorderedLinks = group.links.map((link: any, index: number) => ({
+            id: link.id,
+            position: index
+          }));
+  
+          this.dropService.reorderLinks(reorderedLinks).subscribe({
+            next: () => console.log('Links reordered in new group'),
+            error: (err) => console.error('Failed to reorder links after moving', err)
+          });
+        },
+        error: (err) => console.error('Failed to update link group', err)
+      });
+      
+    }
+  }
+
+  handleLinkMoved(event: { movedLinkId: number, newGroupId: number, oldGroupId: number }) {
+    const { movedLinkId, newGroupId } = event;
+  
+    const reorderedLinks = this.category.groups
+      .find((g: any) => g.id === newGroupId)?.links
+      .map((link: any, index: number) => ({ id: link.id, position: index })) || [];
+  
+    this.dropService.moveAndReorderLink(movedLinkId, newGroupId, reorderedLinks).subscribe({
+      next: () => {
+        console.log('Move and reorder completed successfully');
+        this.refreshGroup(this.category.id, event.oldGroupId);
+        this.refreshGroup(this.category.id, newGroupId);
+      },
+      error: (err) => console.error('Failed to move and reorder link', err)
+    });
+  }
+  
+  
+  refreshGroup(categoryId: number, groupId: number) {
+    this.dropService.fetchCategories().subscribe({
+      next: (data) => {
+        const category = data.find(c => c.id === categoryId);
+        if (category) {
+          const updatedGroup = category.groups.find((g: any) => g.id === Number(groupId));
+          const groupInView = this.category.groups.find((g: any) => g.id === Number(groupId));
+          if (updatedGroup && groupInView) {
+            groupInView.links = updatedGroup.links;
+          }
+        }
+      },
+      error: (err) => console.error('Failed to refresh group', err)
     });
   }
 

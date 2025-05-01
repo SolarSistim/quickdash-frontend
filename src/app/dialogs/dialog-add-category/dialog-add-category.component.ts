@@ -30,7 +30,7 @@ export class DialogAddCategoryComponent {
 
   newCategoryName = '';
 
-  save() {
+  save(closeAfterSave: boolean = false) {
     const name = this.newCategoryName.trim();
     if (!name) return;
   
@@ -41,8 +41,12 @@ export class DialogAddCategoryComponent {
   
       this.dashboardDropService.createCategory(payload).subscribe({
         next: () => {
-          this.categoryAdded.emit();       // 🔄 Tell parent to refresh
-          this.newCategoryName = '';       // 🧼 Clear form
+          this.categoryAdded.emit(); // 🔄 Tell parent to refresh
+          if (closeAfterSave) {
+            this.dialogRef.close();   // ✅ Close after save
+          } else {
+            this.newCategoryName = ''; // 🧼 Clear form if adding another
+          }
         },
         error: (err) => {
           console.error('Failed to create category', err);
@@ -51,10 +55,16 @@ export class DialogAddCategoryComponent {
       });
     });
   }
- 
+
+  saveAndAddAnother() {
+    this.save(false); // ✅ Stay open, clear input
+  }
+
+  saveAndClose() {
+    this.save(true);  // ✅ Save and close dialog
+  }
 
   cancel() {
-    this.categoryAdded.emit();  // 🔄 Trigger refresh on close
-    this.dialogRef.close();     // ❌ Close the dialog
+    this.dialogRef.close(); // ❌ Just close
   }
 }

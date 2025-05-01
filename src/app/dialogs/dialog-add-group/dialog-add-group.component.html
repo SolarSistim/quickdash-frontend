@@ -1,29 +1,34 @@
 <mat-dialog-content style="display: flex; flex-direction: column; height: 100%; position: relative;">
-    <h3 mat-dialog-title class="pb-2">Add New Group</h3>
-    <i class="bi bi-x-lg close-icon" title="Close" (click)="cancel()"></i>
-  
-    <form (ngSubmit)="save()">
-      <div class="input-group mb-3">
-        <input
-        autocomplete="off"
-          type="text"
-          class="form-control"
-          name="newGroupName"
-          placeholder="Enter group name"
-          [(ngModel)]="newGroupName"
-        />
-        <button
-          class="btn btn-outline-primary"
-          type="submit"
-          [disabled]="!newGroupName.trim()"
-        >
-          Add Group
-        </button>
-      </div>
-    </form>
-  </mat-dialog-content>
-  
-  <mat-dialog-actions class="justify-content-end" style="margin-right: 8px; margin-left: 8px;">
-    <button mat-button (click)="cancel()">Close</button>
-  </mat-dialog-actions>
-  
+  <h3 mat-dialog-title class="pb-2">Add New Group</h3>
+  <i class="bi bi-x-lg close-icon" title="Close" (click)="cancel()"></i>
+
+  <div class="input-group mb-3">
+    <input
+      autocomplete="off"
+      type="text"
+      class="form-control"
+      name="newGroupName"
+      placeholder="Enter group name"
+      [(ngModel)]="newGroupName"
+    />
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-end" style="margin-right: 8px; margin-left: 8px;">
+
+  <button 
+    mat-button 
+    color="primary" 
+    (click)="saveAndAdd()" 
+    [disabled]="!newGroupName.trim()">
+    Save & Add
+  </button>
+
+  <button 
+    mat-button 
+    color="primary" 
+    (click)="saveAndClose()" 
+    [disabled]="!newGroupName.trim()">
+    Save & Close
+  </button>
+</mat-dialog-actions>

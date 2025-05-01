@@ -82,7 +82,15 @@
   </div>
   </div>
 </mat-dialog-content>
-<mat-dialog-actions>
-  <button mat-flat-button (click)="saveOrder()" [disabled]="!hasOrderChanged">Save Order</button>
-  <button mat-button (click)="closeDialog()">Close</button>
-</mat-dialog-actions>
+
+<div class="dialog-flex-container">
+  <mat-dialog-content class="dialog-content">
+    <!-- your entire Manage Groups content goes here -->
+    <!-- (already mostly correct, like title, add group input, group list, etc.) -->
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="dialog-actions">
+    <button mat-button color="primary" (click)="closeDialog()">Close</button>
+  </mat-dialog-actions>
+  
+</div>

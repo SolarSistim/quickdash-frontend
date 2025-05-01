@@ -182,5 +182,38 @@ export class DialogManageLinkGroupsComponent implements OnInit {
     });
   }
   
+  get isUnchanged(): boolean {
+  const currentOrder = this.editableGroups.map(group => group.id);
+  return (
+    currentOrder.length === this.originalOrder.length &&
+    currentOrder.every((id, index) => id === this.originalOrder[index])
+  );
+}
+
+saveChanges() {
+  if (!this.selectedCategoryId) return;
+
+  const reordered = this.editableGroups.map((group, index) => ({
+    id: group.id,
+    position: index
+  }));
+
+  this.dropService.reorderGroups(this.selectedCategoryId, reordered).subscribe({
+    next: () => {
+      console.log('Group reorder saved');
+      this.originalOrder = this.editableGroups.map(g => g.id);
+    },
+    error: (err) => {
+      console.error('Failed to save group reorder', err);
+      alert('Failed to save group reorder.');
+    }
+  });
+}
+
+saveAndClose() {
+  this.saveChanges();
+  this.dialogRef.close(true); // ✅ signal that changes were made
+}
+
 
 }

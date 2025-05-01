@@ -24,10 +24,11 @@ export class ManageIconsService {
     return this.http.post(`${this.base}/icons`, formData);
   }
 
-  updateIcon(id: number, title: string, description: string): Observable<any> {
+  updateIcon(id: number, title: string, description: string, filename: string): Observable<any> {
     return this.http.put(`${this.base}/icons/${id}`, {
       title,
-      description
+      description,
+      filename
     });
   }
 

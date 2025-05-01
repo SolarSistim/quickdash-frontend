@@ -61,6 +61,14 @@ export class DashboardDropService {
     return this.http.post(`${this.base}/link-categories`, payload);
   }
 
+  fetchSimpleCategories(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}/link-categories/simple`);
+  }
+  
+  fetchFullCategory(id: number): Observable<any> {
+    return this.http.get<any>(`${this.base}/link-categories/${id}/full`);
+  }
+
   createLink(data: {
     name: string;
     url: string;
@@ -71,6 +79,14 @@ export class DashboardDropService {
     position?: number;
   }) {
     return this.http.post(`${this.base}/links`, data);
+  }
+
+  moveAndReorderLink(movedLinkId: number, newGroupId: number, reorderedLinks: { id: number, position: number }[]) {
+    return this.http.put(`${this.base}/links/move-and-reorder`, {
+      movedLinkId,
+      newGroupId,
+      reorderedLinks
+    });
   }
 
   updateLink(id: number, data: {

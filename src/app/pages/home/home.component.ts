@@ -4,24 +4,22 @@ import { of } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { SearchComponent } from '../../features/search/search.component';
-import { SettingsService } from '../../features/settings/settings.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { DashboardDropComponent } from '../../features/dashboard-drop/dashboard-drop.component';
 import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
 import { DialogManageIconsComponent } from '../../dialogs/dialog-manage-icons/dialog-manage-icons.component';
-import { Dialog } from '@angular/cdk/dialog';
+import { SettingsButtonComponent } from '../../ui-components/settings-button/settings-button.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [SearchComponent,CommonModule,MatMenuModule,DashboardDropComponent,UiStatusComponent],
+  imports: [SearchComponent,CommonModule,MatMenuModule,DashboardDropComponent,UiStatusComponent,SettingsButtonComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
 
-  private settingsService = inject(SettingsService);
 
   backgroundColor = '#212529';
   
@@ -30,22 +28,6 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.settingsService.fetchAllSettings().pipe(
-      catchError((error) => {
-        console.error('Failed to fetch settings, using default background color.', error);
-        document.body.style.backgroundColor = this.backgroundColor;
-        return of([]); // fallback to empty array
-      })
-    ).subscribe((settings) => {
-      const match = settings.find(s => s.key === 'GLOBAL_BG_COLOR');
-      if (match) {
-        console.log('Setting background color to:', match.value);
-        document.body.style.backgroundColor = match.value;
-      } else {
-        // Optional fallback if setting is not found
-        document.body.style.backgroundColor = this.backgroundColor;
-      }
-    });
   }
 
   testStatus(type: 'loading' | 'success' | 'error') {

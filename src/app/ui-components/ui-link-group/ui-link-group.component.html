@@ -19,10 +19,7 @@
       (mouseover)="allowGroupDrag()"
       (mouseout)="preventGroupDrag()"></i>
 
-      <img
-      class="group-icon"
-      src="/assets/icons/www.png"
-      alt="icon"/>
+      <i class="bi bi-box-seam" style="color: white; margin-right: 8px;"></i>
 
       <div class="group-name-container d-flex align-items-center" #groupNameContainer>
         <div class="group-name">{{ group.name }}</div>
@@ -54,18 +51,19 @@
             *ngIf="cat.id !== category.id"
             (click)="onMoveGroup({ group, newCategoryId: cat.id })"
           >
-            {{ cat.name }}
+          <i class="bi bi-box-seam"></i> {{ cat.name }}
           </button>
         </ng-container>
       </mat-menu>
     </div>
 
-        <app-ui-link
-        [group]="group"
-        [category]="category"
-        [isLinkDraggable]="isLinkDraggable"
-        [showHandles]="showHandles">
-        </app-ui-link>
+    <app-ui-link
+    [group]="group"
+    [category]="category"
+    [isLinkDraggable]="isLinkDraggable"
+    [showHandles]="showHandles"
+    (linkMoved)="handleLinkMoved($event)"
+  ></app-ui-link>
 
     <div class="icon-row">
       <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>

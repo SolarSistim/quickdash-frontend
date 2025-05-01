@@ -50,4 +50,11 @@
   .close-icon:hover {
     color: #000;
   }
+
+  mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px !important;
+  }
   

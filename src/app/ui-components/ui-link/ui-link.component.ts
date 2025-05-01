@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatMenuModule } from '@angular/material/menu';
@@ -22,6 +22,10 @@ export class UiLinkComponent {
   @Input() category: any;
   @Input() isLinkDraggable = true;
   @Input() showHandles = false;
+  @Output() linkMoved = new EventEmitter<{ movedLinkId: number, newGroupId: number, oldGroupId: number }>();
+
+  private saveTimer: any = null;
+  private lastSavedPositions: string = '';
 
   readonly defaultIconUrl = '../../../assets/icons/trakt.png';
 
@@ -35,8 +39,8 @@ export class UiLinkComponent {
     return [...this.group.links].sort((a, b) => a.position - b.position);
   }
 
-  getConnectedDropLists(): string[] {
-    return this.category.groups.map((group: any) => `group-list-${group.id}`);
+  getConnectedDropLists(category: any): string[] {
+    return category.groups.map((group: any) => `group-list-${group.id}`);
   }
 
   allowLinkDrag(): void {
@@ -63,6 +67,26 @@ export class UiLinkComponent {
       }
     });
   }
+
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = '/assets/icons/default.png';
+  }
+
+  handleAuxClick(event: MouseEvent, url: string): void {
+    if (event.button === 1) { // Middle mouse button
+      event.preventDefault(); // Important to prevent default middle-click behavior inside div
+      
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+  }
+  
 
   openManageLinksDialog(): void {
     const dialogRef = this.dialog.open(DialogManageLinksComponent, {
@@ -101,24 +125,78 @@ export class UiLinkComponent {
   }
 
   dropLink(event: CdkDragDrop<any[]>) {
-    const sortedLinks = [...this.group.links].sort((a, b) => a.position - b.position);
-
+    const movedLink = event.item.data;
+  
     if (event.previousContainer === event.container) {
-      moveItemInArray(sortedLinks, event.previousIndex, event.currentIndex);
-    } else {
-      const prevLinks = event.previousContainer.data as any[];
-      prevLinks.splice(event.previousIndex, 1);
-      sortedLinks.splice(event.currentIndex, 0, event.item.data);
-    }
-
-    sortedLinks.forEach((link, i) => link.position = i);
-    this.group.links = sortedLinks;
-
-    this.dropService.reorderLinks(sortedLinks.map(l => ({ id: l.id, position: l.position })))
-      .subscribe({
-        next: () => console.log('Link reorder saved'),
-        error: err => console.error('Error saving link reorder', err)
+      // 🔥 Move inside same group
+      moveItemInArray(this.group.links, event.previousIndex, event.currentIndex);
+  
+      // 🔥 Fix local positions
+      this.group.links.forEach((link: any, index: number) => {
+        link.position = index;
       });
+  
+      // 🔥 Queue save
+      this.queueReorderSave();
+    } else {
+      // 🔥 Move across groups
+      const oldGroupLinks = event.previousContainer.data as any[];
+      const indexInOldGroup = oldGroupLinks.findIndex(link => link.id === movedLink.id);
+      if (indexInOldGroup > -1) {
+        oldGroupLinks.splice(indexInOldGroup, 1);
+      }
+  
+      this.group.links.splice(event.currentIndex, 0, movedLink);
+  
+      // 🔥 🔥 🔥 IMPORTANT: Fix *both* old and new group link positions
+      oldGroupLinks.forEach((link: any, index: number) => {
+        link.position = index;
+      });
+      this.group.links.forEach((link: any, index: number) => {
+        link.position = index;
+      });
+  
+      // Now emit move
+      this.linkMoved.emit({
+        movedLinkId: movedLink.id,
+        newGroupId: this.group.id,
+        oldGroupId: Number(event.previousContainer.id.split('group-list-')[1])
+      });
+    }
+  }
+  
+  
+  queueReorderSave() {
+    // 🔥 Clear any previous pending save
+    if (this.saveTimer) {
+      clearTimeout(this.saveTimer);
+    }
+  
+    // 🔥 Set a new timer (wait 300ms after last move)
+    this.saveTimer = setTimeout(() => {
+      this.commitReorder();
+    }, 300); // You can tweak this value (200–500ms is typical)
+  }
+  
+  commitReorder() {
+    const reorderedLinks = this.group.links.map((link: any, index: number) => ({
+      id: link.id,
+      position: index
+    }));
+  
+    const newPositions = JSON.stringify(reorderedLinks);
+  
+    // 🔥 Dirty check: only save if something actually changed
+    if (newPositions !== this.lastSavedPositions) {
+      this.lastSavedPositions = newPositions;
+  
+      this.dropService.reorderLinks(reorderedLinks).subscribe({
+        next: () => console.log('Links saved to server successfully'),
+        error: (err) => console.error('Failed to reorder links', err)
+      });
+    } else {
+      console.log('No changes detected, skipping save.');
+    }
   }
 
   refreshLinks() {
