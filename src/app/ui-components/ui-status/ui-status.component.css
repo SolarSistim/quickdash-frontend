@@ -29,11 +29,11 @@
 
   
   .status-message.loading {
-    background-color: transparent;
+    background-color: #2e3a46;
   }
   
   .status-message.success {
-    background-color: transparent;
+    background-color: #8BC34A;
   }
   
   .status-message.error {

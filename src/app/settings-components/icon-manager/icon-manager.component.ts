@@ -10,6 +10,8 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTabsModule } from '@angular/material/tabs';
 import { IconManagerService } from './icon-manager.service';
+import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
+import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
 
 @Component({
   selector: 'app-icon-manager',
@@ -20,7 +22,8 @@ import { IconManagerService } from './icon-manager.service';
     MatIconModule,
     MatTooltipModule,
     MatMenuModule,
-    MatTabsModule],
+    MatTabsModule,
+    UiStatusComponent],
   templateUrl: './icon-manager.component.html',
   styleUrl: './icon-manager.component.css'
 })
@@ -47,7 +50,7 @@ export class IconManagerComponent {
   editedFilename: string = '';
   selectedTabIndex = 0;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef,private statusService: StatusMessageService) {}
 
   ngOnInit() {
     const savedSetting = localStorage.getItem('showIconNote');
@@ -135,7 +138,9 @@ export class IconManagerComponent {
   uploadIcon() {
     if (!this.selectedFile) return;
   
+    this.statusService.show('Uploading icon...', 'loading');
     this.uploading = true;
+  
     this.iconService.uploadIcon(
       this.selectedFile,
       this.title || this.selectedFile.name.replace('.png', ''),
@@ -143,15 +148,18 @@ export class IconManagerComponent {
     ).subscribe({
       next: () => {
         this.uploading = false;
-        this.resetUpload(); // still good
-        this.fetchIcons();  // this will fix the "missing uploaded icon" issue
+        this.resetUpload();
+        this.fetchIcons();
+        this.statusService.show('Icon uploaded successfully!', 'success');
       },
       error: (err) => {
         console.error(err);
         this.uploading = false;
+        this.statusService.show('Failed to upload icon.', 'error');
       }
     });
   }
+  
 
   startEditingIcon(icon: any) {
     this.editingIconId = icon.id;
@@ -275,6 +283,7 @@ handleMultiIconSelect(event: any) {
 }
 
 uploadMultipleIcons() {
+  this.statusService.show('Uploading icons...', 'loading');
   this.uploading = true;
 
   const uploads = this.multiUploadFiles.map(icon =>
@@ -284,14 +293,17 @@ uploadMultipleIcons() {
   Promise.all(uploads.map(req => req.toPromise()))
     .then(() => {
       this.uploading = false;
-      this.resetMultiUpload();     // ←🔥 Reset the tab here
+      this.resetMultiUpload();
       this.fetchIcons();
+      this.statusService.show('All icons uploaded!', 'success');
     })
     .catch(err => {
       console.error('Failed to upload one or more icons:', err);
       this.uploading = false;
+      this.statusService.show('Upload failed for one or more icons.', 'error');
     });
 }
+
 
 onTabChange(index: number) {
   this.selectedTabIndex = index;

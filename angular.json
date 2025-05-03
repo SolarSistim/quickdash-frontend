@@ -25,7 +25,8 @@
                 "glob": "**/*",
                 "input": "public"
               },
-              "src/_redirects"
+              "src/_redirects",
+              "src/web.config"
             ],
             "styles": [
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",

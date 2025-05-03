@@ -10,6 +10,7 @@ import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.compo
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
 import { DialogManageIconsComponent } from '../../dialogs/dialog-manage-icons/dialog-manage-icons.component';
 import { SettingsButtonComponent } from '../../ui-components/settings-button/settings-button.component';
+import { SettingsService } from '../../settings-components/app-settings/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -20,14 +21,17 @@ import { SettingsButtonComponent } from '../../ui-components/settings-button/set
 })
 export class HomeComponent implements OnInit {
 
-
+  showLogo = false;
   backgroundColor = '#212529';
   
   constructor(
-    private statusService: StatusMessageService, private dialog: MatDialog
+    private statusService: StatusMessageService, private dialog: MatDialog, private settingsService: SettingsService
   ) {}
 
   ngOnInit() {
+    this.settingsService.loadSettings().subscribe(settings => {
+      this.showLogo = settings['LOGO_ENABLE'] !== 'FALSE';
+    });
   }
 
   testStatus(type: 'loading' | 'success' | 'error') {

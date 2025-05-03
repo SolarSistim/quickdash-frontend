@@ -11,7 +11,7 @@ import { IconManagerComponent } from '../../settings-components/icon-manager/ico
 import { ThemesComponent } from '../../settings-components/themes/themes.component';
 import { AboutComponent } from '../../settings-components/about/about.component';
 import { AppSettingsComponent } from '../../settings-components/app-settings/app-settings.component';
-import { RouterLink } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
@@ -28,7 +28,7 @@ import { RouterLink } from '@angular/router';
     ThemesComponent,
     AboutComponent,
     AppSettingsComponent,
-    RouterLink
+    RouterModule
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
