@@ -1,17 +1,17 @@
 import { NgIf, CommonModule } from '@angular/common';
-import { Component, OnDestroy, inject, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal, effect } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { NgFor } from '@angular/common';
 import { IconManagerComponent } from '../../settings-components/icon-manager/icon-manager.component';
 import { ThemesComponent } from '../../settings-components/themes/themes.component';
 import { AboutComponent } from '../../settings-components/about/about.component';
 import { AppSettingsComponent } from '../../settings-components/app-settings/app-settings.component';
 import { RouterModule } from '@angular/router';
+import { ImportExportComponent } from '../../settings-components/import-export/import-export.component';
 
 @Component({
   selector: 'app-settings',
@@ -28,14 +28,15 @@ import { RouterModule } from '@angular/router';
     ThemesComponent,
     AboutComponent,
     AppSettingsComponent,
-    RouterModule
+    RouterModule,
+    ImportExportComponent
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent implements OnDestroy {
 
-  protected selectedPanel = signal('app settings');
+  protected selectedPanel = signal(localStorage.getItem('settings.selectedPanel') || 'app settings');
   protected readonly isMobile = signal(true);
 
   private readonly _mobileQuery: MediaQueryList;
@@ -47,11 +48,14 @@ export class SettingsComponent implements OnDestroy {
     this.isMobile.set(this._mobileQuery.matches);
     this._mobileQueryListener = () => this.isMobile.set(this._mobileQuery.matches);
     this._mobileQuery.addEventListener('change', this._mobileQueryListener);
+    effect(() => {
+      localStorage.setItem('settings.selectedPanel', this.selectedPanel());
+    });
   }
 
   ngOnDestroy(): void {
     this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
   }
 
-  protected readonly navItems = ['Icons', 'Themes', 'App Settings'];
+  protected readonly navItems = ['Icons', 'Themes', 'App Settings', "Import/Export", "About"];
 }

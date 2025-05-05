@@ -34,7 +34,7 @@
           <i class="bi bi-pencil"></i> Edit Group
         </button>
         <button mat-menu-item (click)="openManageGroupsDialog(category.id, group.id)">
-          <i class="bi bi-pencil-square"></i> Group Manager
+          <i class="bi bi-sliders"></i> Group Manager
         </button>
         <button mat-menu-item [matMenuTriggerFor]="moveGroupSubMenu">
           <i class="bi bi-send"></i> Move Group
@@ -67,7 +67,7 @@
 
     <div class="icon-row">
       <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>
-      <i class="bi bi-pencil-square" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
+      <i class="bi bi-sliders" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
       <i class="bi bi-three-dots-vertical" [matMenuTriggerFor]="groupMenu" title="Menu"></i>
     </div>
 

@@ -47,19 +47,37 @@
   
   .nav-button {
     width: 100%;
-    text-align: left;
-    color: white;
-  }
-  
-  .nav-button {
-    width: 100%;
+    justify-content: flex-start; /* Ensure content aligns left */
     text-align: left;
     background-color: #3b4d59 !important;
-    color: white !important; /* ✅ Force text color to white */
+    color: white !important;
     transition: background-color 0.2s ease;
+    display: flex;               /* Important for justify-content to work */
+    align-items: center;         /* Optional: vertically center icon/text */
+    gap: 0.5rem;                 /* Optional: better spacing than `&nbsp;` */
   }
   
   .nav-button:hover {
     background-color: #3b4d59 !important;
     color: white !important; /* ✅ Ensure it stays white on hover */
+  }
+
+  .custom-icon {
+    position: relative !important;
+    bottom: -1px;
+    margin-left: 10px;
+  }
+
+  .custom-button-text {
+    position: relative;
+    margin-left: 15px;
+  }
+
+  .nav-button.active {
+    background-color: #4c6170 !important; /* Or whatever 'selected' color you prefer */
+  }
+
+  .nav-button.active {
+    background-color: #4c6170 !important;
+    border-left: 4px solid #00bcd4; /* Optional accent color */
   }

@@ -1,9 +1,10 @@
-<mat-form-field class="w-100 mt-4">
+<mat-form-field class="w-100 mt-5">
   <mat-label>Search</mat-label>
 
   <input type="text"
        #searchInput
        matInput
+       placeholder="Start typing to search or filter."
        [formControl]="searchControl"
        [matAutocomplete]="auto"
        (keydown.enter)="handleEnter()"
