@@ -25,6 +25,8 @@
   </div>
 </div>
 
+<app-small-title title="Appearance"></app-small-title>
+
 <!-- PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE -->
 <!-- PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE -->
 <!-- PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE PAGE TITLE -->
@@ -81,8 +83,8 @@
 <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between;">
     <div style="color: white;">
-      <h4 style="margin: 0;" *ngIf="showLogo">Logo: Enabled</h4>
-      <h4 style="margin: 0;" *ngIf="!showLogo">Logo: Disabled</h4>
+      <h4 style="margin: 0;" *ngIf="showLogo">Logo: <span style="color: #4CAF50;">Enabled</span></h4>
+      <h4 style="margin: 0;" *ngIf="!showLogo">Logo: <span style="color: #FF5252;">Disabled</span></h4>
       <small style="color: #ccc;">Enable or disable the logo in the interface.</small>
     </div>
     <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
@@ -112,59 +114,22 @@
     <div>
       <img
         [src]="previewUrls['LOGO_IMAGE'] || '/assets/branding/logo/logo.png'"
-        style="max-width: 75%;" />
+        style="max-width: 100px;" />
     </div>
   </div>
 </mat-card>
 
+<!-- SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE  -->
+<!-- SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE  -->
+<!-- SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE  -->
 
-<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
-<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
-<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
+<app-small-title title="Search Feature"></app-small-title>
 
 <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
     <div style="color: white;">
-      <h4 style="margin: 0;">Base URL</h4>
-      <small style="color: #ccc;">Select the base path where Quickdash is hosted.</small>
-    </div>
-    <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
-      <mat-label>Base URL</mat-label>
-      <mat-select [(ngModel)]="formValues['BASE_URL']" (selectionChange)="onValueChange()">
-        <mat-option [value]="'\\'">Use Root</mat-option>
-        <mat-option [value]="'/quickdash'">Specify Subfolder</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-</mat-card>
-
-<mat-card *ngIf="formValues['BASE_URL'] !== '\\'" style="background-color: #2e3a46; padding: 16px;" class="mb-2">
-  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-    <div style="color: white;">
-      <h4 style="margin: 0;">Subfolder</h4>
-      <small style="color: #ccc;">Enter the subfolder where Quickdash is installed (e.g. /quickdash).</small>
-    </div>
-    <mat-form-field appearance="fill" style="min-width: 300px; margin-left: 16px;">
-      <mat-label>Subfolder</mat-label>
-      <input
-        matInput
-        type="text"
-        [(ngModel)]="formValues['BASE_URL']"
-        (ngModelChange)="onValueChange()" />
-    </mat-form-field>
-  </div>
-</mat-card>
-
-
-<!-- SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE  -->
-<!-- SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE  -->
-<!-- SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE SEARCH FEATURE  -->
-
-<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
-  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-    <div style="color: white;">
-      <h4 style="margin: 0;" *ngIf="searchFeature">Search Feature: Enabled</h4>
-      <h4 style="margin: 0;" *ngIf="!searchFeature">Search Feature: Disabled</h4>
+      <h4 style="margin: 0;" *ngIf="searchFeature">Search Feature: <span style="color: #4CAF50;">Enabled</span></h4>
+      <h4 style="margin: 0;" *ngIf="!searchFeature">Search Feature: <span style="color: #FF5252;">Disabled</span></h4>
       <small style="color: #ccc;">Enable or disable the search bar on your Quickdash dashboard.</small>
     </div>
     <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
@@ -211,7 +176,7 @@
       </div>
   
       <!-- Right: input field -->
-      <mat-form-field appearance="fill" style="max-width: 500px; min-width: 200px; min-width: 200px; margin-left: 16px;">
+      <mat-form-field appearance="fill" style="width: 500px; min-width: 200px; min-width: 200px; margin-left: 16px;">
         <mat-label>URL Query</mat-label>
         <input
           matInput
@@ -221,32 +186,70 @@
   
     </div>
   </mat-card>
-  
+
+ <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
+<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
+<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
+
+<app-small-title title="Hosting"></app-small-title>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Base URL</h4>
+      <small style="color: #ccc;">Select the base path where Quickdash is hosted.</small>
+    </div>
+    <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+      <mat-label>Base URL</mat-label>
+      <mat-select [(ngModel)]="formValues['BASE_URL']" (selectionChange)="onValueChange()">
+        <mat-option [value]="'\\'">Use Root</mat-option>
+        <mat-option [value]="'/quickdash'">Specify Subfolder</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-card>
+
+<mat-card *ngIf="formValues['BASE_URL'] !== '\\'" style="background-color: #2e3a46; padding: 16px;" class="mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Subfolder</h4>
+      <small style="color: #ccc;">Enter the subfolder where Quickdash is installed (e.g. /quickdash).</small>
+    </div>
+    <mat-form-field appearance="fill" style="width: 500px; min-width: 200px; margin-left: 16px;">
+      <mat-label>Subfolder</mat-label>
+      <input
+        matInput
+        type="text"
+        [(ngModel)]="formValues['BASE_URL']"
+        (ngModelChange)="onValueChange()" />
+    </mat-form-field>
+  </div>
+</mat-card>
 
 <div class="mat-card button-panel mt-2 mb-4">
-    <div class="row">
-       <div class="col-lg-6 d-flex align-items-center">
-       </div>
-       <div class="col-lg-6 text-end">
-          <ng-container>
-            <button
-                mat-button
-                class="nav-button"
-                style="color: gray;"
-                [disabled]="!changed"
-                [ngStyle]="{ color: changed ? '' : '#999' }"
-                (click)="saveSettings()">
-                <i class="bi bi-check-lg"></i>&nbsp;Save
-                </button>
-          </ng-container>
-          <!-- <ng-container>
-             <button mat-button color="warn" class="nav-button" style="margin-right: 10px;">
-             <i class="bi bi-arrow-counterclockwise"></i> Reset Upload
-             </button>
-          </ng-container> -->
-       </div>
-    </div>
- </div>
+  <div class="row">
+     <div class="col-lg-6 d-flex align-items-center">
+     </div>
+     <div class="col-lg-6 text-end">
+        <ng-container>
+          <button
+              mat-button
+              class="nav-button"
+              style="color: gray;"
+              [disabled]="!changed"
+              [ngStyle]="{ color: changed ? '' : '#999' }"
+              (click)="saveSettings()">
+              <i class="bi bi-check-lg"></i>&nbsp;Save
+              </button>
+        </ng-container>
+        <!-- <ng-container>
+           <button mat-button color="warn" class="nav-button" style="margin-right: 10px;">
+           <i class="bi bi-arrow-counterclockwise"></i> Reset Upload
+           </button>
+        </ng-container> -->
+     </div>
+  </div>
+</div>
 
  <app-ui-status></app-ui-status>
 

@@ -17,10 +17,11 @@ import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.compo
 import { Router } from '@angular/router'; // ⬅️ import this
 import { MatCardModule } from '@angular/material/card';
 import { ViewChild, ElementRef } from '@angular/core';
+import { SmallTitleComponent } from '../../ui-components/small-title/small-title.component';
 
 @Component({
   selector: 'app-app-settings',
-  imports: [MatButtonModule,MatInputModule,MatSelectModule,FormsModule,ReactiveFormsModule,CommonModule,UiStatusComponent,MatCardModule],
+  imports: [MatButtonModule,MatInputModule,MatSelectModule,FormsModule,ReactiveFormsModule,CommonModule,UiStatusComponent,MatCardModule,SmallTitleComponent],
   templateUrl: './app-settings.component.html',
   styleUrl: './app-settings.component.css'
 })
@@ -90,9 +91,9 @@ export class AppSettingsComponent {
   
     Promise.all(uploads).then(() => {
       const updates = Object.entries(this.formValues)
-      .filter(([key, val]) =>
-        key !== 'FAVICON_IMAGE' && key !== 'LOGO_IMAGE' && val !== this.originalValues[key]
-      );
+        .filter(([key, val]) =>
+          key !== 'FAVICON_IMAGE' && key !== 'LOGO_IMAGE' && val !== this.originalValues[key]
+        );
   
       const updateCalls = updates.map(([key, value]) =>
         this.settingsService.saveSetting(key, value).toPromise()
@@ -111,6 +112,13 @@ export class AppSettingsComponent {
         LOGO_IMAGE: null
       };
       this.statusService.show('Settings saved successfully!', 'success');
+  
+      // 👇 Force favicon reload with a cache-busting query param
+      const faviconLink = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (faviconLink) {
+        faviconLink.href = '/assets/branding/favicon/favicon.png?v=' + Date.now();
+      }
+  
       setTimeout(() => {
         window.location.reload();
       }, 500);
@@ -119,6 +127,7 @@ export class AppSettingsComponent {
       console.error(err);
     });
   }
+  
 
   previewUrls: Record<'FAVICON_IMAGE' | 'LOGO_IMAGE', string | null> = {
     FAVICON_IMAGE: null,

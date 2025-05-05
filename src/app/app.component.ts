@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SettingsService } from './settings-components/app-settings/settings.service';
 
 @Component({
   selector: 'app-root',
@@ -8,5 +9,15 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'quickdash-frontend';
+
+  constructor(private settingsService: SettingsService) {}
+
+  ngOnInit() {
+    this.settingsService.loadSettings().subscribe(settings => {
+      if (settings['PAGE_TITLE']) {
+        document.title = settings['PAGE_TITLE'];
+      }
+    });
+  }
+  
 }

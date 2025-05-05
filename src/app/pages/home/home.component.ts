@@ -22,6 +22,7 @@ import { SettingsService } from '../../settings-components/app-settings/settings
 export class HomeComponent implements OnInit {
 
   showLogo = false;
+  searchFeature = false;
   backgroundColor = '#212529';
   
   constructor(
@@ -31,6 +32,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.settingsService.loadSettings().subscribe(settings => {
       this.showLogo = settings['LOGO_ENABLE'] !== 'FALSE';
+      this.searchFeature = settings['SEARCH_FEATURE'] !== 'FALSE';
     });
   }
 

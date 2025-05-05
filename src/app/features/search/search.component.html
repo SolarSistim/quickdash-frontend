@@ -1,4 +1,39 @@
-<div class="input-group input-group-lg mt-4 mb-3">
-  <input type="text" class="form-control" placeholder="Search">
-  <button class="input-group-text" id="inputGroup-sizing-lg">Search Google</button>
-</div>
+<mat-form-field class="w-100 mt-4">
+  <mat-label>Search</mat-label>
+
+  <input type="text"
+       #searchInput
+       matInput
+       [formControl]="searchControl"
+       [matAutocomplete]="auto"
+       (keydown.enter)="handleEnter()"
+       (focus)="onFocus()" />
+
+  <!-- Clear Button (suffix) -->
+  <button *ngIf="searchControl.value"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clearSearch()">
+    <mat-icon>clear</mat-icon>
+  </button>
+
+  <mat-autocomplete #auto="matAutocomplete" autoActiveFirstOption (optionSelected)="onOptionSelected($event)">
+    <mat-option *ngIf="searchControl.value" [value]="'SEARCH_EXTERNAL'">
+      🔍 Search {{ searchProviderName }} for "{{ searchControl.value }}"
+    </mat-option>
+
+    <mat-divider *ngIf="searchControl.value && searchControl.value.length > 0 && filteredLinks.length > 0" class="my-1"></mat-divider>
+
+    <ng-container *ngIf="searchControl.value && searchControl.value.length > 0 && filteredLinks.length > 0">
+      <mat-option *ngFor="let link of filteredLinks" [value]="link">
+        <img [src]="getIconUrl(link.icon)"
+             width="24"
+             height="24"
+             style="margin-right: 8px;"
+             (error)="onImageError($event)">
+        {{ link.name }}
+      </mat-option>
+    </ng-container>
+  </mat-autocomplete>
+</mat-form-field>
