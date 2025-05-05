@@ -4,13 +4,25 @@
 
 .group-list {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
   gap: 15px;
   margin-top: 15px;
   min-height: 60px;
   border-radius: 4px;
   width: 100%;
   box-sizing: border-box;
+  grid-template-columns: repeat(var(--dashboard-columns, 6), 1fr);
+}
+
+@media (max-width: 768px) {
+  .group-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .group-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .group-box {
@@ -174,32 +186,12 @@
   pointer-events: auto !important;
 }
 
-
-
-
-
-
-
-
-
-
 .custom-tab-label {
   display: flex;
   align-items: center;
   justify-content: space-between; /* Pushes button to the end */
   width: 100%; /* Ensure it takes full width */
 }
-
-
-
-
-
-
-
-
-
-
-
 
 .custom-tab-label {
   display: flex;
@@ -317,10 +309,6 @@
 ::ng-deep .custom-dialog-container .mat-dialog-container {
   padding: 0;
   overflow-y: hidden;
-}
-
-.dashboard-wrapper {
-
 }
 
 /* Ensure mat-tab-group stretches */

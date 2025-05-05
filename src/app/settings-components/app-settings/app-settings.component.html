@@ -1,4 +1,4 @@
-<h3 mat-dialog-title class="pb-2">App Settings</h3>
+<h3 mat-dialog-title class="pb-2"><i class="bi bi-sliders custom-icon"></i> App Settings</h3>
 
 <div class="container">
 
@@ -60,7 +60,7 @@
     <div style="color: white;">
       <h4 style="margin: 0;">Favicon</h4>
       <small style="color: #ccc;">This is the icon shown in your browser tab.</small><br />
-      <button mat-button class="nav-button mt-2" (click)="triggerFileInput('FAVICON_IMAGE')">
+      <button mat-button class="upload-button mt-2" (click)="triggerFileInput('FAVICON_IMAGE')">
         <i class="bi bi-upload"></i>&nbsp;Browse
       </button>
       <input
@@ -104,7 +104,7 @@
     <div style="color: white;">
       <h4 style="margin: 0;">Logo Image</h4>
       <small style="color: #ccc;">This is the logo shown in the app header.</small><br />
-      <button mat-button class="nav-button mt-2" (click)="triggerFileInput('LOGO_IMAGE')">
+      <button mat-button class="upload-button mt-2" (click)="triggerFileInput('LOGO_IMAGE')">
         <i class="bi bi-upload"></i>&nbsp;Browse
       </button>
       <input
@@ -118,6 +118,34 @@
         [src]="previewUrls['LOGO_IMAGE'] || '/assets/branding/logo/logo.png'"
         style="max-width: 100px;" />
     </div>
+  </div>
+</mat-card>
+
+<!-- COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS -->
+<!-- COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS -->
+<!-- COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS COLUMNS -->
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Columns</h4>
+      <small style="color: #ccc;">The number of columns that populate the link dashboard area.</small>
+    </div>
+    <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+      <mat-label>Dashboard Columns</mat-label>
+      <mat-select [(ngModel)]="formValues['DASHBOARD_COLUMNS']" (selectionChange)="onValueChange()">
+        <mat-option [value]="'1'">1 Column</mat-option>
+        <mat-option [value]="'2'">2 Columns</mat-option>
+        <mat-option [value]="'3'">3 Columns</mat-option>
+        <mat-option [value]="'4'">4 Columns</mat-option>
+        <mat-option [value]="'5'">5 Columns</mat-option>
+        <mat-option [value]="'6'">6 Columns</mat-option>
+        <mat-option [value]="'7'">7 Columns</mat-option>
+        <mat-option [value]="'8'">8 Columns</mat-option>
+        <mat-option [value]="'9'">9 Columns</mat-option>
+        <mat-option [value]="'10'">10 Columns</mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 </mat-card>
 

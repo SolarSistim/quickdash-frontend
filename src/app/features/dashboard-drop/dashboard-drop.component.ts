@@ -11,6 +11,7 @@ import { DialogEditSingleCategoryComponent } from '../../dialogs/dialog-edit-sin
 import { DialogManageCategoriesComponent } from '../../dialogs/dialog-manage-categories/dialog-manage-categories.component';
 import { UiLinkGroupComponent } from '../../ui-components/ui-link-group/ui-link-group.component';
 import { MatButtonModule } from '@angular/material/button';
+import { SettingsService } from '../../settings-components/app-settings/settings.service';
 
 @Component({
   selector: 'app-dashboard-drop',
@@ -25,15 +26,21 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   isGroupDraggable: boolean = true;
   isLinkDraggable: boolean = true;
   selectedTabIndex: number = 0;
+  dashboardColumns = 6;
 
   @ViewChildren('groupNameContainer') groupNameContainers!: QueryList<ElementRef>;
 
   constructor(
     private dropService: DashboardDropService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private settingsService: SettingsService
   ) {}
 
   ngOnInit(): void {
+    this.settingsService.loadSettings().subscribe(settings => {
+      this.dashboardColumns = parseInt(settings['DASHBOARD_COLUMNS'] || '6', 10);
+      document.documentElement.style.setProperty('--dashboard-columns', this.dashboardColumns.toString());
+    });
     this.dropService.fetchSimpleCategories().subscribe({
       next: (data) => {
         this.categories = data.map(c => ({
@@ -203,6 +210,10 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
     dialogRef.componentInstance.categoryAdded.subscribe(() => {
       this.refreshCategories();
     });
+  }
+
+  getGridColumns(): string {
+    return `repeat(${this.dashboardColumns}, 1fr)`;
   }
 
 }

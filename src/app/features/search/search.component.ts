@@ -12,6 +12,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-search',
@@ -24,7 +25,8 @@ import { ViewChild, ElementRef, AfterViewInit } from '@angular/core';
     MatAutocompleteModule,
     MatDividerModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    MatCardModule
   ],
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
