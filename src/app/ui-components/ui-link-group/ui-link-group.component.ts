@@ -12,6 +12,8 @@ import { DialogManageLinkGroupsComponent } from '../../dialogs/dialog-manage-lin
 import { DialogAddGroupComponent } from '../../dialogs/dialog-add-group/dialog-add-group.component';
 import { UiLinkComponent } from '../ui-link/ui-link.component';
 import { StatusMessageService } from '../ui-status/ui-status.service';
+import { SettingsService } from '../../settings-components/app-settings/settings.service';
+import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-ui-link-group',
@@ -29,6 +31,7 @@ export class UiLinkGroupComponent {
 
   @Input() group!: any;
   @Output() linkAdded = new EventEmitter<void>();
+  @Input() selectedThemeName: string = '';
 
   @Output() moveGroup = new EventEmitter<{ group: any, newCategoryId: number }>();
   @Output() openEditLinks = new EventEmitter<{ categoryId: number, groupId: number }>();
@@ -40,11 +43,59 @@ export class UiLinkGroupComponent {
 
   showHandles = false;
 
+  groupBoxStyle: SafeStyle = '';
+  iconRowStyle: SafeStyle = '';
+  groupFontStyle: SafeStyle = '';
+
   constructor(
     private dropService: DashboardDropService,
     private dialog: MatDialog,
-    private statusService: StatusMessageService  // <-- add this
+    private statusService: StatusMessageService,
+    private settingsService: SettingsService,
+    private sanitizer: DomSanitizer
   ) {}
+
+  ngOnInit(): void {
+    this.settingsService.loadSettings().subscribe(settings => {
+      const bgColor = settings['GROUP_BACKGROUND_COLOR'] || '#ffffff';
+      const opacity = parseFloat(settings['GROUP_BACKGROUND_OPACITY'] || '1');
+      const borderColor = settings['GROUP_BORDER_COLOR'] || '#000000';
+      const borderWidth = settings['GROUP_BORDER_WIDTH'] || '1';
+      const fontColor = settings['GROUP_FONT_COLOR'] || '#ffffff';
+      const fontWeight = settings['GROUP_FONT_WEIGHT'] || '400';
+      const fontSize = settings['GROUP_FONT_SIZE'] || '14';
+      const iconColor = settings['GROUP_FOOTER_ICON_COLOR'] || '#000000';
+      const footerBgHex = settings['GROUP_FOOTER_BACKGROUND_COLOR'] || '#2e3a46';
+      const footerOpacity = parseFloat(settings['GROUP_FOOTER_BACKGROUND_OPACITY'] || '1.0');
+      const footerBgRgba = this.hexToRgba(footerBgHex, footerOpacity);
+  
+      const rgba = this.hexToRgba(bgColor, opacity);
+  
+      this.groupBoxStyle = this.sanitizer.bypassSecurityTrustStyle(`
+        background-color: ${rgba};
+        border: ${borderWidth}px solid ${borderColor};
+      `);
+  
+      this.iconRowStyle = this.sanitizer.bypassSecurityTrustStyle(`
+        background-color: ${footerBgRgba};
+        color: ${iconColor};
+      `);
+  
+      this.groupFontStyle = this.sanitizer.bypassSecurityTrustStyle(`
+        color: ${fontColor};
+        font-weight: ${fontWeight};
+        font-size: ${fontSize}px;
+      `);
+    });
+  }
+
+  hexToRgba(hex: string, alpha: number): string {
+    const cleanHex = hex.replace('#', '');
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
 
   allowGroupDrag(): void {
     this.isGroupDraggable = false;

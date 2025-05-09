@@ -1,30 +1,30 @@
 <mat-dialog-content style="display: flex; flex-direction: column; height: 100%; position: relative;">
-    <h3 mat-dialog-title class="pb-2">Edit Category</h3>
-  
-    <i
-      class="bi bi-x-lg close-icon"
-      title="Close"
-      (click)="cancel()"
-      style="position: absolute; top: 16px; right: 16px; cursor: pointer;"
-    ></i>
-  
-    <div class="input-group mb-4 mt-2">
-      <input
-        autocomplete="off"
-        type="text"
-        class="form-control"
-        [(ngModel)]="category.name"
-        placeholder="Category Name"
-      />
-    </div>
-  </mat-dialog-content>
-  
-  <mat-dialog-actions class="justify-content-between">
-    <button mat-button color="warn" (click)="delete()">
-      Delete Category
-    </button>
-    <button mat-button (click)="save()" [disabled]="isUnchanged">
-      Save & Close
-    </button>
-  </mat-dialog-actions>
-  
+  <h3 mat-dialog-title class="pb-2">Edit Category</h3>
+
+  <i
+    class="bi bi-x-lg close-icon"
+    title="Close"
+    (click)="cancel()"
+    style="position: absolute; top: 16px; right: 16px; cursor: pointer;"
+  ></i>
+
+  <mat-form-field appearance="fill" class="mt-2 mb-4" style="width: 100%;">
+    <mat-label>Category Name</mat-label>
+    <input
+      matInput
+      autocomplete="off"
+      type="text"
+      [(ngModel)]="category.name"
+      placeholder="Category Name"
+    />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions class="justify-content-between">
+  <button mat-button color="warn" (click)="delete()">
+    Delete Category
+  </button>
+  <button mat-button (click)="save()" [disabled]="isUnchanged">
+    Save & Close
+  </button>
+</mat-dialog-actions>

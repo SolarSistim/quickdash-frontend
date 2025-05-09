@@ -5,37 +5,38 @@
   <div *ngIf="!isSelectingIcon; else iconSelectorTemplate">
     <form (ngSubmit)="save()">
 
-      <label>&nbsp;Display Name</label>
-      <input
-        autocomplete="off"
-        type="text"
-        class="form-control mb-2"
-        name="newLinkName"
-        placeholder="Display Name"
-        [(ngModel)]="newLinkName"
-      />
-
-      <label>&nbsp;Link URL</label>
-      <input
-        autocomplete="off"
-        type="text"
-        class="form-control mb-2"
-        name="newLinkUrl"
-        placeholder="https://example.com"
-        [(ngModel)]="newLinkUrl"
-      />
-
-      <label>&nbsp;Link Description</label>
-      <div class="input-group mb-3">
+      <mat-form-field appearance="fill" class="mb-2" style="width: 100%;">
+        <mat-label>Display Name</mat-label>
         <input
+          matInput
           autocomplete="off"
-          type="text"
-          class="form-control"
+          name="newLinkName"
+          placeholder="Display Name"
+          [(ngModel)]="newLinkName"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mb-2" style="width: 100%;">
+        <mat-label>Link URL</mat-label>
+        <input
+          matInput
+          autocomplete="off"
+          name="newLinkUrl"
+          placeholder="https://example.com"
+          [(ngModel)]="newLinkUrl"
+        />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill" class="mb-3" style="width: 100%;">
+        <mat-label>Link Description</mat-label>
+        <input
+          matInput
+          autocomplete="off"
           name="newLinkDescription"
           placeholder="Optional description"
           [(ngModel)]="newLinkDescription"
         />
-      </div>
+      </mat-form-field>
 
       <div *ngIf="selectedIcon">
         <label>Selected Icon</label>
@@ -52,20 +53,17 @@
 
   <!-- Template when selecting an icon -->
   <ng-template #iconSelectorTemplate>
-    <div class="" >
+    <div>
       <app-icon-selector
         (iconSelected)="selectedIcon = $event"
         [showUploadSection]="false"
         [selectedIcon]="selectedIcon">
       </app-icon-selector>
-
     </div>
   </ng-template>
-
 </mat-dialog-content>
 
 <mat-dialog-actions class="d-flex justify-content-between" style="margin-right: 8px; margin-left: 8px;">
-
   <!-- Left-aligned Cancel -->
   <div *ngIf="!isSelectingIcon">
     <button mat-button color="warn" (click)="cancel()">Cancel</button>
@@ -89,7 +87,4 @@
       </button>
     </div>
   </ng-template>
-
 </mat-dialog-actions>
-
-

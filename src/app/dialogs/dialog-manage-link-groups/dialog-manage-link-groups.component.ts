@@ -10,6 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatDialogContent, MatDialogActions, MatDialogRef } from '@angular/material/dialog';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 interface EditableGroup {
   id: number;
@@ -96,9 +97,8 @@ export class DialogManageLinkGroupsComponent implements OnInit {
     delete group.originalName;
   }
 
-  onCategoryChange(event: Event) {
-    const select = event.target as HTMLSelectElement;
-    const selectedId = Number(select.value); // Ensure numeric match
+  onCategoryChange(event: any) {
+    const selectedId = event.value;
     this.selectCategory(selectedId);
   }
 

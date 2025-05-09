@@ -8,6 +8,7 @@
     *ngFor="let group of category.groups; trackBy: trackLinkById"
     class="group-box"
     cdkDrag
+    [style]="groupBoxStyle"
     [cdkDragDisabled]="isGroupDraggable"
   >
     <div class="group-header d-flex align-items-center justify-content-between">
@@ -19,10 +20,9 @@
       (mouseover)="allowGroupDrag()"
       (mouseout)="preventGroupDrag()"></i>
 
-      <i class="bi bi-box-seam" style="color: white; margin-right: 8px;"></i>
-
+      <i class="bi bi-box-seam" style="color: white; margin-right: 8px;" [style]="groupFontStyle"></i>
       <div class="group-name-container d-flex align-items-center" #groupNameContainer>
-        <div class="group-name">{{ group.name }}</div>
+        <div class="group-name" [style]="groupFontStyle">{{ group.name }}</div>
       </div>
 
       <i class="bi bi-three-dots-vertical group-menu-icon" [matMenuTriggerFor]="groupMenu"></i>
@@ -63,13 +63,14 @@
     [isLinkDraggable]="isLinkDraggable"
     [showHandles]="showHandles"
     (linkMoved)="handleLinkMoved($event)"
+    [refreshTrigger]="selectedThemeName"
   ></app-ui-link>
 
-    <div class="icon-row">
-      <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>
-      <i class="bi bi-sliders" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
-      <i class="bi bi-three-dots-vertical" [matMenuTriggerFor]="groupMenu" title="Menu"></i>
-    </div>
+  <div class="icon-row" [style]="iconRowStyle">
+    <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>
+    <i class="bi bi-sliders" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
+    <i class="bi bi-three-dots-vertical" [matMenuTriggerFor]="groupMenu" title="Menu"></i>
+  </div>
 
   </div>
 

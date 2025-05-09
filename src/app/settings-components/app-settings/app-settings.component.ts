@@ -137,6 +137,13 @@ export class AppSettingsComponent {
   onFileSelected(event: any, settingKey: 'FAVICON_IMAGE' | 'LOGO_IMAGE') {
     const file = event.target.files[0];
     if (!file) return;
+
+      const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+    if (!isPng) {
+      this.statusService.show('Only PNG images allowed', 'error');
+      event.target.value = ''; // reset file input
+      return;
+    }
   
     this.pendingFileUploads[settingKey] = file;
   
@@ -144,7 +151,7 @@ export class AppSettingsComponent {
     this.formValues[settingKey] =
       settingKey === 'FAVICON_IMAGE' ? 'favicon.png' : 'logo.png';
   
-    this.previewUrls[settingKey] = URL.createObjectURL(file);
+      this.previewUrls[settingKey] = URL.createObjectURL(file);
   
     this.onValueChange();
   }

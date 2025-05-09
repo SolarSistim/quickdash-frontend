@@ -261,10 +261,6 @@
   pointer-events: auto;
 }
 
-::ng-deep .mat-mdc-tab:hover .tab-menu-trigger {
-  opacity: 0.6;
-}
-
 .tab-menu-trigger:hover {
   color: #fff;
 }
@@ -332,6 +328,10 @@ mat-tab-group {
 
 ::ng-deep .mat-mdc-menu-panel {
   min-width: 50px !important;
+}
+
+::ng-deep .mat-mdc-tab {
+  background-color: var(--category-tab-bg-rgba, rgba(46, 58, 70, 1.0)) !important;
 }
 
 

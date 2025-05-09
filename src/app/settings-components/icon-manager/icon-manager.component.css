@@ -342,4 +342,8 @@
   margin: 0 auto 8px auto;
 }
 
+::ng-deep .mat-mdc-menu-item {
+  min-height: 30px !important;
+}
+
   

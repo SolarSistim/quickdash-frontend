@@ -3,15 +3,16 @@
 
   <i class="bi bi-x-lg close-icon" title="Close" (click)="cancel()"></i>
 
-  <div class="input-group mb-4 mt-2">
+  <mat-form-field appearance="fill" class="mt-2 mb-4" style="width: 100%;">
+    <mat-label>Group Name</mat-label>
     <input
+      matInput
       autocomplete="off"
       type="text"
-      class="form-control"
       [(ngModel)]="group.name"
       placeholder="Group Name"
     />
-  </div>
+  </mat-form-field>
 </mat-dialog-content>
 
 <mat-dialog-actions style="margin: 0 8px 8px 8px; width: 100%;">

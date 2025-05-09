@@ -17,6 +17,12 @@
       [cdkDragData]="link"
       [cdkDragDisabled]="isLinkDraggable"
       [class.handles-visible]="showHandles"
+      [ngStyle]="{
+        'background-color': linkStyles.backgroundColor,
+        'color': linkStyles.fontColor,
+        'font-weight': linkStyles.fontWeight,
+        'font-size.px': linkStyles.fontSize
+      }"
     >
      <i
        *ngIf="showHandles"
@@ -27,6 +33,14 @@
        (mouseout)="preventLinkDrag()"
      ></i>
      
+     <a
+      [href]="link.url"
+      target="_blank"
+      rel="noopener noreferrer"
+      (click)="onAnchorClick($event)"
+      class="link-anchor"
+      [title]="link.url"
+    >
      <img
      class="link-icon"
      (click)="openLink(link.url)"
@@ -34,7 +48,8 @@
      [src]="'/assets/icons/' + (link.icon || 'default.png')"
      [alt]="link.name || 'Link Icon'"
      (error)="onImageError($event)"
-   />
+   /></a>
+
 
       <div
         class="link-name-container"
@@ -43,7 +58,16 @@
         [title]="link.url"
         style="cursor: pointer;"
       >
+      <a
+        [href]="link.url"
+        target="_blank"
+        rel="noopener noreferrer"
+        (click)="onAnchorClick($event)"
+        class="link-name-container"
+        [title]="link.url"
+      >
         {{ link.name }}
+      </a>
       </div>
 
       <i class="bi bi-three-dots-vertical link-menu-icon" [matMenuTriggerFor]="linkMenu"></i>

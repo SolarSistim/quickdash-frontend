@@ -1,11 +1,66 @@
 import { Component } from '@angular/core';
+import { NgIf } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { environment } from '../../../environment/environment';
+import { HttpClient } from '@angular/common/http';
+import { MatFormField } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { SmallTitleComponent } from '../../ui-components/small-title/small-title.component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-import-export',
-  imports: [],
+  imports: [MatButtonModule,MatIconModule,NgIf,SmallTitleComponent,MatProgressSpinner],
   templateUrl: './import-export.component.html',
   styleUrl: './import-export.component.css'
 })
 export class ImportExportComponent {
+  selectedFileName: string | null = null;
+  selectedFile: File | null = null;
+  loading = false;
+  importing = false; // <- add this
 
+  constructor(private http: HttpClient) {}
+
+  exportData() {
+    this.loading = true;
+    const exportUrl = `${environment.apiUrl}/export-full-backup`;
+    const anchor = document.createElement('a');
+    anchor.href = exportUrl;
+    anchor.target = '_blank';
+    anchor.click();
+
+    setTimeout(() => {
+      this.loading = false;
+    }, 2000);
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      this.selectedFileName = file.name;
+    }
+  }
+
+  importSelectedFile() {
+    if (!this.selectedFile) return;
+
+    this.importing = true; // start spinner
+    const formData = new FormData();
+    formData.append('file', this.selectedFile);
+
+    this.http.post(`${environment.apiUrl}/import-full-backup`, formData).subscribe({
+      next: () => {
+        alert('Import complete!');
+        this.importing = false;
+        this.selectedFileName = null;
+        this.selectedFile = null;
+      },
+      error: () => {
+        alert('Import failed.');
+        this.importing = false;
+      }
+    });
+  }
 }

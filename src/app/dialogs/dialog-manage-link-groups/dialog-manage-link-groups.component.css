@@ -15,6 +15,10 @@
     background-color: #f9f9f9;
     transition: background-color 0.2s ease;
   }
+
+  ::ng-deep mat-dialog-content {
+    overflow-x: hidden !important;
+  }
   
   .category-row:hover {
     background-color: #eaeaea;

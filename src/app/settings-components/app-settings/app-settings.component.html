@@ -18,11 +18,6 @@
               <i class="bi bi-check-lg"></i>&nbsp;Save
               </button>
         </ng-container>
-        <!-- <ng-container>
-           <button mat-button color="warn" class="nav-button" style="margin-right: 10px;">
-           <i class="bi bi-arrow-counterclockwise"></i> Reset Upload
-           </button>
-        </ng-container> -->
      </div>
   </div>
 </div>
@@ -66,6 +61,7 @@
       <input
         #fileInputFavicon
         type="file"
+        accept="image/png"
         hidden
         (change)="onFileSelected($event, 'FAVICON_IMAGE')" />
     </div>
@@ -99,7 +95,10 @@
   </div>
 </mat-card>
 
-<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+<mat-card
+  *ngIf="formValues['LOGO_ENABLE'] === 'TRUE'"
+  style="background-color: #2e3a46; padding: 16px;"
+  class="mt-2 mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
     <div style="color: white;">
       <h4 style="margin: 0;">Logo Image</h4>
@@ -110,6 +109,7 @@
       <input
         #fileInputLogo
         type="file"
+        accept="image/png"
         hidden
         (change)="onFileSelected($event, 'LOGO_IMAGE')" />
     </div>
@@ -173,6 +173,7 @@
   </div>
 </mat-card>
 
+<ng-container *ngIf="formValues['SEARCH_FEATURE'] === 'TRUE'">
 
 <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -189,12 +190,6 @@
     </mat-form-field>
   </div>
 </mat-card>
-
-
-<!-- <mat-form-field style="min-width: 300px;">
-    <mat-label>URL Query</mat-label>
-    <input matInput [(ngModel)]="formValues['SEARCH_FEATURE_QUERY_URL']" (ngModelChange)="onValueChange()" />
-  </mat-form-field> -->
 
   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -216,6 +211,8 @@
   
     </div>
   </mat-card>
+
+</ng-container>
 
  <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
 <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
@@ -272,11 +269,6 @@
               <i class="bi bi-check-lg"></i>&nbsp;Save
               </button>
         </ng-container>
-        <!-- <ng-container>
-           <button mat-button color="warn" class="nav-button" style="margin-right: 10px;">
-           <i class="bi bi-arrow-counterclockwise"></i> Reset Upload
-           </button>
-        </ng-container> -->
      </div>
   </div>
 </div>

@@ -3,7 +3,11 @@
 
     <ng-template mat-tab-label>
       <div class="custom-tab-label-wrapper">
-        <span class="category-name">{{ category.name }}</span>
+        <span class="category-name" [ngStyle]="{
+            'color': categoryFontColor,
+            'font-weight': categoryFontWeight,
+            'font-size': categoryFontSize
+          }">{{ category.name }}</span>
         <i
           class="bi bi-three-dots-vertical tab-menu-trigger"
           [matMenuTriggerFor]="tabMenu"
@@ -35,6 +39,7 @@
     <app-ui-link-group
     [category]="category"
     [categories]="categories"
+    [selectedThemeName]="selectedThemeName"
     [isGroupDraggable]="isGroupDraggable"
     [isLinkDraggable]="isLinkDraggable"
     (refreshRequested)="refreshCategories()"

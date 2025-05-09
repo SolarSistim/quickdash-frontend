@@ -49,6 +49,12 @@ export class IconManagerComponent {
   allowEdit = true;
   editedFilename: string = '';
   selectedTabIndex = 0;
+  invalidFileType = false;
+
+  invalidFiles: {
+    file: File;
+    previewUrl: string;
+  }[] = [];
 
   constructor(private cdr: ChangeDetectorRef,private statusService: StatusMessageService) {}
 
@@ -75,7 +81,8 @@ export class IconManagerComponent {
 
   fetchIcons() {
     this.iconService.fetchIcons().subscribe((data) => {
-      this.icons = [...data]; // 🔥 Important: replace with new array reference
+      // 🔽 Sort icons by ID descending (largest ID first)
+      this.icons = [...data].sort((a, b) => b.id - a.id);
       this.cdr.detectChanges();
     });
   }
@@ -84,22 +91,40 @@ export class IconManagerComponent {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.png';
+  
     input.onchange = (e: any) => {
       const file = e.target.files[0];
       if (file) {
-        this.selectedFile = file;
         this.previewUrl = URL.createObjectURL(file);
-        this.title = file.name.replace(/\.[^/.]+$/, '');
+        this.selectedFile = file;
   
-        this.filenameExists = this.icons.some(icon => icon.filename.toLowerCase() === file.name.toLowerCase());
+        const isPng = file.type === 'image/png';
+  
+        if (!isPng) {
+          this.invalidFileType = true;
+          this.title = '';
+          this.description = '';
+          this.filenameExists = false;
+        
+          this.cdr.detectChanges(); // ✅ force the UI to reflect the change
+          return;
+        }
+  
+        this.invalidFileType = false;
+        this.title = file.name.replace(/\.[^/.]+$/, '');
+        this.description = '';
+        this.filenameExists = this.icons.some(icon =>
+          icon.filename.toLowerCase() === file.name.toLowerCase()
+        );
   
         if (this.filenameExists) {
           this.startBlinking();
         }
       }
     };
+  
     input.click();
-  }
+  }  
 
   confirmDelete(icon: any) {
     if (!icon) return;
@@ -133,6 +158,7 @@ export class IconManagerComponent {
     this.title = '';
     this.description = '';
     this.filenameExists = false;
+    this.invalidFileType = false;
   }
 
   uploadIcon() {
@@ -258,6 +284,7 @@ handleMultiIconSelect(event: any) {
   const files: FileList = event.target.files;
   this.multiUploadFiles = [];
   this.duplicateFiles = [];
+  this.invalidFiles = [];
 
   const existingFilenames = this.icons.map(icon => icon.filename.toLowerCase());
 
@@ -265,22 +292,21 @@ handleMultiIconSelect(event: any) {
     const file = files[i];
     const previewUrl = URL.createObjectURL(file);
     const title = file.name.replace(/\.[^/.]+$/, '');
-    const isDuplicate = existingFilenames.includes(file.name.toLowerCase());
 
-    const iconData = {
-      file,
-      previewUrl,
-      title,
-      description: ''
-    };
+    if (file.type !== 'image/png') {
+      this.invalidFiles.push({ file, previewUrl });
+      continue;
+    }
 
-    if (isDuplicate) {
+    const iconData = { file, previewUrl, title, description: '' };
+    if (existingFilenames.includes(file.name.toLowerCase())) {
       this.duplicateFiles.push(iconData);
     } else {
       this.multiUploadFiles.push(iconData);
     }
   }
 }
+
 
 uploadMultipleIcons() {
   this.statusService.show('Uploading icons...', 'loading');
@@ -312,6 +338,7 @@ onTabChange(index: number) {
 resetMultiUpload() {
   this.multiUploadFiles = [];
   this.duplicateFiles = [];
+  this.invalidFiles = []; // 🧹 clear invalid files here too
 }
 
 

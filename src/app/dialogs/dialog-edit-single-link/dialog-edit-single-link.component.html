@@ -3,42 +3,45 @@
   <i class="bi bi-x-lg close-icon" title="Close" (click)="cancel()"></i>
 
   <div *ngIf="!isSelectingIcon; else iconSelectorTemplate">
+    <!-- First row: Link Title + Link URL -->
+    <div style="display: flex; gap: 16px;">
+      <mat-form-field appearance="fill" style="flex: 1;">
+        <mat-label>Link Title</mat-label>
+        <input
+          matInput
+          id="linkName"
+          autocomplete="off"
+          [(ngModel)]="link.name"
+          placeholder="Link Title"
+        />
+      </mat-form-field>
 
+      <mat-form-field appearance="fill" style="flex: 1;">
+        <mat-label>Link URL</mat-label>
+        <input
+          matInput
+          id="linkUrl"
+          autocomplete="off"
+          [(ngModel)]="link.url"
+          placeholder="Link URL"
+        />
+      </mat-form-field>
+    </div>
 
-      <label for="linkName">Link Title</label>
+    <!-- Second row: Description -->
+    <mat-form-field appearance="fill" style="width: 100%;" class="mt-2">
+      <mat-label>Description</mat-label>
       <input
-        id="linkName"
-        autocomplete="off"
-        type="text"
-        class="form-control mb-2"
-        placeholder="Link Title"
-        [(ngModel)]="link.name"
-      />
-
-
-    <label for="linkUrl">Link URL</label>
-
-      <input
-        id="linkUrl"
-        autocomplete="off"
-        type="text"
-        class="form-control mb-2"
-        placeholder="Link URL"
-        [(ngModel)]="link.url"
-      />
-
-      <label for="linkDescription">Link URL</label>
-      <input
+        matInput
         id="linkDescription"
         autocomplete="off"
-        type="text"
-        class="form-control mt-2 mb-3"
-        placeholder="Description"
         [(ngModel)]="link.description"
+        placeholder="Description"
       />
+    </mat-form-field>
 
-
-    <div *ngIf="selectedIcon">
+    <!-- Icon Section -->
+    <div *ngIf="selectedIcon" class="mt-2">
       <label>Selected Icon</label>
       <div class="d-flex align-items-center">
         <img [src]="'/assets/icons/' + selectedIcon" alt="Selected Icon" height="60" />
@@ -47,10 +50,8 @@
         </button>
       </div>
     </div>
-
   </div>
 
-  <!-- When Selecting Icon -->
   <ng-template #iconSelectorTemplate>
     <div>
       <app-icon-selector
@@ -61,14 +62,10 @@
       </app-icon-selector>
     </div>
   </ng-template>
-
 </mat-dialog-content>
 
-  
 <mat-dialog-actions class="d-flex justify-content-between" style="margin: 10px;">
-
   <ng-container *ngIf="isSelectingIcon; else normalActions">
-    <!-- While Selecting Icon -->
     <div>
       <button mat-button (click)="stopSelectingIcon()" [disabled]="uploadInProgress || previewActive">
         <mat-icon>close</mat-icon>&nbsp;Cancel
@@ -82,23 +79,12 @@
   </ng-container>
 
   <ng-template #normalActions>
-    <!-- Normal Mode -->
     <div>
-      <button mat-button color="warn" (click)="delete()">
-        Delete Link
-      </button>
+      <button mat-button color="warn" (click)="delete()">Delete Link</button>
     </div>
     <div>
-      
-      <button mat-button color="primary" (click)="saveOnly()" [disabled]="isUnchanged">
-        Save
-      </button>
-      <button mat-button color="primary" (click)="saveAndClose()" [disabled]="isUnchanged">
-        Save & Close
-      </button>
+      <button mat-button color="primary" (click)="saveOnly()" [disabled]="isUnchanged">Save</button>
+      <button mat-button color="primary" (click)="saveAndClose()" [disabled]="isUnchanged">Save & Close</button>
     </div>
   </ng-template>
-
 </mat-dialog-actions>
-
-  

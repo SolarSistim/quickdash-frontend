@@ -42,10 +42,21 @@ export class SearchComponent implements OnInit, AfterViewInit {
   searchProviderUrl = '';
   rawSearchQuery = '';
 
+  searchBackgroundColor = '#000000';
+  searchBackgroundOpacity = 0.4;
+
   constructor(
     private dashboardService: DashboardDropService,
     private settingsService: SettingsService
   ) {}
+
+  get cardBackgroundRgba(): string {
+    const hex = this.searchBackgroundColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${this.searchBackgroundOpacity})`;
+  }
 
   ngOnInit(): void {
     // Load links
@@ -55,7 +66,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.settingsService.loadSettings().subscribe(settings => {
       this.searchProviderName = settings['SEARCH_FEATURE_PROVIDER_NAME'] || 'Google';
       this.searchProviderUrl = settings['SEARCH_FEATURE_QUERY_URL'] || 'https://www.google.com/search?q=';
-    });
+    
+      // ✅ NEW: Load and log background color + opacity
+      this.searchBackgroundColor = settings['SEARCH_FEATURE_BACKGROUND_COLOR'] || '#000000';
+      this.searchBackgroundOpacity = parseFloat(settings['SEARCH_FEATURE_BACKGROUND_OPACITY'] || '1.0');
+    
+      console.log('🎨 SEARCH_FEATURE_BACKGROUND_COLOR:', this.searchBackgroundColor);
+      console.log('🟡 SEARCH_FEATURE_BACKGROUND_OPACITY:', this.searchBackgroundOpacity);
+    });    
   
     // Filter links on input
     this.searchControl.valueChanges

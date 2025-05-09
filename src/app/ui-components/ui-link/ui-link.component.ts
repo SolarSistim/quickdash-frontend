@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatMenuModule } from '@angular/material/menu';
@@ -8,6 +8,7 @@ import { DialogManageLinksComponent } from '../../dialogs/dialog-manage-links/di
 import { DialogAddLinkComponent } from '../../dialogs/dialog-add-link/dialog-add-link.component';
 import { DialogConfirmComponent } from '../../dialogs/dialog-confirm/dialog-confirm.component';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
+import { SettingsService } from '../../settings-components/app-settings/settings.service';
 
 @Component({
   selector: 'app-ui-link',
@@ -22,6 +23,7 @@ export class UiLinkComponent {
   @Input() category: any;
   @Input() isLinkDraggable = true;
   @Input() showHandles = false;
+  @Input() refreshTrigger: any;
   @Output() linkMoved = new EventEmitter<{ movedLinkId: number, newGroupId: number, oldGroupId: number }>();
 
   private saveTimer: any = null;
@@ -29,7 +31,56 @@ export class UiLinkComponent {
 
   readonly defaultIconUrl = '../../../assets/icons/trakt.png';
 
-  constructor(private dialog: MatDialog, private dropService: DashboardDropService) {}
+  constructor(private dialog: MatDialog, private dropService: DashboardDropService, private settingsService: SettingsService) {}
+
+  ngOnInit(): void {
+    this.settingsService.loadSettings().subscribe(settings => {
+      const bgHex = settings['LINK_BACKGROUND_COLOR'] || '#000000';
+      const opacity = parseFloat(settings['LINK_BACKGROUND_OPACITY'] || '0.2');
+      const r = parseInt(bgHex.substring(1, 3), 16);
+      const g = parseInt(bgHex.substring(3, 5), 16);
+      const b = parseInt(bgHex.substring(5, 7), 16);
+      this.linkStyles.backgroundColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  
+      this.linkStyles.fontColor = settings['LINK_FONT_COLOR'] || '#ff0000';
+      this.linkStyles.fontWeight = settings['LINK_FONT_WEIGHT'] || '400';
+      this.linkStyles.fontSize = parseInt(settings['LINK_FONT_SIZE'] || '13', 10);
+    });
+    this.loadStyles();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['refreshTrigger']) {
+      this.loadStyles(); // 👈 repeat settings fetch
+    }
+  }
+
+  private loadStyles(): void {
+    this.settingsService.loadSettings().subscribe(settings => {
+      const bgHex = settings['LINK_BACKGROUND_COLOR'] || '#000000';
+      const opacity = parseFloat(settings['LINK_BACKGROUND_OPACITY'] || '0.2');
+      const r = parseInt(bgHex.substring(1, 3), 16);
+      const g = parseInt(bgHex.substring(3, 5), 16);
+      const b = parseInt(bgHex.substring(5, 7), 16);
+      this.linkStyles.backgroundColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+
+      this.linkStyles.fontColor = settings['LINK_FONT_COLOR'] || '#ff0000';
+      this.linkStyles.fontWeight = settings['LINK_FONT_WEIGHT'] || '400';
+      this.linkStyles.fontSize = parseInt(settings['LINK_FONT_SIZE'] || '13', 10);
+    });
+  }
+
+  linkStyles: {
+    backgroundColor: string;
+    fontColor: string;
+    fontWeight: string;
+    fontSize: number; // ✅ fix this
+  } = {
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    fontColor: '#ff0000',
+    fontWeight: '400',
+    fontSize: 13 // ✅ and this must match (number, not '13px')
+  };
 
   trackById(index: number, item: any): number {
     return item.id;
@@ -87,6 +138,12 @@ export class UiLinkComponent {
     }
   }
   
+  onAnchorClick(event: MouseEvent): void {
+    if (event.button === 0) {
+      event.preventDefault(); // optional: prevents default left-click nav
+      this.openLink((event.currentTarget as HTMLAnchorElement).href);
+    }
+  }
 
   openManageLinksDialog(): void {
     const dialogRef = this.dialog.open(DialogManageLinksComponent, {

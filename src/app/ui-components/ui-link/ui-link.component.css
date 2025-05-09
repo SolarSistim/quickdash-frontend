@@ -35,7 +35,7 @@
     display: block;
     flex: 1 1 auto;
     min-width: 0;
-    font-size: 14px; /* or whatever your standard is */
+    /*font-size: 14px; /* or whatever your standard is */
   }
   
   .link-item.cdk-drag-preview .link-name-container,
@@ -107,7 +107,7 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    font-size: 13px;
+    /* font-size: 13px; */
   }
 
   .group-list {

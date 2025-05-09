@@ -28,6 +28,11 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   selectedTabIndex: number = 0;
   dashboardColumns = 6;
 
+  categoryFontColor = '#ffffff';
+  categoryFontWeight = '400';
+  categoryFontSize = '18px';
+  selectedThemeName: string = '';
+  
   @ViewChildren('groupNameContainer') groupNameContainers!: QueryList<ElementRef>;
 
   constructor(
@@ -40,7 +45,16 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
     this.settingsService.loadSettings().subscribe(settings => {
       this.dashboardColumns = parseInt(settings['DASHBOARD_COLUMNS'] || '6', 10);
       document.documentElement.style.setProperty('--dashboard-columns', this.dashboardColumns.toString());
+  
+      this.categoryFontColor = settings['CATEGORY_FONT_COLOR'] || '#ffffff';
+      this.categoryFontWeight = settings['CATEGORY_FONT_WEIGHT'] || '900';
+      this.categoryFontSize = settings['CATEGORY_FONT_SIZE']
+        ? `${settings['CATEGORY_FONT_SIZE']}px`
+        : '18px';
     });
+  
+    this.setCategoryTabStyles();
+  
     this.dropService.fetchSimpleCategories().subscribe({
       next: (data) => {
         this.categories = data.map(c => ({
@@ -49,7 +63,6 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
           loaded: false
         }));
   
-        // 👇 Immediately load first category after basic categories are fetched
         if (this.categories.length > 0) {
           this.loadCategoryGroups(this.categories[0]);
         }
@@ -57,6 +70,7 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
       error: (err) => console.error('Error loading categories', err)
     });
   }
+  
 
   ngAfterViewChecked(): void {
     this.groupNameContainers.forEach((containerRef, index) => {
@@ -66,6 +80,34 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
         this.truncateGroupName(groupNameElement, container.offsetWidth);
       }
     });
+  }
+
+  setCategoryTabStyles(): void {
+    this.settingsService.loadSettings().subscribe(settings => {
+      const hex = settings['CATEGORY_BUTTON_BACKGROUND_COLOR'] || '#2e3a46';
+      const opacity = parseFloat(settings['CATEGORY_BUTTON_BACKGROUND_OPACITY'] || '1.0');
+      const rgba = this.hexToRgba(hex, opacity);
+      document.body.style.setProperty('--category-tab-bg-rgba', rgba);
+    });
+  }
+
+  hexToRgba(hex: string, opacity: number): string {
+    let r = 0, g = 0, b = 0;
+  
+    // Remove `#` if present
+    hex = hex.replace('#', '');
+  
+    if (hex.length === 3) {
+      r = parseInt(hex[0] + hex[0], 16);
+      g = parseInt(hex[1] + hex[1], 16);
+      b = parseInt(hex[2] + hex[2], 16);
+    } else if (hex.length === 6) {
+      r = parseInt(hex.substring(0, 2), 16);
+      g = parseInt(hex.substring(2, 4), 16);
+      b = parseInt(hex.substring(4, 6), 16);
+    }
+  
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
   }
 
   loadCategoryGroups(category: any): void {

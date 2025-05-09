@@ -292,3 +292,8 @@
     cursor: pointer;
     margin-right: 7px;
   }
+
+  .icon-row i {
+    color: inherit;
+    padding-top: 3px;
+  }
