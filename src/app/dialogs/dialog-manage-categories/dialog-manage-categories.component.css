@@ -43,7 +43,7 @@
 
   .close-icon {
     position: absolute;
-    top: 28px;
+    top: 23px !important;
     right: 24px;
     font-size: 1.1rem;
     color: #666;

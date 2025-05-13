@@ -12,6 +12,7 @@ import { AboutComponent } from '../../settings-components/about/about.component'
 import { AppSettingsComponent } from '../../settings-components/app-settings/app-settings.component';
 import { RouterModule } from '@angular/router';
 import { ImportExportComponent } from '../../settings-components/import-export/import-export.component';
+import { TutorialsComponent } from '../../settings-components/tutorials/tutorials.component';
 
 @Component({
   selector: 'app-settings',
@@ -29,12 +30,15 @@ import { ImportExportComponent } from '../../settings-components/import-export/i
     AboutComponent,
     AppSettingsComponent,
     RouterModule,
-    ImportExportComponent
+    ImportExportComponent,
+    TutorialsComponent
   ],
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.css',
 })
 export class SettingsComponent implements OnDestroy {
+
+  protected readonly navItems = ['Icons', 'Themes', 'App Settings', 'Import/Export', 'About', 'Tutorials'];
 
   protected selectedPanel = signal(localStorage.getItem('settings.selectedPanel') || 'app settings');
   protected readonly isMobile = signal(true);
@@ -57,5 +61,4 @@ export class SettingsComponent implements OnDestroy {
     this._mobileQuery.removeEventListener('change', this._mobileQueryListener);
   }
 
-  protected readonly navItems = ['Icons', 'Themes', 'App Settings', "Import/Export", "About"];
 }

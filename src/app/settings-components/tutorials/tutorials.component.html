@@ -1,0 +1,76 @@
+<h3 mat-dialog-title class="pb-2"><i class="bi bi-info-circle"></i> Tutorials</h3>
+<div class="container">
+   <div class="mat-card button-panel mt-2 mb-1">
+      <div class="row">
+         <div class="col-lg-6 d-flex align-items-center">
+         </div>
+         <div class="col-lg-6 text-end">
+            <ng-container>
+               <button mat-button class="nav-button" style="color: white;" (click)="disableAll()">
+                <i class="bi bi-x-lg"></i>&nbsp;Disable All Tutorials
+                </button>
+                <button mat-button class="nav-button" style="color: white;" (click)="enableAll()">
+                <i class="bi bi-check-lg"></i>&nbsp;Enable All Tutorials
+                </button>
+            </ng-container>
+         </div>
+      </div>
+   </div>
+   <div class="alert alert-info fade show mt-3" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Here's a Quick Crash Course</h4>
+      <p>
+         This will be your main operating area. From this page you can add <b>Categories</b>, <b>Link Groups</b>, and <b>Links</b>. Within link groups, links can drag-and-drop within the same group, or to other groups. To drag a link, click the &nbsp;<i class="bi bi-arrows-move"></i> &nbsp;icon on the bottom group toolbar, which will enable drag-and-drop. Then use the drag handle to drag the link to where you want it. Using the same feature, you can drag entire groups to different locations under the same category.
+      </p>
+      <p>
+         To move a group to another category, click the <i class="bi bi-three-dots-vertical"></i> menu at the top right of the group, then go to <i class="bi bi-send"></i> <b> Move Group</b>, then select the <i class="bi bi-box-seam"></i> <b> Category</b> you want to move the group to. Other useful features can be accessed from the many <i class="bi bi-three-dots-vertical"></i> menus available.
+      </p>
+      <p>
+         To access Bolero's settings, click the <i class="bi bi-sliders"></i> &nbsp;button found below the groups area. Other quick start tutorials can be found there.
+      </p>
+   </div>
+   <div class="alert alert-info fade show mt-3" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Using Bolero's Search Bar</h4>
+      <p>
+         You can configure Bolero’s search feature to work with any search engine that supports URL-based searches. Bolero will automatically append your search terms to the end of the URL you provide.
+      </p>
+      <p>
+         Go to the search engine you want to use, perform a sample search, then in the address bar, copy the full URL up to (but not including) your actual search terms. Then paste that URL into the "URL Query" field, then click save, and Bolero will take care of the rest.
+      </p>
+      <p>
+         Examples:
+      </p>
+      <ul>
+         <li><b>Google</b>: https://www.google.com/search?q=</li>
+         <li><b>Duckduckgo</b>: https://duckduckgo.com/?t=h_&q=</li>
+         <li><b>Yahoo</b>: https://search.yahoo.com/search?p=</li>
+      </ul>
+   </div>
+   <div class="alert alert-info fade show mt-3" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-info-circle"></i> A Note on Icons</h4>
+      <p>
+         Optimal icon size is 120x120, and icon format must be .PNG. Using other dimensions can cause render issues, slow loading times, or other unpredictable behavior.
+      </p>
+      <p>
+         You can use Canva, Photoshop, Adobe Express, or any number of other free or paid image editors to create additional icons for Bolero.
+      </p>
+   </div>
+   <div class="alert alert-info fade show mt-3" role="alert">
+      <h4 class="alert-heading">
+         <i class="bi bi-info-circle"></i> Customizing Your Theme
+      </h4>
+      <p>
+         Use this panel to fully customize the appearance of your dashboard. You can change fonts, colors, background styles, and more—then save your work as a new theme or overwrite an existing one.
+      </p>
+   </div>
+   <div class="alert alert-danger fade show" role="alert">
+      <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> A Note on Imports</h4>
+      <p>
+         Importing a backup .ZIP file will <strong>erase</strong> all current Bolero settings and replace them with what's in the file. This includes links, categories, icons, images, and themes.
+      </p>
+      <p>
+         Make sure you've exported your current data before proceeding.
+      </p>
+   </div>
+</div>
+
+<app-ui-status></app-ui-status>

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -18,6 +18,7 @@ import { MatDialog } from '@angular/material/dialog';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { DialogManageBackgroundImagesComponent } from './dialog-manage-background-images/dialog-manage-background-images.component';
+import { TutorialsService } from '../tutorials/tutorials.service';
 
 interface ThemePreset {
   name: string;
@@ -45,7 +46,8 @@ export class ThemesComponent {
 
   themePresets: ThemePreset[] = [];
   selectedThemeName: string = '';
-  
+  showThemeTutorial = false;
+  themeTutorialId: number | null = null;
   changed = false;
   formValues: Record<string, string> = {};
   originalValues: Record<string, string> = {};
@@ -53,6 +55,8 @@ export class ThemesComponent {
   color: any;
   backgroundImageLoadError = false;
   missingBackgroundImageName: string | null = null;
+
+  private tutorialService = inject(TutorialsService);
 
   constructor(
     private settingsService: SettingsService,
@@ -98,16 +102,40 @@ export class ThemesComponent {
       } else {
         this.selectedThemeName = 'Unsaved Theme';
       }
-    });
-
-  
+    });  
     this.themesService.loadThemes().subscribe((themes) => {
       this.themePresets = themes.map(t => ({
         name: t.name,
         ...JSON.parse(t.data)
       }));
     });
+    this.loadThemeEditorTutorial();
   }
+
+  loadThemeEditorTutorial() {
+  this.tutorialService.getByFeature('themes_feature_help').subscribe({
+    next: (tutorial: any) => {
+      this.showThemeTutorial = tutorial.display;
+      this.themeTutorialId = tutorial.id;
+    },
+    error: (err: any) => {
+      console.warn('Failed to load theme tutorial setting:', err);
+    }
+  });
+}
+
+dismissThemeTutorial() {
+  if (this.themeTutorialId !== null) {
+    this.tutorialService.updateDisplay(this.themeTutorialId, false).subscribe({
+      next: () => {
+        this.showThemeTutorial = false;
+      },
+      error: (err: any) => {
+        console.error('Failed to update theme tutorial display:', err);
+      }
+    });
+  }
+}
 
   handleMissingImage(filename: string | null) {
     this.backgroundImageLoadError = true;

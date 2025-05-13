@@ -49,37 +49,38 @@
   </div>
 
   <!-- Group List with Drag and Edit -->
-  <div cdkDropList (cdkDropListDropped)="drop($event)" style="flex: 1; overflow-y: auto; padding-right: 8px; min-height: 0;">
-    <div *ngFor="let group of editableGroups"
-         #groupRow
-         [attr.id]="'group-' + group.id"
-         cdkDrag 
-         class="category-row" 
-         style="align-items: center; display: flex; gap: 10px;"
-         [class.cdk-drag-animating]="true">
-      
-      <span cdkDragHandle style="cursor: grab;">
-        <i class="bi bi-list" style="font-size: 1.2rem;"></i>
-      </span>
+  <div *ngFor="let group of editableGroups"
+     #groupRow
+     [attr.id]="'group-' + group.id"
+     cdkDrag 
+     class="category-row" 
+     style="align-items: center; display: flex; gap: 10px;"
+     [class.cdk-drag-animating]="true">
+  
+  <span cdkDragHandle style="cursor: grab;">
+    <i class="bi bi-list" style="font-size: 1.2rem;"></i>
+  </span>
 
-      <i class="bi bi-pencil" (click)="enableEdit(group)" *ngIf="!group.isEditing" style="cursor: pointer;"></i>
-
-      <span *ngIf="!group.isEditing">{{ group.name }}</span>
-      <span style="flex: 1 1 auto;"></span>
-
-      <div *ngIf="group.isEditing" style="display: flex; align-items: center; gap: 8px;">
-        <mat-form-field appearance="fill" style="width: 200px;">
-          <mat-label>Edit Group Name</mat-label>
-          <input matInput type="text" autocomplete="off" [(ngModel)]="group.name" />
-        </mat-form-field>
-
-        <button mat-button color="warn" (click)="cancelEdit(group)">Cancel</button>
-        <button mat-raised-button color="primary" (click)="saveEdit(group)">Save</button>
-      </div>
-
-      <i class="bi bi-x-lg" (click)="deleteGroup(group)" *ngIf="!group.isEditing" style="color: red; cursor: pointer;"></i>
-    </div>
+  <!-- Non-editing view -->
+  <div *ngIf="!group.isEditing" style="display: flex; align-items: center; width: 100%;">
+    <i class="bi bi-pencil" (click)="enableEdit(group)" style="cursor: pointer; margin-right: 8px;"></i>
+    <span>{{ group.name }}</span>
+    <span style="flex: 1 1 auto;"></span>
+    <i class="bi bi-x-lg" (click)="deleteGroup(group)" style="color: red; cursor: pointer;"></i>
   </div>
+
+  <!-- Editing view -->
+  <div *ngIf="group.isEditing" style="display: flex; align-items: center; gap: 8px;">
+    <mat-form-field appearance="fill" style="width: 280px;">
+      <mat-label>Edit Group Name</mat-label>
+      <input matInput type="text" autocomplete="off" [(ngModel)]="group.name" />
+    </mat-form-field>
+
+    <button mat-button color="warn" (click)="cancelEdit(group)">Cancel</button>
+    <button mat-raised-button color="primary" (click)="saveEdit(group)">Save</button>
+  </div>
+</div>
+
 </mat-dialog-content>
 
 <!-- Dialog Footer -->

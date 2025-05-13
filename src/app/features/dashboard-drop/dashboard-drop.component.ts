@@ -12,6 +12,7 @@ import { DialogManageCategoriesComponent } from '../../dialogs/dialog-manage-cat
 import { UiLinkGroupComponent } from '../../ui-components/ui-link-group/ui-link-group.component';
 import { MatButtonModule } from '@angular/material/button';
 import { SettingsService } from '../../settings-components/app-settings/settings.service';
+import { TutorialsService } from '../../settings-components/tutorials/tutorials.service';
 
 @Component({
   selector: 'app-dashboard-drop',
@@ -32,16 +33,21 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   categoryFontWeight = '400';
   categoryFontSize = '18px';
   selectedThemeName: string = '';
+
+  showDashboardTutorial = true;
+  dashboardTutorialId: number | null = null;
   
   @ViewChildren('groupNameContainer') groupNameContainers!: QueryList<ElementRef>;
 
   constructor(
     private dropService: DashboardDropService,
     private dialog: MatDialog,
-    private settingsService: SettingsService
+    private settingsService: SettingsService,
+    private tutorialsService: TutorialsService
   ) {}
 
   ngOnInit(): void {
+    this.loadDashboardTutorial();
     this.settingsService.loadSettings().subscribe(settings => {
       this.dashboardColumns = parseInt(settings['DASHBOARD_COLUMNS'] || '6', 10);
       document.documentElement.style.setProperty('--dashboard-columns', this.dashboardColumns.toString());
@@ -57,20 +63,55 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   
     this.dropService.fetchSimpleCategories().subscribe({
       next: (data) => {
-        this.categories = data.map(c => ({
-          ...c,
-          groups: [],
-          loaded: false
-        }));
-  
-        if (this.categories.length > 0) {
-          this.loadCategoryGroups(this.categories[0]);
+        if (data.length === 0) {
+          // 🧪 Inject a fake placeholder category
+          this.categories = [{
+            id: -1,
+            name: 'Bolero',
+            groups: [],
+            loaded: true,
+            isPlaceholder: true
+          }];
+        } else {
+          this.categories = data.map(c => ({
+            ...c,
+            groups: [],
+            loaded: false
+          }));
+
+          if (this.categories.length > 0) {
+            this.loadCategoryGroups(this.categories[0]);
+          }
         }
       },
       error: (err) => console.error('Error loading categories', err)
     });
   }
   
+    loadDashboardTutorial(): void {
+    this.tutorialsService.getByFeature('dashboard_crash_course').subscribe({
+      next: (tutorial: any) => {
+        this.showDashboardTutorial = tutorial.display;
+        this.dashboardTutorialId = tutorial.id;
+      },
+      error: (err: any) => {
+        console.warn('Failed to load dashboard tutorial setting:', err);
+      }
+    });
+  }
+
+  dismissDashboardTutorial(): void {
+    if (this.dashboardTutorialId !== null) {
+      this.tutorialsService.updateDisplay(this.dashboardTutorialId, false).subscribe({
+        next: () => {
+          this.showDashboardTutorial = false;
+        },
+        error: (err: any) => {
+          console.error('Failed to update dashboard tutorial display:', err);
+        }
+      });
+    }
+  }
 
   ngAfterViewChecked(): void {
     this.groupNameContainers.forEach((containerRef, index) => {
@@ -174,21 +215,64 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   }
   
 
-  refreshCategories(): void {
-    this.dropService.fetchCategories().subscribe({
-      next: (data: any[]) => {
-        console.log('Fetched categories from backend:', data); // 🔍 debug this
-        this.categories = [...data]; // force change detection
-      },
-      error: (err: any) => console.error('Error loading categories', err)
-    });
-  }
+refreshCategories(): void {
+  this.dropService.fetchCategories().subscribe({
+    next: (data: any[]) => {
+      if (data.length === 0) {
+        this.categories = [{
+          id: -1,
+          name: 'Bolero',
+          groups: [],
+          loaded: true,
+          isPlaceholder: true
+        }];
+        this.selectedTabIndex = 0; // ✅ Set to 0 to show placeholder tab
+      } else {
+        this.categories = data.map(c => ({
+          ...c,
+          groups: [],
+          loaded: false
+        }));
+
+        if (this.categories.length > 0) {
+          this.selectedTabIndex = 0; // ✅ Reset tab if needed
+          this.loadCategoryGroups(this.categories[0]);
+        }
+      }
+    },
+    error: (err: any) => console.error('Error loading categories', err)
+  });
+}
+
+
   
-  refreshDashboard() {
-    this.dropService.fetchCategories().subscribe((data) => {
-      this.categories = data;
-    });
-  }
+  refreshDashboard(): void {
+  this.dropService.fetchCategories().subscribe({
+    next: (data: any[]) => {
+      if (data.length === 0) {
+        this.categories = [{
+          id: -1,
+          name: 'Bolero',
+          groups: [],
+          loaded: true,
+          isPlaceholder: true
+        }];
+      } else {
+        this.categories = data.map(c => ({
+          ...c,
+          groups: [],
+          loaded: false
+        }));
+
+        if (this.categories.length > 0) {
+          this.loadCategoryGroups(this.categories[0]);
+        }
+      }
+    },
+    error: (err: any) => console.error('Error loading categories', err)
+  });
+}
+
   
   
 

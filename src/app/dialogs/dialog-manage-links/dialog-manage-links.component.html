@@ -38,7 +38,7 @@
       <form (ngSubmit)="addLink()">
         <div style="display: flex; gap: 8px; margin-bottom: 16px;">
           <mat-form-field appearance="fill" style="flex: 1;">
-            <mat-label>Display Name</mat-label>
+            <mat-label>Display Name123</mat-label>
             <input matInput autocomplete="off" #linkNameInput name="newLinkName" [(ngModel)]="newLinkName" />
           </mat-form-field>
           <mat-form-field appearance="fill" style="flex: 1;">
@@ -81,7 +81,10 @@
         <div *ngIf="!link.isEditing" style="display: flex; align-items: center; width: 100%;">
           <i class="bi bi-pencil" (click)="enableEdit(link)" style="cursor: pointer; margin-right: 8px;"></i>
           <span>{{ link.name }}</span>
+
+          <!-- Spacer to push the X to the right -->
           <span style="flex: 1 1 auto;"></span>
+
           <i class="bi bi-x-lg" style="color: red; cursor: pointer;" (click)="deleteLink(link)"></i>
         </div>
 

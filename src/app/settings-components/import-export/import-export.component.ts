@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../environment/environment';
@@ -7,6 +7,7 @@ import { MatFormField } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { SmallTitleComponent } from '../../ui-components/small-title/small-title.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { TutorialsService } from '../tutorials/tutorials.service';
 
 @Component({
   selector: 'app-import-export',
@@ -14,13 +15,44 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
   templateUrl: './import-export.component.html',
   styleUrl: './import-export.component.css'
 })
-export class ImportExportComponent {
+export class ImportExportComponent implements OnInit{
+
   selectedFileName: string | null = null;
   selectedFile: File | null = null;
   loading = false;
   importing = false; // <- add this
+  showImportTutorial = false;
+  tutorialId!: number;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private tutorialsService: TutorialsService) {}
+
+  ngOnInit() {
+    this.loadImportExportTutorial();
+  }
+
+  loadImportExportTutorial() {
+  this.tutorialsService.getByFeature('import_export_help').subscribe({
+    next: (tutorial: any) => {
+      this.showImportTutorial = tutorial.display;
+      this.tutorialId = tutorial.id;
+    },
+    error: (err: any) => {
+      console.warn('Failed to load import/export tutorial setting:', err);
+    }
+  });
+}
+
+dontShowAgain() {
+  if (!this.tutorialId) return;
+  this.tutorialsService.updateDisplay(this.tutorialId, false).subscribe({
+    next: () => {
+      this.showImportTutorial = false;
+    },
+    error: (err: any) => {
+      console.error('Failed to update import/export tutorial display:', err);
+    }
+  });
+}
 
   exportData() {
     this.loading = true;

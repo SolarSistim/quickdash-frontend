@@ -12,6 +12,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { IconManagerService } from './icon-manager.service';
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
 import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
+import { TutorialsService } from '../tutorials/tutorials.service';
 
 @Component({
   selector: 'app-icon-manager',
@@ -29,6 +30,7 @@ import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.compo
 })
 export class IconManagerComponent {
 
+  private tutorialService = inject(TutorialsService);
   private readonly base = environment.apiUrl;
   private http = inject(HttpClient);
   private iconService = inject(IconManagerService);
@@ -50,6 +52,8 @@ export class IconManagerComponent {
   editedFilename: string = '';
   selectedTabIndex = 0;
   invalidFileType = false;
+  showTutorial: boolean = false;
+  tutorialId: number | null = null;
 
   invalidFiles: {
     file: File;
@@ -64,7 +68,33 @@ export class IconManagerComponent {
     setTimeout(() => {
       this.fetchIcons();
     });
+    this.loadTutorialSetting();
   }
+
+  loadTutorialSetting() {
+  this.tutorialService.getByFeature('icon_upload_help').subscribe({
+    next: (tutorial) => {
+      this.showTutorial = tutorial.display;
+      this.tutorialId = tutorial.id;
+    },
+    error: (err) => {
+      console.warn('Could not load tutorial setting:', err);
+    }
+  });
+}
+
+dontShowAgain() {
+  if (this.tutorialId !== null) {
+    this.tutorialService.updateDisplay(this.tutorialId, false).subscribe({
+      next: () => {
+        this.showTutorial = false;
+      },
+      error: (err) => {
+        console.error('Failed to update tutorial display setting:', err);
+      }
+    });
+  }
+}
 
   get filteredIcons() {
     if (!this.filterText.trim()) {
@@ -259,11 +289,6 @@ export class IconManagerComponent {
   showNote() {
     this.showIconNote = true;
     localStorage.setItem('showIconNote', 'true');
-  }
-  
-  dontShowAgain() {
-    this.showIconNote = false;
-    localStorage.setItem('showIconNote', 'false');
   }
 
   multiUploadFiles: {

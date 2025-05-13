@@ -3,6 +3,30 @@
    <mat-tab-group dynamicHeight (selectedIndexChange)="onTabChange($event)">
    <!-- start Single icon upload -->
    <mat-tab label="Icon Manager">
+
+      <!-- Begin Alert -->
+         <div *ngIf="showTutorial" class="alert alert-info fade show mt-3" role="alert">
+         <h4 class="alert-heading"><i class="bi bi-info-circle"></i> A Note on Icons</h4>
+         <p>
+            Optimal icon size is 120x120, and icon format must be .PNG. Using other dimensions can cause render issues, slow loading times, or other unpredictable behavior.
+         </p>
+         <p>
+            You can use Canva, Photoshop, Adobe Express, or any number of other free or paid image editors to create additional icons for Bolero.
+         </p>
+         <p class="mb-0 d-flex justify-content-between align-items-center">
+            <span>&nbsp;</span>
+            <span class="button-group ms-3">
+               <button mat-stroked-button style="margin-right: 10px;" [disabled]="!showTutorial" (click)="dontShowAgain()">
+               <i class="bi bi-x-lg"></i> Don’t Show Again
+               </button>
+               <button type="button" mat-stroked-button (click)="showTutorial = false">
+               <i class="bi bi-caret-down"></i> Hide
+               </button>
+            </span>
+         </p>
+         </div>
+         <!-- End Alert -->
+
       <div class="mat-elevation-z4">
          <div class="upload-section" *ngIf="!editingIconId" class="mt-4">
             <div class="mat-card button-panel" *ngIf="!previewUrl">

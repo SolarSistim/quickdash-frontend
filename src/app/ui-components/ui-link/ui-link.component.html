@@ -44,6 +44,8 @@
      <img
      class="link-icon"
      (click)="openLink(link.url)"
+     [alt]="link.name || 'Link Icon'"
+     [title]="'Description: ' + (link.description ? link.description : 'No description') + ' | Link Name: ' + link.name"
      (auxclick)="handleAuxClick($event, link.url)"
      [src]="'/assets/icons/' + (link.icon || 'default.png')"
      [alt]="link.name || 'Link Icon'"
@@ -52,23 +54,22 @@
 
 
       <div
-        class="link-name-container"
-        (click)="openLink(link.url)"
-        (auxclick)="handleAuxClick($event, link.url)"
-        [title]="link.url"
-        style="cursor: pointer;"
-      >
+      class="link-name-container"
+      (click)="openLink(link.url)"
+      (auxclick)="handleAuxClick($event, link.url)"
+      [title]="'Description: ' + (link.description ? link.description : 'No description') + ' | Link Name: ' + link.name"
+      style="cursor: pointer;"
+    >
       <a
         [href]="link.url"
         target="_blank"
         rel="noopener noreferrer"
         (click)="onAnchorClick($event)"
         class="link-name-container"
-        [title]="link.url"
       >
         {{ link.name }}
       </a>
-      </div>
+    </div>
 
       <i class="bi bi-three-dots-vertical link-menu-icon" [matMenuTriggerFor]="linkMenu"></i>
       <mat-menu #linkMenu="matMenu">

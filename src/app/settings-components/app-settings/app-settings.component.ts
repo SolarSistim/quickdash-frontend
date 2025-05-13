@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -18,6 +18,7 @@ import { Router } from '@angular/router'; // ⬅️ import this
 import { MatCardModule } from '@angular/material/card';
 import { ViewChild, ElementRef } from '@angular/core';
 import { SmallTitleComponent } from '../../ui-components/small-title/small-title.component';
+import { TutorialsService } from '../tutorials/tutorials.service';
 
 @Component({
   selector: 'app-app-settings',
@@ -32,6 +33,12 @@ export class AppSettingsComponent {
   changed = false;
   showLogo = false;
   searchFeature = false;
+  showImportTutorial = true;
+  tutorialId!: number;
+  showSearchTutorial: boolean = false;
+  searchTutorialId: number | null = null;
+  
+  private tutorialService = inject(TutorialsService);
 
   @ViewChild('fileInputFavicon') fileInputFavicon!: ElementRef<HTMLInputElement>;
   @ViewChild('fileInputLogo') fileInputLogo!: ElementRef<HTMLInputElement>;
@@ -43,15 +50,39 @@ export class AppSettingsComponent {
   ) {}
 
   ngOnInit() {
-    this.settingsService.loadSettings().subscribe(settings => {
-      this.formValues = { ...settings };
-      this.originalValues = { ...settings };
-    });
-    this.settingsService.loadSettings().subscribe(settings => {
-      this.showLogo = settings['LOGO_ENABLE'] !== 'FALSE';
-      this.searchFeature = settings['SEARCH_FEATURE'] !== 'FALSE';
+  this.settingsService.loadSettings().subscribe(settings => {
+    this.formValues = { ...settings };
+    this.originalValues = { ...settings };
+    this.showLogo = settings['LOGO_ENABLE'] !== 'FALSE';
+    this.searchFeature = settings['SEARCH_FEATURE'] !== 'FALSE';
+  });
+this.loadSearchFeatureTutorial();
+}
+
+loadSearchFeatureTutorial() {
+  this.tutorialService.getByFeature('search_feature_help').subscribe({
+    next: (tutorial) => {
+      this.showSearchTutorial = tutorial.display;
+      this.searchTutorialId = tutorial.id;
+    },
+    error: (err) => {
+      console.warn('Failed to load search tutorial setting:', err);
+    }
+  });
+}
+
+dismissSearchTutorial() {
+  if (this.searchTutorialId !== null) {
+    this.tutorialService.updateDisplay(this.searchTutorialId, false).subscribe({
+      next: () => {
+        this.showSearchTutorial = false;
+      },
+      error: (err) => {
+        console.error('Failed to update search tutorial display:', err);
+      }
     });
   }
+}
 
   triggerFileInput(key: 'FAVICON_IMAGE' | 'LOGO_IMAGE') {
     if (key === 'FAVICON_IMAGE') {

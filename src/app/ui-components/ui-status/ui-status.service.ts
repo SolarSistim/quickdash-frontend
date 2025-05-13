@@ -22,23 +22,25 @@ export class StatusMessageService {
   private readonly MIN_DISPLAY_MS = 500;
   private readonly AUTO_CLEAR_MS = 3000;
 
-  show(message: string, status: StatusType = 'loading', persistent = false) {
-    this._message.next(message);
-    this._status.next(status);
-    this.lastShownTimestamp = Date.now();
-  
-    if (persistent) {
-      this.persistentMessage = message;
-      this.persistentStatus = status;
-    }
-  
-    clearTimeout(this.clearTimeoutRef);
-  
-    const timeout =
-      status === 'loading' ? this.AUTO_CLEAR_MS : 2000; // ⏳ 2s for success/error
-  
-    this.clearTimeoutRef = setTimeout(() => this.clear(), timeout);
+  show(message: string, status: StatusType = 'loading', persistent = false, customDurationMs?: number) {
+  this._message.next(message);
+  this._status.next(status);
+  this.lastShownTimestamp = Date.now();
+
+  if (persistent) {
+    this.persistentMessage = message;
+    this.persistentStatus = status;
   }
+
+  clearTimeout(this.clearTimeoutRef);
+
+  const timeout =
+  status === 'loading'
+    ? customDurationMs ?? this.AUTO_CLEAR_MS
+    : customDurationMs ?? 2000;
+
+  this.clearTimeoutRef = setTimeout(() => this.clear(), timeout);
+}
 
   clear() {
     const elapsed = Date.now() - (this.lastShownTimestamp ?? 0);

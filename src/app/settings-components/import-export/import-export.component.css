@@ -11,3 +11,15 @@
   }
 
 .mat-mdc-progress-spinner { --mdc-circular-progress-active-indicator-color: white; }
+
+.orange-nav-button {
+    background-color: #ff9800;
+    text-align: left;
+    color: white;
+}
+
+.green-nav-button {
+    background-color: #00aa8d;
+    text-align: left;
+    color: white;
+}
