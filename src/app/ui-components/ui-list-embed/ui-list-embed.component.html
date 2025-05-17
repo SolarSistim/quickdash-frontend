@@ -1,0 +1,435 @@
+<div
+
+  [ngStyle]="{ '--group-bg-color': groupBackgroundColor }"
+  style="display: flex; flex-direction: column; height: 100%; position: relative; border-radius: 50px !important;"
+>
+   <div class="dialog-header" [style.color]="styleSettings.groupFontColor">
+      <h3 mat-dialog-title class="pb-2" [style.color]="styleSettings.groupFontColor">
+         <ng-container *ngIf="showNewItemForm">Add List Item</ng-container>
+         <ng-container *ngIf="isCategoryEditMode">Manage Categories</ng-container>
+         <ng-container *ngIf="!showNewItemForm && !isCategoryEditMode">
+            Editing "<span style="font-weight: 500;">{{ list?.name }}</span>"
+         </ng-container>
+      </h3>
+      <i
+        class="bi bi-x-lg close-icon"
+        title="Close"
+        style="color: white !important;"
+        (click)="closeDialog()"
+        ></i>
+   </div>
+   <div class="dialog-body-scroll" cdkScrollable>
+      <div *ngIf="showNewItemForm" class="mt-4">
+        <div class="row">
+            <div class="col-lg-12">
+                               <mat-form-field class="w-100 mb-2">
+                  <mat-label>List Item Title</mat-label>
+                  <input matInput [(ngModel)]="newTitle" (keydown.enter)="addItem(true)" />
+               </mat-form-field>
+        </div></div>
+         <div class="row">
+            <div class="col-lg-6">
+               <mat-form-field class="w-100 mb-2">
+              <mat-label>Select Category</mat-label>
+              <mat-select [(ngModel)]="selectedCategoryId">
+                <mat-option *ngFor="let cat of categories" [value]="cat.id">
+                  {{ cat.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+<div *ngIf="categories.length === 0" style="margin-top: -0.5rem; margin-bottom: 0.75rem;">
+  <span
+    (click)="toggleCategoryEditMode()"
+    style="text-decoration: underline; cursor: pointer;"
+    [style.color]="styleSettings.groupFontColor"
+  >
+    No categories. Click here to add a category
+  </span>
+</div>
+            </div>
+            <div class="col-lg-6">
+               <mat-form-field class="w-100 mb-2">
+                  <mat-label>Priority</mat-label>
+                  <mat-select [(ngModel)]="newPriority">
+                  <mat-option value="High">High</mat-option>
+                  <mat-option value="Medium">Medium</mat-option>
+                  <mat-option value="Low">Low</mat-option>
+                  </mat-select>
+               </mat-form-field>
+            </div>
+         </div>
+         <mat-form-field class="w-100 mb-2">
+            <mat-label>List Item Description</mat-label>
+            <textarea matInput rows="5" [(ngModel)]="newDescription"></textarea>
+         </mat-form-field>
+      </div>
+      <ng-container *ngIf="!isCategoryEditMode && !showNewItemForm">
+         <div *ngIf="loading">Loading items...</div>
+         <div *ngIf="!loading && items.length === 0" class="mt-3" [style.color]="styleSettings.groupFontColor">
+          No items found.
+          <div
+            (click)="setShowNewItemForm(true)"
+            style="text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 4px;"
+          >
+            Click here to add a new list item
+          </div>
+        </div>
+   <div *ngIf="!loading && items.length > 0" class="mt-3">
+   <div *ngFor="let cat of categories" class="mt-2">
+   <div class="category-header" [style.color]="styleSettings.groupFontColor">
+   <i class="bi bi-tag"></i> {{ cat.name }}
+   </div>
+   <div
+   cdkDropList
+   [id]="'cdk-drop-' + cat.id"
+   [cdkDropListData]="groupedItems[cat.id] || []"
+   [cdkDropListConnectedTo]="connectedDropListIds"
+   class="list-group"
+   (cdkDropListDropped)="onItemDrop($event, cat.id)"
+   >
+   <div
+      *ngIf="!(groupedItems[cat.id]?.length)"
+      class="empty-drop-placeholder"
+      >
+   Drop items here
+   </div>
+  <div
+  *ngFor="let item of groupedItems[cat.id]"
+  cdkDrag
+  [cdkDragData]="item"
+  [cdkDragDisabled]="anyItemDetailsVisible"
+  class="list-item d-flex align-items-center w-100"
+  (click)="!item.showDetails && toggleDetails(item)"
+  [ngStyle]="{
+    'background-color': styleSettings.linkBackgroundColor,
+    'color': styleSettings.linkFontColor,
+    'cursor': item.showDetails ? 'default' : 'pointer'
+  }"
+>
+
+
+<div
+  class="d-flex align-items-center gap-1"
+  style="min-width: 100px;"
+  *ngIf="!item.showDetails && !item.isEditing"
+>
+  <span
+    class="badge bg-secondary"
+    matTooltipPosition="above"
+    style="font-size: 11px; font-weight: 100; margin-right: 7px;"
+  >
+    {{ item.createdAt | date: 'MM/dd/yyyy' }}
+  </span>
+
+  <i
+    [ngClass]="{
+      'bi-1-circle-fill': item.priority === 'High',
+      'bi-2-circle-fill': item.priority === 'Medium',
+      'bi-3-circle-fill': item.priority === 'Low'
+    }"
+    class="bi"
+    [style.color]="
+      item.priority === 'High' ? '#ef5350' :
+      item.priority === 'Medium' ? '#ffca2c' :
+      '#67bb6a'"
+    style="font-size: 18px;"
+  ></i>
+</div>
+
+
+
+
+
+  <div class="flex-grow-1 ps-1 pe-1">
+  <ng-container *ngIf="item.isEditing; else viewMode">
+    <div class="row mt-3 mb-2">
+      <div class="col-md-4">
+        <label class="form-label custom-form-label">Title</label>
+        <input matInput [(ngModel)]="item.tempTitle" class="form-control mb-2" placeholder="Title" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label custom-form-label">Priority</label>
+        <select [(ngModel)]="item.tempPriority" class="form-select mb-2">
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label custom-form-label">Category</label>
+        <select [(ngModel)]="item.tempCategoryId" class="form-select mb-2">
+          <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+      </div>
+      <div class="col-md-12">
+        <textarea [(ngModel)]="item.tempDescription" rows="4" class="form-control mb-2" placeholder="Description"></textarea>
+      </div>
+      <div class="col-md-12 d-flex justify-content-end gap-2">
+        <button mat-button (click)="saveItemEdit(item)" [style.color]="styleSettings.groupFontColor">Save</button>
+        <button mat-button (click)="cancelItemEdit(item)" [style.color]="styleSettings.groupFontColor">Cancel</button>
+      </div>
+    </div>
+  </ng-container>
+
+<ng-template #viewMode>
+  <div class="list-item-inline-text" *ngIf="!item.showDetails">
+    <span class="title-text">{{ item.title }}</span>
+  </div>
+
+<ng-container *ngIf="item.showDetails">
+  <div class="list-item-details-wrapper">
+    <div class="list-item-details-icon">
+      <i class="bi bi-info-circle"></i>
+    </div>
+    <div
+      class="list-item-details-panel w-100"
+      style="cursor: default; user-select: text;"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="list-item-line"><strong>Title:</strong> {{ item.title }}</div>
+      <div class="list-item-line"><strong>Priority:</strong> {{ item.priority }}</div>
+<div class="list-item-line">
+  <strong>Description:</strong>
+  <span class="list-item-description-text">
+    {{ item.description?.trim() ? item.description : 'No description yet' }}
+  </span>
+</div>
+    </div>
+  </div>
+
+<div class="d-flex justify-content-end gap-2 mt-2 w-100">
+  <button
+    mat-button
+    (click)="editItem(item); hideDetails(item); $event.stopPropagation()"
+    [style.color]="styleSettings.groupFontColor"
+  >
+    Edit
+  </button>
+
+  <button
+    mat-button
+    (click)="hideDetails(item); $event.stopPropagation()"
+    [style.color]="styleSettings.groupFontColor"
+  >
+    Close
+  </button>
+</div>
+
+
+
+</ng-container>
+
+
+
+
+
+</ng-template>
+
+
+</div>
+
+<div
+  class="d-flex align-items-start"
+  *ngIf="!item.isEditing && !item.showDetails"
+>
+  <button
+    mat-icon-button
+    (click)="editItem(item)"
+    [style.color]="styleSettings.groupFontColor"
+    title="Edit Item"
+    style="position: relative; right: -10px;"
+  >
+    <i class="bi bi-pencil list-item-delete-button"></i>
+  </button>
+  <button
+    mat-icon-button
+    (click)="deleteItem(item)"
+    [style.color]="styleSettings.groupFontColor"
+    title="Delete Item"
+  >
+    <i class="bi bi-x-lg list-item-delete-button"></i>
+  </button>
+</div>
+
+
+
+
+
+</div>
+
+
+
+
+
+   </div>
+   </div>
+   </div>
+   </ng-container>
+   <div *ngIf="isCategoryEditMode" class="mt-4">
+      <mat-form-field class="w-100 mb-2">
+         <mat-label>New Category</mat-label>
+         <input matInput [(ngModel)]="newCategoryName" (keydown.enter)="addCategory(true)" />
+      </mat-form-field>
+      <div class="mt-3">
+         <h5 [style.color]="styleSettings.groupFontColor">Current Categories</h5>
+         <div
+  cdkDropList
+  [cdkDropListData]="categories"
+  (cdkDropListDropped)="onCategoryDrop($event)"
+  class="category-drop-list"
+>
+  <div *ngIf="categories.length === 0" class="mt-2" [style.color]="styleSettings.groupFontColor">
+    No categories found.
+  </div>
+
+  <div
+    *ngFor="let cat of categories"
+    cdkDrag
+    class="list-item d-flex justify-content-between p-3 mb-2"
+    [style.backgroundColor]="styleSettings.linkBackgroundColor"
+  >
+    <span *ngIf="!cat.isEditing" [style.color]="styleSettings.groupFontColor">
+      <i class="bi bi-tag"></i> {{ cat.name }}
+    </span>
+
+    <ng-container *ngIf="cat.isEditing">
+      <input matInput [(ngModel)]="cat.tempName" class="form-control" />
+      <button mat-button (click)="saveCategoryEdit(cat)" [style.color]="styleSettings.groupFontColor">Save</button>
+      <button mat-button (click)="cancelCategoryEdit(cat)" [style.color]="styleSettings.groupFontColor">Cancel</button>
+    </ng-container>
+
+    <div>
+      <i
+        class="bi bi-pencil list-item-delete-button"
+        (click)="editCategory(cat)"
+        style="padding-right: 10px;"
+        [style.color]="styleSettings.groupFontColor"
+      ></i>
+      <i
+        class="bi bi-x-lg list-item-delete-button"
+        (click)="deleteCategory(cat)"
+        [style.color]="styleSettings.groupFontColor"
+      ></i>
+    </div>
+  </div>
+</div>
+
+   </div>
+   </div>
+   </div>
+
+
+   <div class="p-3">
+  <!-- Buttons when in category edit mode -->
+  <ng-container *ngIf="isCategoryEditMode">
+    <div class="d-flex justify-content-between align-items-center">
+      <!-- Left: Return -->
+      <div>
+        <button
+          mat-button
+          color="warn"
+          (click)="isCategoryEditMode = false; newCategoryName = '';"
+          [style.color]="styleSettings.groupFontColor"
+          [disabled]="anyCategoryEditing"
+          [style.color]="anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+        >
+          Return
+        </button>
+      </div>
+
+      <!-- Right: Save/Add -->
+      <div class="d-flex gap-2">
+        <button
+          mat-button
+          color="primary"
+          (click)="addCategory(true)"
+          [disabled]="!newCategoryName.trim() || anyCategoryEditing"
+          [style.color]="!newCategoryName.trim() || anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+        >
+          Save & Add Another
+        </button>
+        <button
+          mat-button
+          color="primary"
+          (click)="addCategory(false)"
+          [disabled]="!newCategoryName.trim() || anyCategoryEditing"
+          [style.color]="!newCategoryName.trim() || anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+        >
+          Add Category
+        </button>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Buttons when in item form or default state -->
+  <!-- Buttons when in item form or default state -->
+<ng-container *ngIf="!isCategoryEditMode">
+  <div class="d-flex justify-content-between align-items-center w-100">
+    
+    <!-- Left: Return (if item form is open) -->
+    <div>
+      <button
+        *ngIf="showNewItemForm"
+        mat-button
+        color="warn"
+        (click)="showNewItemForm = false; newTitle=''; newDescription='';"
+        [style.color]="styleSettings.groupFontColor"
+      >
+        Return
+      </button>
+    </div>
+
+    <!-- Right: Buttons -->
+    <div class="d-flex gap-2">
+      <ng-container *ngIf="showNewItemForm">
+        <button
+          mat-button
+          color="primary"
+          (click)="addItem(true)"
+          [disabled]="!newTitle.trim()"
+          [style.color]="!newTitle.trim() ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+        >
+          Save & Add Another
+        </button>
+        <button
+          mat-button
+          color="primary"
+          (click)="addItem()"
+          [disabled]="!newTitle.trim()"
+          [style.color]="!newTitle.trim() ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+        >
+          Add
+        </button>
+      </ng-container>
+
+      <ng-container *ngIf="!showNewItemForm">
+        <button
+        mat-button
+        (click)="toggleCategoryEditMode()"
+        [disabled]="anyItemEditing"
+        [style.color]="anyItemEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+      >
+        Manage Categories
+      </button>
+      <button
+        mat-button
+        (click)="setShowNewItemForm(true)"
+        [disabled]="anyItemEditing"
+        [style.color]="anyItemEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor"
+      >
+        <i class="bi bi-plus"></i> Add New List Item
+      </button>
+      </ng-container>
+    </div>
+
+  </div>
+</ng-container>
+
+
+
+</div>
+
+
+
+</div>

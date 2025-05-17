@@ -30,6 +30,9 @@
         <button mat-menu-item (click)="openAddLinkDialog(group.id)">
           <i class="bi bi-plus-lg"></i> Add Link
         </button>
+        <button mat-menu-item (click)="openAddListDialog(group.id)">
+          <i class="bi bi-journal-plus"></i> Add List
+        </button>
         <button mat-menu-item (click)="openEditLinksDialog(category.id, group.id)">
           <i class="bi bi-pencil"></i> Edit Group
         </button>
@@ -57,14 +60,42 @@
       </mat-menu>
     </div>
 
-    <app-ui-link
-    [group]="group"
-    [category]="category"
-    [isLinkDraggable]="isLinkDraggable"
-    [showHandles]="showHandles"
-    (linkMoved)="handleLinkMoved($event)"
-    [refreshTrigger]="selectedThemeName"
-  ></app-ui-link>
+    <div
+  cdkDropList
+  class="link-list"
+  [cdkDropListData]="getCombinedItemsCached(group)"
+  [cdkDropListConnectedTo]="getConnectedDropLists()"
+  (cdkDropListDropped)="dropCombined($event, group)"
+  [id]="'combined-drop-' + group.id"
+>
+  <div
+    *ngFor="let item of getCombinedItemsCached(group); trackBy: trackLinkById"
+    cdkDrag
+    [cdkDragData]="item"
+    [class.handles-visible]="showHandles"
+  >
+    <app-ui-list
+      *ngIf="item.type === 'list'"
+      [list]="item"
+      [showHandles]="showHandles"
+      (openList)="openListDialog(item)"
+      (listDeleted)="refreshGroups()"
+      [style.--list-bg]="groupBackgroundColor"
+    ></app-ui-list>
+
+    <div *ngIf="item.type === 'link'">
+      <app-ui-link
+        [link]="item"
+        [group]="group"
+        [category]="category"
+        [isLinkDraggable]="isLinkDraggable"
+        [showHandles]="showHandles"
+        [refreshTrigger]="selectedThemeName"
+      ></app-ui-link>
+    </div>
+  </div>
+</div>
+
 
   <div class="icon-row" [style]="iconRowStyle">
     <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>

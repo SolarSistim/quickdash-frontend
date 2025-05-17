@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { forkJoin } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatMenuModule } from '@angular/material/menu';
 import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
@@ -14,11 +14,14 @@ import { UiLinkComponent } from '../ui-link/ui-link.component';
 import { StatusMessageService } from '../ui-status/ui-status.service';
 import { SettingsService } from '../../settings-components/app-settings/settings.service';
 import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
+import { UiListComponent } from '../ui-list/ui-list.component';
+import { DialogAddListComponent } from '../../dialogs/dialog-add-list/dialog-add-list.component';
+import { DialogListComponent } from '../../dialogs/dialog-list/dialog-list.component';
 
 @Component({
   selector: 'app-ui-link-group',
   standalone: true,
-  imports: [CommonModule, DragDropModule, MatMenuModule,UiLinkComponent],
+  imports: [CommonModule, DragDropModule, MatMenuModule,UiLinkComponent,UiListComponent],
   templateUrl: './ui-link-group.component.html',
   styleUrls: ['./ui-link-group.component.css']
 })
@@ -28,24 +31,20 @@ export class UiLinkGroupComponent {
   @Input() categories: any[] = [];
   @Input() isGroupDraggable = true;
   @Input() isLinkDraggable = true;
-
+  @Input() link: any;
   @Input() group!: any;
-  @Output() linkAdded = new EventEmitter<void>();
   @Input() selectedThemeName: string = '';
-
-  @Output() moveGroup = new EventEmitter<{ group: any, newCategoryId: number }>();
-  @Output() openEditLinks = new EventEmitter<{ categoryId: number, groupId: number }>();
-  @Output() openManageGroups = new EventEmitter<{ categoryId: number, groupId: number }>();
-  @Output() openAddGroup = new EventEmitter<number>();
   @Output() groupMoved = new EventEmitter<void>();
   @Output() refreshRequested = new EventEmitter<void>();
   @Output() refreshCategories = new EventEmitter<void>();
+  @Input() backgroundColor: string = '';
 
+  combinedItemsMap = new Map<number, any[]>();
   showHandles = false;
-
   groupBoxStyle: SafeStyle = '';
   iconRowStyle: SafeStyle = '';
   groupFontStyle: SafeStyle = '';
+  groupBackgroundColor: string = '';
 
   constructor(
     private dropService: DashboardDropService,
@@ -55,39 +54,248 @@ export class UiLinkGroupComponent {
     private sanitizer: DomSanitizer
   ) {}
 
-  ngOnInit(): void {
-    this.settingsService.loadSettings().subscribe(settings => {
-      const bgColor = settings['GROUP_BACKGROUND_COLOR'] || '#ffffff';
-      const opacity = parseFloat(settings['GROUP_BACKGROUND_OPACITY'] || '1');
-      const borderColor = settings['GROUP_BORDER_COLOR'] || '#000000';
-      const borderWidth = settings['GROUP_BORDER_WIDTH'] || '1';
-      const fontColor = settings['GROUP_FONT_COLOR'] || '#ffffff';
-      const fontWeight = settings['GROUP_FONT_WEIGHT'] || '400';
-      const fontSize = settings['GROUP_FONT_SIZE'] || '14';
-      const iconColor = settings['GROUP_FOOTER_ICON_COLOR'] || '#000000';
-      const footerBgHex = settings['GROUP_FOOTER_BACKGROUND_COLOR'] || '#2e3a46';
-      const footerOpacity = parseFloat(settings['GROUP_FOOTER_BACKGROUND_OPACITY'] || '1.0');
-      const footerBgRgba = this.hexToRgba(footerBgHex, footerOpacity);
-  
-      const rgba = this.hexToRgba(bgColor, opacity);
-  
-      this.groupBoxStyle = this.sanitizer.bypassSecurityTrustStyle(`
-        background-color: ${rgba};
-        border: ${borderWidth}px solid ${borderColor};
-      `);
-  
-      this.iconRowStyle = this.sanitizer.bypassSecurityTrustStyle(`
-        background-color: ${footerBgRgba};
-        color: ${iconColor};
-      `);
-  
-      this.groupFontStyle = this.sanitizer.bypassSecurityTrustStyle(`
-        color: ${fontColor};
-        font-weight: ${fontWeight};
-        font-size: ${fontSize}px;
-      `);
+ngOnInit(): void {
+  this.settingsService.loadSettings().subscribe(settings => {
+    const bgColor = settings['GROUP_BACKGROUND_COLOR'] || '#ffffff';
+    const opacity = parseFloat(settings['GROUP_BACKGROUND_OPACITY'] || '1');
+    const borderColor = settings['GROUP_BORDER_COLOR'] || '#000000';
+    const borderWidth = settings['GROUP_BORDER_WIDTH'] || '1';
+    const fontColor = settings['GROUP_FONT_COLOR'] || '#ffffff';
+    const fontWeight = settings['GROUP_FONT_WEIGHT'] || '400';
+    const fontSize = settings['GROUP_FONT_SIZE'] || '14';
+    const iconColor = settings['GROUP_FOOTER_ICON_COLOR'] || '#000000';
+    const footerBgHex = settings['GROUP_FOOTER_BACKGROUND_COLOR'] || '#2e3a46';
+    const footerOpacity = parseFloat(settings['GROUP_FOOTER_BACKGROUND_OPACITY'] || '1.0');
+    const footerBgRgba = this.hexToRgba(footerBgHex, footerOpacity);
+
+    const rgba = this.hexToRgba(bgColor, opacity); // 🔹 rgba defined here
+
+    // ✅ Set instance variable here inside the same scope
+    this.groupBackgroundColor = rgba;
+
+    this.groupBoxStyle = this.sanitizer.bypassSecurityTrustStyle(`
+      background-color: ${rgba};
+      border: ${borderWidth}px solid ${borderColor};
+    `);
+
+    this.iconRowStyle = this.sanitizer.bypassSecurityTrustStyle(`
+      background-color: ${footerBgRgba};
+      color: ${iconColor};
+    `);
+
+    this.groupFontStyle = this.sanitizer.bypassSecurityTrustStyle(`
+      color: ${fontColor};
+      font-weight: ${fontWeight};
+      font-size: ${fontSize}px;
+    `);
+  });
+}
+
+
+getCombinedItemsCached(group: any): any[] {
+  if (!this.combinedItemsMap.has(group.id)) {
+    const links = (group.links || [])
+      .filter((item: any) => item && typeof item.id === 'number')
+      .map((item: any) => ({
+        ...item,
+        type: 'link'
+      }));
+
+    const lists = (group.lists || [])
+    .map((item: any) => ({
+      ...item,
+      id: Number(item.id),
+      type: 'list'
+    }))
+    .filter((item: any) => typeof item.id === 'number' && !isNaN(item.id));
+
+    const combined = [...lists, ...links].sort((a, b) => a.position - b.position);
+    this.combinedItemsMap.set(group.id, combined);
+  }
+
+  return this.combinedItemsMap.get(group.id)!;
+}
+
+openListDialog(list: any, groupId?: number) {
+  const dialogRef = this.dialog.open(DialogListComponent, {
+    width: '50%',
+    maxWidth: '1000px',
+    maxHeight: '80vh',
+    data: { list, groupId } // ✅ include groupId
+  });
+
+  const instance = dialogRef.componentInstance;
+
+  instance.listAdded.subscribe(() => {
+    this.combinedItemsMap.delete(groupId || list.groupId); // fallback if needed
+    this.refreshGroups();
+  });
+
+  dialogRef.afterClosed().subscribe(() => {
+    this.refreshGroups();
+  });
+}
+
+dropCombined(event: CdkDragDrop<any[]>, group: any) {
+  const movedItem = event.item.data;
+  //console.log('Dropcombined: dragged item: ', movedItem);
+
+  if (!movedItem?.type || (movedItem.type !== 'list' && movedItem.type !== 'link')) {
+    console.warn('⚠️ Unknown or unsupported item type in dropCombined:', movedItem);
+    this.statusService.show('Unsupported item type.', 'error');
+    return;
+  }
+
+  // Ensure movedItem.id is a number for links, and can be converted for lists
+  if ((movedItem.type === 'link' && typeof movedItem.id !== 'number') ||
+      (movedItem.type === 'list' && isNaN(Number(movedItem.id))) ) {
+    console.error('❌ Invalid item ID for drop operation:', movedItem);
+    this.statusService.show('Invalid item ID.', 'error');
+    return;
+  }
+
+  this.handleItemDrop(event, group, movedItem.type as 'list' | 'link');
+}
+
+
+private handleItemDrop(event: CdkDragDrop<any[]>, targetGroupData: any, itemType: 'list' | 'link'): void {
+  const prevContainer = event.previousContainer;
+  const currContainer = event.container;
+  const movedItem = event.item.data;
+  const movedItemId = Number(movedItem.id);
+  const targetGroupId = Number(targetGroupData.id);
+
+  if (isNaN(movedItemId) || isNaN(targetGroupId)) {
+    console.error(`❌ Invalid moved ${itemType} ID (${movedItem.id}) or targetGroupId (${targetGroupId}).`);
+    this.statusService.show('Error: Invalid item or group ID.', 'error');
+    return;
+  }
+
+  const sourceGroup = this.category.groups.find((g: any) => `combined-drop-${g.id}` === prevContainer.id);
+  const destinationGroup = this.category.groups.find((g: any) => `combined-drop-${g.id}` === currContainer.id);
+
+  if (!destinationGroup) {
+    console.error('❌ Target group not found for drop operation.');
+    this.statusService.show('Error: Target group not found.', 'error');
+    return;
+  }
+  if (prevContainer !== currContainer && !sourceGroup) {
+    console.warn('⚠️ Source group not found for moved item. Assuming it originated from a different context or was already removed.');
+  }
+
+  const sourceCombinedItems = sourceGroup ? [...this.getCombinedItemsCached(sourceGroup)] : [];
+  let destinationCombinedItems = [...this.getCombinedItemsCached(destinationGroup)];
+
+  const itemDataForNewList = {
+    ...movedItem,
+    id: movedItemId,
+    type: itemType,
+    ...(itemType === 'list' && { groupId: targetGroupId })
+  };
+
+  if (prevContainer === currContainer) {
+    moveItemInArray(destinationCombinedItems, event.previousIndex, event.currentIndex);
+    // **UPDATE POSITIONS IN CACHE**
+    destinationCombinedItems.forEach((item, index) => item.position = index);
+    // Generate the reordered payload for the backend - INCLUDE ALL ITEMS
+    const reorderedPayloadForBackend = destinationCombinedItems
+      .map((item) => ({ id: Number(item.id), position: item.position, type: item.type })); // Include type
+    //console.log('reorderedPayloadForBackend (same group):', reorderedPayloadForBackend);
+
+    let backendCall$: Observable<any>;
+    const listsToReorder = reorderedPayloadForBackend.filter(item => item.type === 'list');
+    const linksToReorder = reorderedPayloadForBackend.filter(item => item.type === 'link');
+
+    const bulkOperations: Observable<any>[] = [];
+
+    if (listsToReorder.length > 0) {
+      bulkOperations.push(this.dropService.reorderLists(targetGroupId, listsToReorder.map(l => ({ id: l.id, position: l.position }))));
+    }
+    if (linksToReorder.length > 0) {
+      bulkOperations.push(this.dropService.reorderLinks(linksToReorder.map(l => ({ id: l.id, position: l.position })))); // Corrected call
+    }
+
+    if (bulkOperations.length > 0) {
+      forkJoin(bulkOperations).subscribe({
+        next: () => {
+          //console.log(`✅ Items reordered within group ${targetGroupId}. Cache updated.`);
+        },
+        error: (err: any) => {
+          console.error(`❌ Error reordering items in group ${targetGroupId}:`, err);
+          this.statusService.show(`Error saving item order. Reverting changes.`, 'error');
+          this.refreshGroups();
+        }
+      });
+    }
+
+  } else {
+    // Optimistically update the source group's cached items
+    if (sourceGroup) {
+      const itemIndexInSource = sourceCombinedItems.findIndex(item => item.type === itemType && item.id === movedItemId);
+      if (itemIndexInSource > -1) {
+        sourceCombinedItems.splice(itemIndexInSource, 1);
+        sourceCombinedItems.forEach((item, index) => item.position = index);
+        this.combinedItemsMap.set(sourceGroup.id, sourceCombinedItems);
+      } else {
+        console.warn(`⚠️ Moved ${itemType} (ID: ${movedItemId}) not found in source group (${sourceGroup.id}) cache for removal.`);
+      }
+    }
+    // Update the destination group's cached items
+    //console.log('itemDataForNewList before splice:', itemDataForNewList);
+    destinationCombinedItems.splice(event.currentIndex, 0, itemDataForNewList);
+    //console.log('destinationCombinedItems after splice:', destinationCombinedItems);
+    //console.log('destinationCombinedItems before reorderedPayload:', destinationCombinedItems);
+
+    // **UPDATE POSITIONS IN CACHE**
+    destinationCombinedItems.forEach((item, index) => item.position = index);
+    // Generate the reordered payload for the backend - INCLUDE ALL ITEMS
+    const reorderedPayloadForBackend = destinationCombinedItems
+      .map(item => ({ id: Number(item.id), position: item.position, type: item.type })); // Include type
+    //console.log('reorderedPayloadForBackend:', reorderedPayloadForBackend);
+
+    let backendCall$: Observable<any>;
+    const movedItemPayload = { id: movedItemId, position: event.currentIndex }; // Position in the new group
+
+    if (itemType === 'list') {
+      backendCall$ = this.dropService.moveAndReorderList(movedItemId, targetGroupId, reorderedPayloadForBackend.filter(i => i.type === 'list'));
+    } else {
+      backendCall$ = this.dropService.moveAndReorderLink(movedItemId, targetGroupId, reorderedPayloadForBackend.filter(i => i.type === 'link'));
+    }
+
+    backendCall$.subscribe({
+      next: () => {
+        //console.log(`✅ ${itemType} (ID: ${movedItemId}) moved to group ${targetGroupId}. Cache updated.`);
+        // No need to delete from source cache here as it was done optimistically
+      },
+      error: (err: any) => {
+        console.error(`❌ Error moving ${itemType} ID ${movedItemId} to group ${targetGroupId}:`, err);
+        this.statusService.show(`Error saving ${itemType} move. Reverting changes.`, 'error');
+        this.refreshGroups();
+      }
     });
   }
+  this.combinedItemsMap.set(destinationGroup.id, destinationCombinedItems);
+}
+
+
+getConnectedDropLists(): string[] {
+  return this.category.groups.map((g: any) => 'combined-drop-' + g.id);
+}
+
+openAddListDialog(groupId: number) {
+  const dialogRef = this.dialog.open(DialogAddListComponent, {
+    width: '400px',
+    data: { groupId }
+  });
+
+  dialogRef.afterClosed().subscribe(result => {
+    if (result?.created) {
+      this.combinedItemsMap.delete(groupId); // clear cached items
+      this.refreshGroups(); // reload updated data
+    }
+  });
+}
+
 
   hexToRgba(hex: string, alpha: number): string {
     const cleanHex = hex.replace('#', '');
@@ -120,22 +328,22 @@ export class UiLinkGroupComponent {
     }
   }
 
-  openAddGroupDialog(categoryId: number): void {
-    const dialogRef = this.dialog.open(DialogAddGroupComponent, {
-      width: '400px',
-      data: { categoryId }
-    });
-  
-    const instance = dialogRef.componentInstance;
-  
-    instance.groupAdded.subscribe(() => {
-      this.refreshGroups();  // ✅ ACTUALLY refresh the data now
-    });
-  
-    dialogRef.afterClosed().subscribe(() => {
-      this.refreshGroups(); // ✅ optional: refresh again after closing
-    });
-  }
+openAddGroupDialog(categoryId: number): void {
+  const dialogRef = this.dialog.open(DialogAddGroupComponent, {
+    width: '400px',
+    data: { categoryId }
+  });
+
+  const instance = dialogRef.componentInstance;
+
+  instance.groupAdded.subscribe(() => {
+    this.refreshGroups();  // ✅ refresh when new group added
+  });
+
+  dialogRef.afterClosed().subscribe(() => {
+    this.refreshGroups(); // ✅ optional: refresh again after closing
+  });
+}
   
   dropLink(event: CdkDragDrop<any[]>, group: any) {
     const prevContainer = event.previousContainer;
@@ -151,7 +359,6 @@ export class UiLinkGroupComponent {
       }));
   
       this.dropService.reorderLinks(reorderedLinks).subscribe({
-        next: () => console.log('Links reordered within group'),
         error: (err) => console.error('Failed to reorder links', err)
       });
     } else {
@@ -167,7 +374,6 @@ export class UiLinkGroupComponent {
       // 🛠 Update link's groupId
       this.dropService.updateLinkGroup(movedLink.id, group.id).subscribe({
         next: () => {
-          console.log('Link moved to new group successfully');
   
           // Now optionally reorder links in the new group too
           const reorderedLinks = group.links.map((link: any, index: number) => ({
@@ -176,7 +382,6 @@ export class UiLinkGroupComponent {
           }));
   
           this.dropService.reorderLinks(reorderedLinks).subscribe({
-            next: () => console.log('Links reordered in new group'),
             error: (err) => console.error('Failed to reorder links after moving', err)
           });
         },
@@ -184,40 +389,6 @@ export class UiLinkGroupComponent {
       });
       
     }
-  }
-
-  handleLinkMoved(event: { movedLinkId: number, newGroupId: number, oldGroupId: number }) {
-    const { movedLinkId, newGroupId } = event;
-  
-    const reorderedLinks = this.category.groups
-      .find((g: any) => g.id === newGroupId)?.links
-      .map((link: any, index: number) => ({ id: link.id, position: index })) || [];
-  
-    this.dropService.moveAndReorderLink(movedLinkId, newGroupId, reorderedLinks).subscribe({
-      next: () => {
-        console.log('Move and reorder completed successfully');
-        this.refreshGroup(this.category.id, event.oldGroupId);
-        this.refreshGroup(this.category.id, newGroupId);
-      },
-      error: (err) => console.error('Failed to move and reorder link', err)
-    });
-  }
-  
-  
-  refreshGroup(categoryId: number, groupId: number) {
-    this.dropService.fetchCategories().subscribe({
-      next: (data) => {
-        const category = data.find(c => c.id === categoryId);
-        if (category) {
-          const updatedGroup = category.groups.find((g: any) => g.id === Number(groupId));
-          const groupInView = this.category.groups.find((g: any) => g.id === Number(groupId));
-          if (updatedGroup && groupInView) {
-            groupInView.links = updatedGroup.links;
-          }
-        }
-      },
-      error: (err) => console.error('Failed to refresh group', err)
-    });
   }
 
   openAddLinkDialog(groupId: number): void {
@@ -265,7 +436,6 @@ export class UiLinkGroupComponent {
       if (result) {
         this.dropService.deleteGroup(group.id).subscribe({
           next: () => {
-            console.log('Group deleted');
             this.refreshRequested.emit();
           },
           error: err => console.error('Failed to delete group', err)
@@ -283,7 +453,6 @@ export class UiLinkGroupComponent {
     }));
 
     this.dropService.reorderGroups(this.category.id, reordered).subscribe({
-      next: () => console.log('Group reorder saved'),
       error: err => console.error('Error saving group reorder', err)
     });
   }
@@ -297,24 +466,29 @@ export class UiLinkGroupComponent {
       position: nextPosition
     }).subscribe({
       next: () => {
-        console.log('Group moved to new category at end');
         this.groupMoved.emit(); // 🔼 notify parent
       },
       error: err => console.error('Failed to move group', err)
     });
   }
 
-  refreshGroups() {
-    this.dropService.fetchCategories().subscribe({
-      next: (data) => {
-        const currentCategory = data.find(c => c.id === this.category.id);
-        if (currentCategory) {
-          this.category.groups = currentCategory.groups;
-        }
-      },
-      error: (err) => console.error('Error refreshing groups', err)
-    });
-  }
+refreshGroups() {
+  this.combinedItemsMap.clear(); // ⬅️ ensure cache is fully cleared
+  this.dropService.fetchCategories().subscribe({
+    next: (data) => {
+      const currentCategory = data.find(c => c.id === this.category.id);
+      if (currentCategory) {
+        this.category.groups = currentCategory.groups.map((group: any) => ({
+          ...group,
+          links: [...group.links],
+          lists: [...group.lists]
+        }));
+        this.combinedItemsMap.clear(); // ✅ clear again after updating group data
+      }
+    },
+    error: (err) => console.error('Error refreshing groups', err)
+  });
+}
 
   openManageGroupsDialog(categoryId?: number, groupId?: number): void {
     const dialogRef = this.dialog.open(DialogManageLinkGroupsComponent, {
@@ -337,12 +511,10 @@ export class UiLinkGroupComponent {
       position: this.categories.find(c => c.id === newCategoryId)?.groups.length || 0
     }).subscribe({
       next: () => {
-        console.log(`Group ${group.name} moved to category ID ${newCategoryId}`);
         this.refreshRequested.emit();
       },
       error: err => console.error('Failed to move group', err)
     });
   }
-
 
 }

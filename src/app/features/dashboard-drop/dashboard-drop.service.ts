@@ -27,6 +27,10 @@ export class DashboardDropService {
     return this.http.put(`${this.base}/links/reorder`, links);
   }
 
+reorderLists(groupId: number, lists: { id: number, position: number }[]) {
+    return this.http.put(`${this.base}/lists/reorder-list`, { groupId, lists });
+}
+
   updateLinkGroup(linkId: number, groupId: number) {
     return this.http.put(`${this.base}/links/${linkId}`, {
       groupId
@@ -116,4 +120,12 @@ export class DashboardDropService {
     return this.http.get<any[]>(`${this.base}/link-categories`);
   }
   
+moveAndReorderList(movedListId: number, newGroupId: number, reorderedLists: { id: number; position: number }[]) {
+    return this.http.put(`${this.base}/lists/move-reorder-list`, {
+        movedListId,
+        newGroupId,
+        reorderedLists
+    });
+}
+
 }

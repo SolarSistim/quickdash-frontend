@@ -19,6 +19,8 @@
   .tab-menu-trigger:hover {
     color: #fff;
   }
+
+
   
   .link-name-container {
     white-space: nowrap;
@@ -297,3 +299,5 @@
     color: inherit;
     padding-top: 3px;
   }
+  
+  

@@ -31,3 +31,9 @@ app-root {
   .disabled-theme-button {
     color: gray !important;
   }
+
+  ::ng-deep .mat-mdc-dialog-surface {
+  max-height: 90vh;
+  overflow: auto;
+  display: inline-block; /* Important: don’t force it to stretch */
+}

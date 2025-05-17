@@ -1,0 +1,22 @@
+<div class="custom-list-icon" (click)="open()" title="{{ list.name }}">
+  <i class="bi bi-list-columns-reverse"></i>
+  <div class="list-name">{{ list.name }}</div>
+  <button
+  mat-icon-button
+  [matMenuTriggerFor]="menu"
+  class="menu-trigger"
+  aria-label="List menu"
+  (click)="$event.stopPropagation()"
+>
+  <i class="bi bi-three-dots-vertical link-menu-icon"></i>
+</button>
+</div>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="openEditDialog()">
+    <i class="bi bi-pencil"></i> Edit List
+  </button>
+  <button mat-menu-item (click)="confirmDelete()">
+    <i class="bi bi-trash"></i> Delete List
+  </button>
+</mat-menu>

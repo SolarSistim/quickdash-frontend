@@ -24,6 +24,7 @@ export class UiLinkComponent {
   @Input() isLinkDraggable = true;
   @Input() showHandles = false;
   @Input() refreshTrigger: any;
+  @Input() link: any;
   @Output() linkMoved = new EventEmitter<{ movedLinkId: number, newGroupId: number, oldGroupId: number }>();
 
   private saveTimer: any = null;
