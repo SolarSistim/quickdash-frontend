@@ -95,7 +95,7 @@ deleteCategoryForList(listId: number, categoryId: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/items/${itemId}`);
   }
 
-  reorderItems(payload: { id: number; position: number; categoryId: number }[]): Observable<any> {
+reorderItems(payload: { id: number; position: number; categoryId: number | null; pinned: boolean }[]): Observable<any> {
   return this.http.put(`${environment.apiUrl}/items/reorder`, { items: payload });
 }
 
@@ -112,16 +112,18 @@ updateCategoryName(listId: number, categoryId: number, newName: string): Observa
   return this.http.put(`${this.baseUrl}/${listId}/categories/${categoryId}`, { name: newName });
 }
 
-updateItem(
-  itemId: number,
-  payload: {
-    title: string;
-    description: string;
-    priority: 'High' | 'Medium' | 'Low';
-    categoryId: number | null;
-  }
-): Observable<any> {
-  return this.http.put(`${environment.apiUrl}/items/${itemId}`, payload);
+togglePin(id: number, pinned: boolean) {
+  return this.http.put(`${environment.apiUrl}/items/${id}/pin`, { pinned });
+}
+
+updateItem(id: number, payload: {
+  title: string;
+  description: string;
+  priority: 'High' | 'Medium' | 'Low';
+  categoryId: number | null;
+  pinned?: boolean; // ✅ make it optional
+}) {
+  return this.http.put(`${environment.apiUrl}/items/${id}`, payload);
 }
 
 }

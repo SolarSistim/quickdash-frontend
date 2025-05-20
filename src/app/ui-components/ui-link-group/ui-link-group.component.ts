@@ -17,6 +17,7 @@ import { DomSanitizer, SafeStyle } from '@angular/platform-browser';
 import { UiListComponent } from '../ui-list/ui-list.component';
 import { DialogAddListComponent } from '../../dialogs/dialog-add-list/dialog-add-list.component';
 import { DialogListComponent } from '../../dialogs/dialog-list/dialog-list.component';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-ui-link-group',
@@ -51,7 +52,8 @@ export class UiLinkGroupComponent {
     private dialog: MatDialog,
     private statusService: StatusMessageService,
     private settingsService: SettingsService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
 ngOnInit(): void {
@@ -117,17 +119,27 @@ getCombinedItemsCached(group: any): any[] {
 }
 
 openListDialog(list: any, groupId?: number) {
+  let width = '50%';
+
+  if (this.breakpointObserver.isMatched(Breakpoints.Handset)) {
+    width = '100%'; // mobile
+  } else if (this.breakpointObserver.isMatched(Breakpoints.Tablet)) {
+    width = '80%'; // tablet / medium
+  } else {
+    width = '50%'; // large
+  }
+
   const dialogRef = this.dialog.open(DialogListComponent, {
-    width: '50%',
+    width,
     maxWidth: '1000px',
     maxHeight: '80vh',
-    data: { list, groupId } // ✅ include groupId
+    data: { list, groupId }
   });
 
   const instance = dialogRef.componentInstance;
 
   instance.listAdded.subscribe(() => {
-    this.combinedItemsMap.delete(groupId || list.groupId); // fallback if needed
+    this.combinedItemsMap.delete(groupId || list.groupId);
     this.refreshGroups();
   });
 
