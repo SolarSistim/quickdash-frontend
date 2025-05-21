@@ -25,10 +25,11 @@ interface Category {
 })
 export class ManageCategoriesComponent {
 
+  @Output() categoryDeleted = new EventEmitter<void>();
   @Output() categoryAdded = new EventEmitter<void>();
   @Output() categoryAddCompleted = new EventEmitter<void>();
   @Input() listId: number | null = null;
-  @Input() styleSettings: any;
+  // @Input() styleSettings: any;
   @Output() exit = new EventEmitter<void>();
   @Output() newCategoryNameChange = new EventEmitter<string>();
   @Output() categoriesChanged = new EventEmitter<Category[]>();
@@ -36,12 +37,20 @@ export class ManageCategoriesComponent {
     this.newCategoryName = val;
     this.newCategoryNameChange.emit(this.newCategoryName); // keep in sync
   }
-
   @Output() anyEditingChange = new EventEmitter<boolean>();
+
+  @Input() styleSettings: {
+    groupBackgroundColor?: string;
+    groupFontColor?: string;
+    linkBackgroundColor?: string;
+    linkFontColor?: string;
+  } = {};
 
   categories: Category[] = [];
   newCategoryName = '';
   isLoading = false;
+  isHovering = false;
+  hoveredButtonKey: string | null = null;
 
   constructor(private listsService: ListsService) {}
 
@@ -75,13 +84,21 @@ addCategory(keepFormOpen = false) {
   this.listsService.addCategoryForList(listId, name).subscribe({
     next: () => {
       this.newCategoryName = '';
-      this.loadCategories();
 
-      this.categoryAdded.emit(); // ✅ notify parent to refresh
-
-      if (!keepFormOpen) {
-        this.categoryAddCompleted.emit(); // ✅ notify exit
-      }
+      // Reload categories, then emit updated list to parent
+      this.listsService.getCategoriesForList(listId).subscribe({
+        next: (categories) => {
+          this.categories = categories.sort((a, b) => a.position - b.position);
+          this.categoriesChanged.emit(this.categories); // ✅ This was missing
+          this.categoryAdded.emit(); // still needed
+          if (!keepFormOpen) {
+            this.categoryAddCompleted.emit(); // still needed
+          }
+        },
+        error: (err) => {
+          console.error('❌ Failed to fetch categories after add:', err);
+        }
+      });
     },
     error: (err) => {
       console.error('❌ Failed to add category:', err);
@@ -91,20 +108,22 @@ addCategory(keepFormOpen = false) {
 }
 
 
-  loadCategories() {
-    if (!this.listId) return;
-    this.isLoading = true;
-    this.listsService.getCategoriesForList(this.listId).subscribe({
-      next: (categories) => {
-        this.categories = categories.sort((a, b) => a.position - b.position);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error('❌ Failed to load categories:', err);
-        this.isLoading = false;
-      }
-    });
-  }
+
+loadCategories() {
+  if (!this.listId) return;
+  this.isLoading = true;
+  this.listsService.getCategoriesForList(this.listId).subscribe({
+    next: (categories) => {
+      this.categories = categories.sort((a, b) => a.position - b.position);
+      this.categoriesChanged.emit(this.categories); // ✅ emit to parent
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('❌ Failed to load categories:', err);
+      this.isLoading = false;
+    }
+  });
+}
 
   editCategory(cat: Category) {
     cat.isEditing = true;
@@ -136,7 +155,7 @@ addCategory(keepFormOpen = false) {
     });
   }
 
-  deleteCategory(cat: Category) {
+deleteCategory(cat: Category) {
   if (!this.listId) return;
 
   const confirmed = window.confirm(`Are you sure you want to delete category "${cat.name}"?`);
@@ -146,6 +165,8 @@ addCategory(keepFormOpen = false) {
     next: () => {
       this.categories = this.categories.filter(c => c.id !== cat.id);
       console.log(`✅ Deleted category with ID ${cat.id}`);
+      this.categoryDeleted.emit();
+      this.categoriesChanged.emit(this.categories); // ✅ ADD THIS
     },
     error: (err) => {
       console.error('❌ Failed to delete category:', err);
@@ -153,6 +174,7 @@ addCategory(keepFormOpen = false) {
     }
   });
 }
+
 
 onDrop(event: CdkDragDrop<Category[]>) {
   moveItemInArray(this.categories, event.previousIndex, event.currentIndex);

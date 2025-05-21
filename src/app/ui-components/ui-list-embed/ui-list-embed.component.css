@@ -7,16 +7,18 @@
   background-color: var(--group-bg-color);
   border-radius: 40px;
   height: 100%;
+  --link-bg-color: #3b4d59;
 }
 
 ::ng-deep .mat-mdc-dialog-content {
-height: 100% !important;
+  height: 100% !important;
 }
 
 ::ng-deep .cdk-overlay-pane {
   display: flex !important;
   flex-direction: column !important;
-  height: 100vh !important; /* ⬅️ Full viewport */
+  height: 100vh !important;
+  /* ⬅️ Full viewport */
   max-height: 100vh !important;
 }
 
@@ -25,7 +27,8 @@ height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   max-height: 90vh !important;
-  margin: auto !important; /* center the dialog */
+  margin: auto !important;
+  /* center the dialog */
 }
 
 .dialog-body-scroll {
@@ -56,29 +59,29 @@ height: 100% !important;
 ::ng-deep .mat-mdc-dialog-surface {
   background-color: var(--group-bg-color);
 }
-  
-  .input-group {
-    display: flex;
-  }
-  
-  input.form-control {
-    flex: 1;
-  }
-  
-  mat-dialog-actions {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0 0;
-  }
 
-  .close-icon {
-    position: absolute;
-    top: 24px;
-    right: 22px;
-    font-size: 1.1rem;
-    color: #fff !important;
-    cursor: pointer;
-  }
+.input-group {
+  display: flex;
+}
+
+input.form-control {
+  flex: 1;
+}
+
+mat-dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0 0;
+}
+
+.close-icon {
+  position: absolute;
+  top: 24px;
+  right: 22px;
+  font-size: 1.1rem;
+  color: #fff !important;
+  cursor: pointer;
+}
 
 .category-header {
   font-size: 18px;
@@ -124,17 +127,18 @@ button[mat-icon-button] {
 .d-flex {
   display: flex;
 }
+
 .justify-content-between {
   justify-content: space-between;
 }
+
 .align-items-center {
   align-items: center;
 }
+
 .mt-2 {
   margin-top: 0.5rem;
 }
-
-
 
 .cdk-drop-list-dragging .cdk-drag-placeholder {
   background: rgba(255, 255, 255, 0.1);
@@ -183,7 +187,8 @@ button[mat-icon-button] {
 .list-group {
   max-height: 100%;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  /* Firefox */
   min-height: 100px;
 }
 
@@ -192,8 +197,10 @@ button[mat-icon-button] {
 }
 
 .cdk-drop-list-dragging {
-  scrollbar-width: none !important; /* Firefox */
-  overflow-y: hidden !important;    /* Prevent scroll from appearing */
+  scrollbar-width: none !important;
+  /* Firefox */
+  overflow-y: hidden !important;
+  /* Prevent scroll from appearing */
 }
 
 .cdk-drop-list-dragging::-webkit-scrollbar {
@@ -235,20 +242,6 @@ button[mat-icon-button] {
   margin-bottom: 4px;
 }
 
-
-
-
-
-
-
-
-
-
-
-/* Basic drag and drop testing */
-
-
-
 .link-item.cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
@@ -279,14 +272,14 @@ button[mat-icon-button] {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 4px;
-  cursor: grab;
+  cursor: pointer;
 }
 
 .link-name-container {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 .link-drag-handle {
@@ -294,6 +287,8 @@ button[mat-icon-button] {
   color: #aaa;
   cursor: grab;
 }
+
+
 
 .pin-icon-wrapper {
   padding: 4px;
@@ -311,5 +306,51 @@ button[mat-icon-button] {
   box-sizing: border-box;
 }
 
+@keyframes flashHighlight {
+  0% {
+    background-color: yellow;
+  }
+
+  100% {
+    background-color: var(--link-bg-color, #3b4d59);
+  }
+}
+
+.link-item.highlight {
+  animation: flashHighlight 2s ease;
+}
 
 
+@keyframes flashHighlightA {
+  0% {
+    background-color: yellow;
+  }
+
+  100% {
+    background-color: var(--link-bg-color, #3b4d59);
+  }
+}
+
+@keyframes flashHighlightB {
+  0% {
+    background-color: yellow;
+  }
+
+  100% {
+    background-color: var(--link-bg-color, #3b4d59);
+  }
+}
+
+.link-item.highlightA {
+  animation: flashHighlightA 1s ease;
+}
+
+.link-item.highlightB {
+  animation: flashHighlightB 1s ease;
+}
+
+.custom-completed-checkbox {
+  cursor: pointer;
+  height: 20px;
+  width: 20px;
+}

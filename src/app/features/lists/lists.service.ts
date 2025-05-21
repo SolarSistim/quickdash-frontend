@@ -126,5 +126,21 @@ updateItem(id: number, payload: {
   return this.http.put(`${environment.apiUrl}/items/${id}`, payload);
 }
 
+completeItem(itemId: number): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/items/complete/${itemId}`, {});
+}
+
+uncompleteItem(itemId: number): Observable<any> {
+  return this.http.post(`${environment.apiUrl}/items/uncomplete/${itemId}`, {});
+}
+
+getCompletedItems(listId: number): Observable<any[]> {
+  return this.http.get<any[]>(`${this.baseUrl}/${listId}/completed-items`);
+}
+
+getAllListItems(): Observable<any[]> {
+  return this.http.get<any[]>(`${environment.apiUrl}/items`);
+}
+
 }
 

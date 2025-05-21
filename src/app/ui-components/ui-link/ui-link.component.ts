@@ -25,6 +25,7 @@ export class UiLinkComponent {
   @Input() showHandles = false;
   @Input() refreshTrigger: any;
   @Input() link: any;
+  @Output() linkDeleted = new EventEmitter<void>();
   @Output() linkMoved = new EventEmitter<{ movedLinkId: number, newGroupId: number, oldGroupId: number }>();
 
   private saveTimer: any = null;
@@ -178,6 +179,7 @@ export class UiLinkComponent {
           next: () => this.refreshLinks(),
           error: err => console.error('Failed to delete link', err)
         });
+        this.linkDeleted.emit();
       }
     });
   }

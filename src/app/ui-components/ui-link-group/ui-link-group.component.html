@@ -68,6 +68,16 @@
   (cdkDropListDropped)="dropCombined($event, group)"
   [id]="'combined-drop-' + group.id"
 >
+
+  <div
+    *ngIf="getCombinedItemsCached(group)?.length === 0"
+    class="empty-drop-placeholder"
+    (click)="openAddLinkDialog(group.id)"
+    style="cursor: pointer; text-align: center; padding: 12px; font-style: italic; color: white;"
+  >
+    Drop link here or <span style="text-decoration: underline;">click here</span> to add new link.
+  </div>
+
   <div
     *ngFor="let item of getCombinedItemsCached(group); trackBy: trackLinkById"
     cdkDrag
@@ -79,7 +89,7 @@
       [list]="item"
       [showHandles]="showHandles"
       (openList)="openListDialog(item)"
-      (listDeleted)="refreshGroups()"
+      (listDeleted)="handleListDeleted(group.id)"
       [style.--list-bg]="groupBackgroundColor"
     ></app-ui-list>
 
@@ -91,6 +101,7 @@
         [isLinkDraggable]="isLinkDraggable"
         [showHandles]="showHandles"
         [refreshTrigger]="selectedThemeName"
+        (linkDeleted)="handleLinkDeleted(group.id)"
       ></app-ui-link>
     </div>
   </div>

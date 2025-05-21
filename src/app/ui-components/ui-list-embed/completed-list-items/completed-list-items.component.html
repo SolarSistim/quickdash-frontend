@@ -1,0 +1,28 @@
+<div style="padding: 16px;">
+  <div *ngIf="loading" style="color: white;">Loading completed items...</div>
+
+  <div *ngIf="!loading && items.length === 0" style="color: white;">
+    No completed items found.
+  </div>
+
+  <div *ngIf="!loading && items.length > 0">
+    <div *ngFor="let item of items" class="completed-item"
+      style="border: 1px solid #ccc; padding: 12px; margin-bottom: 12px; border-radius: 6px; background-color: rgba(255,255,255,0.05); color: white;">
+      
+      <!-- ✅ Title, Date, and Restore Button on same line -->
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-weight: bold;">{{ item.title }}</div>
+          <div style="font-size: 0.85rem; opacity: 0.8;">Completed: {{ item.completedAt | date:'short' }}</div>
+        </div>
+        <button mat-button (click)="restoreItem(item)" style="color: limegreen;">Restore</button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="items.length > 0" style="display: flex; justify-content: space-between; margin-top: 16px;">
+  <!-- Left-aligned Return button should be placed in the parent component -->
+  <div></div> <!-- Placeholder if Return button is in parent -->
+</div>
+
+</div>

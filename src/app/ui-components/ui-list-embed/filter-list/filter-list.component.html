@@ -1,0 +1,75 @@
+<div [style.--group-font-color]="styleSettings.groupFontColor" class="text-white">
+  <!-- Filter input -->
+<!-- Filter input (only shown when at least one checkbox is selected) -->
+<ng-container *ngIf="!isFilterDisabled; else disabledMessage">
+  <mat-form-field class="w-100" style="margin-left: 10px; padding-right: 10px;">
+    <mat-label>{{ filterLabel }}</mat-label>
+    <input
+      matInput
+      [ngModel]="filterText"
+      (ngModelChange)="onInputChange($event)"
+      placeholder="Start typing to filter"
+    />
+    <button
+      *ngIf="filterText"
+      mat-icon-button
+      matSuffix
+      aria-label="Clear"
+      (click)="clear()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</ng-container>
+
+<!-- 🔒 Message when filtering is disabled -->
+<ng-template #disabledMessage>
+  <div style="margin-left: 10px; padding: 10px;" [style.color]="styleSettings.groupFontColor">
+    Filtering is disabled. Please check at least one filter option below.
+  </div>
+</ng-template>
+
+
+  <!-- ✅ Bootstrap Checkboxes -->
+  <div class="d-flex gap-4 align-items-center flex-wrap mt-3 filter-checkboxes" style="margin-left: 10px;">
+  <div class="form-check d-flex align-items-center">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="filterByName"
+      [(ngModel)]="filterByName"
+      (change)="filterByNameChange.emit(filterByName)"
+    />
+    <label class="form-check-label ms-2" for="filterByName" style="cursor: pointer;">
+      List Item Name
+    </label>
+  </div>
+
+  <div class="form-check d-flex align-items-center">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="filterByDescription"
+      [(ngModel)]="filterByDescription"
+      (change)="filterByDescriptionChange.emit(filterByDescription)"
+    />
+    <label class="form-check-label ms-2" for="filterByDescription" style="cursor: pointer;">
+      List Item Description
+    </label>
+  </div>
+
+  <div class="form-check d-flex align-items-center">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="filterByCategory"
+      [(ngModel)]="filterByCategory"
+      (change)="filterByCategoryChange.emit(filterByCategory)"
+    />
+    <label class="form-check-label ms-2" for="filterByCategory" style="cursor: pointer;">
+      Category Name
+    </label>
+  </div>
+</div>
+
+</div>

@@ -95,6 +95,8 @@ ngOnInit(): void {
 
 
 getCombinedItemsCached(group: any): any[] {
+  if (!group || typeof group.id !== 'number') return [];
+
   if (!this.combinedItemsMap.has(group.id)) {
     const links = (group.links || [])
       .filter((item: any) => item && typeof item.id === 'number')
@@ -104,19 +106,22 @@ getCombinedItemsCached(group: any): any[] {
       }));
 
     const lists = (group.lists || [])
-    .map((item: any) => ({
-      ...item,
-      id: Number(item.id),
-      type: 'list'
-    }))
-    .filter((item: any) => typeof item.id === 'number' && !isNaN(item.id));
+      .map((item: any) => ({
+        ...item,
+        id: Number(item.id),
+        type: 'list'
+      }))
+      .filter((item: any) => typeof item.id === 'number' && !isNaN(item.id));
 
     const combined = [...lists, ...links].sort((a, b) => a.position - b.position);
+
+    // 🔹 Even if combined is empty, cache it
     this.combinedItemsMap.set(group.id, combined);
   }
 
-  return this.combinedItemsMap.get(group.id)!;
+  return this.combinedItemsMap.get(group.id) || [];
 }
+
 
 openListDialog(list: any, groupId?: number) {
   let width = '50%';
@@ -143,9 +148,12 @@ openListDialog(list: any, groupId?: number) {
     this.refreshGroups();
   });
 
-  dialogRef.afterClosed().subscribe(() => {
+  dialogRef.afterClosed().subscribe(result => {
+  if (result?.created) {
+    this.combinedItemsMap.clear(); // or delete specific group
     this.refreshGroups();
-  });
+  }
+});
 }
 
 dropCombined(event: CdkDragDrop<any[]>, group: any) {
@@ -409,12 +417,28 @@ openAddGroupDialog(categoryId: number): void {
       data: { groupId }
     });
   
-    dialogRef.componentInstance.linkAdded
-    .subscribe(() => this.refreshGroups());
+dialogRef.componentInstance.linkAdded
+  .subscribe(() => {
+    this.clearCombinedItemsForGroup(groupId);
+    this.refreshGroups();
+  });
   
-    dialogRef.afterClosed()
-    .subscribe(() => this.refreshGroups());
+  dialogRef.afterClosed()
+  .subscribe(() => {
+    this.clearCombinedItemsForGroup(groupId);
+    this.refreshGroups();
+  });
   }
+
+  handleListDeleted(groupId: number) {
+  this.clearCombinedItemsForGroup(groupId);
+  this.refreshGroups();
+}
+
+handleLinkDeleted(groupId: number) {
+  this.clearCombinedItemsForGroup(groupId);
+  this.refreshGroups();
+}
   
   openEditLinksDialog(categoryId: number, groupId: number): void {
     const dialogRef = this.dialog.open(DialogManageLinksComponent, {
@@ -485,21 +509,27 @@ openAddGroupDialog(categoryId: number): void {
   }
 
 refreshGroups() {
-  this.combinedItemsMap.clear(); // ⬅️ ensure cache is fully cleared
+  this.combinedItemsMap.clear(); // ⬅️ clear all caches
   this.dropService.fetchCategories().subscribe({
     next: (data) => {
       const currentCategory = data.find(c => c.id === this.category.id);
       if (currentCategory) {
-        this.category.groups = currentCategory.groups.map((group: any) => ({
-          ...group,
-          links: [...group.links],
-          lists: [...group.lists]
-        }));
-        this.combinedItemsMap.clear(); // ✅ clear again after updating group data
+        this.category.groups = currentCategory.groups.map((group: any) => {
+          const links = [...(group.links || [])];
+          const lists = [...(group.lists || [])];
+          const combined = [...lists.map(l => ({ ...l, type: 'list' })), ...links.map(l => ({ ...l, type: 'link' }))];
+          combined.sort((a, b) => a.position - b.position);
+          this.combinedItemsMap.set(group.id, combined); // ✅ Force-rebuild cache here
+          return { ...group, links, lists };
+        });
       }
     },
     error: (err) => console.error('Error refreshing groups', err)
   });
+}
+
+clearCombinedItemsForGroup(groupId: number) {
+  this.combinedItemsMap.delete(groupId);
 }
 
   openManageGroupsDialog(categoryId?: number, groupId?: number): void {

@@ -48,6 +48,7 @@
       (auxclick)="handleAuxClick($event, link.url)"
       [src]="'/assets/icons/' + (link.icon || 'default.png')"
       (error)="onImageError($event)"
+      style="cursor: grab !important;"
     />
   </a>
 
@@ -65,7 +66,7 @@
       (click)="onAnchorClick($event)"
       class="link-name-container"
     >
-      {{ link.name }}
+      <span style="cursor: pointer !important;">{{ link.name }}</span>
     </a>
   </div>
 

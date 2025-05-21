@@ -1,310 +1,409 @@
-<div [ngStyle]="{ '--group-bg-color': groupBackgroundColor }" style="display: flex; flex-direction: column; height: 100%; position: relative; border-radius: 50px !important;">
+<div [ngStyle]="{ '--group-bg-color': groupBackgroundColor }"
+   style="display: flex; flex-direction: column; height: 100%; position: relative; border-radius: 50px !important;">
    <div class="dialog-header" [style.color]="styleSettings.groupFontColor">
       <h3 mat-dialog-title class="pb-2" [style.color]="styleSettings.groupFontColor">
          <ng-container *ngIf="showNewItemForm">Add List Item</ng-container>
          <ng-container *ngIf="isCategoryEditMode">Manage Categories</ng-container>
-         <ng-container *ngIf="!showNewItemForm && !isCategoryEditMode">
-            List "<span style="font-weight: 500;">{{ list?.name }}</span>"
+         <ng-container *ngIf="showCompletedItems; else normalTitle">
+         Completed list items
          </ng-container>
+         <ng-template #normalTitle>
+         List "<span style="font-weight: 500;">{{ list?.name }}</span>"
+         </ng-template>
       </h3>
       <i class="bi bi-x-lg close-icon" title="Close" style="color: white !important;" (click)="closeDialog()"></i>
    </div>
    <div class="dialog-body-scroll" cdkScrollable>
-      <app-add-list-item *ngIf="showNewItemForm" [listId]="list?.id" [categories]="categories" [styleSettings]="styleSettings" (itemCreated)="onItemCreated($event)" #addListItemComponent></app-add-list-item>
-      <ng-container *ngIf="!isCategoryEditMode && !showNewItemForm">
+
+<app-completed-list-items
+  *ngIf="showCompletedItems"
+  [listId]="list?.id"
+  [styleSettings]="styleSettings"
+  (itemRestored)="onItemRestored($event)">
+</app-completed-list-items>
+
+      <app-add-list-item *ngIf="showNewItemForm" [listId]="list?.id" [categories]="categories"
+         [styleSettings]="styleSettings" (itemCreated)="onItemCreated($event)"
+         #addListItemComponent></app-add-list-item>
+      <ng-container *ngIf="!isCategoryEditMode && !showNewItemForm && !showCompletedItems">
          <div *ngIf="loading">Loading items...</div>
          <div *ngIf="!loading && items.length === 0" class="mt-3" [style.color]="styleSettings.groupFontColor">
-         No items found.
-         <div (click)="setShowNewItemForm(true)" style="text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 4px;">
-            Click here to add a new list item
-         </div>
-   </div>
-   <div *ngIf="!loading && items.length > 0">
-   <!-- ✅ Pinned Section -->
-   <!-- ✅ Pinned Section -->
-   <!-- <div class="category-header mt-3" style="font-size: 20px;" [style.color]="styleSettings.groupFontColor">
-      <i class="bi bi-pin-angle"></i> Pinned
-      </div>
-      <div cdkDropList id="cdk-drop-pinned" [cdkDropListData]="groupedItems['pinned'] || []" [cdkDropListConnectedTo]="connectedDropListIds" class="list-group" (cdkDropListDropped)="onItemDrop($event, 'pinned')">
-      <div *ngIf="!(groupedItems['pinned']?.length)" class="empty-drop-placeholder">
-      No items pinned yet.
-      </div>
-      <div *ngFor="let item of groupedItems['pinned']; trackBy: trackById" cdkDrag [cdkDragData]="item" [cdkDragDisabled]="anyItemDetailsVisible">
-      <ng-template cdkDragPreview>
-      <div class="list-item">
-      {{ item.title }}
-      </div>
-      </ng-template>
-      <ng-template cdkDragPlaceholder>
-      <div class="list-item cdk-drag-placeholder"></div>
-      </ng-template>
-      <app-list-item
-      [item]="item"
-      [categories]="categories"
-      [styleSettings]="styleSettings"
-      [isMobile]="isMobile"
-      [disableDrag]="anyItemDetailsVisible"
-      (delete)="deleteItem(item)"
-      (save)="saveItemEdit(item)"
-      (pinToggle)="togglePin(item, $event)">
-      </app-list-item>
-      </div>
-      </div> -->
-   <!-- End pinned section -->
-   <!-- <div *ngFor="let cat of categories" class="mt-2" style="overflow: hidden;">
-      <div class="category-header" [style.color]="styleSettings.groupFontColor">
-      <i class="bi bi-tag"></i> {{ cat.name }}
-      </div>
-      <div cdkDropList [id]="'cdk-drop-' + cat.id" [cdkDropListData]="groupedItems[cat.id] || []" [cdkDropListConnectedTo]="connectedDropListIds" class="list-group" (cdkDropListDropped)="onItemDrop($event, cat.id)">
-      <div *ngIf="!(groupedItems[cat.id]?.length)" class="empty-drop-placeholder">
-      Drop items here
-      </div>
-      <div *ngFor="let item of groupedItems[cat.id]" cdkDrag [cdkDragData]="item" [cdkDragDisabled]="anyItemDetailsVisible">
-      <ng-template cdkDragPreview>
-      <div class="list-item">
-      {{ item.title }}
-      </div>
-      </ng-template>
-      <ng-template cdkDragPlaceholder>
-      <div class="list-item cdk-drag-placeholder"></div>
-      </ng-template>
-      <app-list-item
-      [item]="item"
-      [categories]="categories"
-      [styleSettings]="styleSettings"
-      [isMobile]="isMobile"
-      [disableDrag]="anyItemDetailsVisible"
-      (delete)="deleteItem(item)"
-      (save)="saveItemEdit(item)"
-      (pinToggle)="togglePin(item, $event)">
-      </app-list-item>
-      </div>
-      </div>
-      </div> -->
-   <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-   <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-   <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-   <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-   <div class="test-group-list" [ngStyle]="{ '--group-background-color': styleSettings.groupBackgroundColor }">
-   <!-- ✅ Static Pinned Section -->
-   <div class="category-header" style="color: white; font-weight: bold; margin-top: 16px;">
-      Pinned
-   </div>
-   <div
-   cdkDropList
-   id="Pinned"
-   [cdkDropListData]="groupedTestItems['Pinned']"
-   [cdkDropListConnectedTo]="objectKeys(groupedTestItems)"
-   class="link-list"
-   (cdkDropListDropped)="dropTestItem($event)"
-   >
-   <div *ngIf="!groupedTestItems['Pinned']?.length" class="empty-drop-placeholder">
-      Drop items here to pin them
-   </div>
-   <div
-  *ngFor="let item of groupedTestItems['Pinned']"
-  cdkDrag
-  [cdkDragData]="item"
-  [cdkDragDisabled]="item.isEditing || anyItemDetailsVisible"
-  class="link-item"
-  [ngStyle]="item.pinned ? { 'border': '2px dotted yellow' } : {}"
->
-   <!-- Inline Edit Form -->
-    <!-- Inline Edit Form -->
-     <!-- Inline Edit Form -->
-<div
-  *ngIf="item.isEditing"
-  class="edit-form"
-  [ngStyle]="{ 'background-color': styleSettings.groupBackgroundColor }"
-  style="margin-top: 10px; padding: 10px; border-radius: 4px;"
->
-  <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-    <input [(ngModel)]="item.tempName" placeholder="Item Name" style="flex: 1;" class="form-control" />
-    
-    <select [(ngModel)]="item.tempPriority" style="flex: 1;" class="form-select">
-      <option value="High">High</option>
-      <option value="Medium">Medium</option>
-      <option value="Low">Low</option>
-    </select>
-    
-    <select [(ngModel)]="item.tempCategoryName" style="flex: 1;" class="form-select">
-      <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
-    </select>
-  </div>
-
-  <textarea [(ngModel)]="item.tempDescription" rows="4" style="width: 100%;" class="form-control" placeholder="Item description..."></textarea>
-
-  <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px;">
-    <button mat-button (click)="onCancelEdit(item)" style="color: white;">Cancel</button>
-    <button mat-button (click)="onSaveEdit(item)" style="color: white;">Save</button>
-  </div>
-</div>
-<!-- END Inline Edit Form -->
- <!-- END Inline Edit Form -->
-  <!-- END Inline Edit Form -->
-   <div *ngIf="!item.isEditing" class="link-name-container" style="display: flex; justify-content: space-between; align-items: center;">
-      {{ item.name }}
-      <div style="display: flex; align-items: center;">
-         <!-- Pin & Edit -->
-         <div style="display: flex; gap: 2px; align-items: center;">
-            <div class="pin-icon-wrapper" (click)="onPinIconClick(item, $event)">
-               <i 
-                  [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'"
-                  style="cursor: pointer;"
-                  ></i>
-            </div>
-            <div class="pin-icon-wrapper" (click)="onEditItem(item, $event)">
-               <i class="bi bi-pen" style="cursor: pointer;"></i>
-            </div>
-            <!-- Delete (right-aligned) -->
-            <div class="pin-icon-wrapper" style="margin-left: auto;" (click)="onDeleteItem(item, $event)">
-               <i class="bi bi-x-lg" style="cursor: pointer;"></i>
+            No items found.
+            <div (click)="setShowNewItemForm(true)"
+               style="text-decoration: underline; cursor: pointer; display: inline-block; margin-top: 4px;">
+               Click here to add a new list item
             </div>
          </div>
-      </div>
-   </div>
-</div>
-</div>
-<!-- 🔁 Dynamic Categories -->
-<ng-container *ngFor="let category of objectKeys(groupedTestItems)">
-   <ng-container *ngIf="category !== 'Pinned'">
-      <div class="category-header" style="color: white; font-weight: bold; margin-top: 16px;">
-         {{ category }}
-      </div>
-      <div
-      cdkDropList
-      [id]="category"
-      [cdkDropListData]="groupedTestItems[category]"
-      [cdkDropListConnectedTo]="objectKeys(groupedTestItems)"
-      class="link-list"
-      (cdkDropListDropped)="dropTestItem($event)"
-      >
-      <div *ngIf="!groupedTestItems[category]?.length" class="empty-drop-placeholder">
-         Drop items here
-      </div>
-      <div
-  *ngFor="let item of groupedTestItems[category]"
-  cdkDrag
-  [cdkDragData]="item"
-  [cdkDragDisabled]="item.isEditing || anyItemDetailsVisible"
-  class="link-item"
->
-      <!-- Inline Edit Form -->
-<div *ngIf="item.isEditing" class="edit-form" style="margin-top: 10px; padding: 10px; border-radius: 4px; background-color: #2e3a46;">
-  <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-    <input [(ngModel)]="item.tempName" placeholder="Item Name" style="flex: 1;" class="form-control" />
-    
-    <select [(ngModel)]="item.tempPriority" style="flex: 1;" class="form-select">
-      <option value="High">High</option>
-      <option value="Medium">Medium</option>
-      <option value="Low">Low</option>
-    </select>
-    
-    <select [(ngModel)]="item.tempCategoryName" style="flex: 1;" class="form-select">
-      <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
-    </select>
-  </div>
+         <div *ngIf="!loading && items.length > 0">
+            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
 
-  <textarea [(ngModel)]="item.tempDescription" rows="4" style="width: 100%;" class="form-control" placeholder="Item description..."></textarea>
+            <app-filter-list
+               [(filterText)]="filterText"
+               [(filterByName)]="filterByName"
+               [(filterByDescription)]="filterByDescription"
+               [(filterByCategory)]="filterByCategory"
+               [styleSettings]="styleSettings"
+               />
 
-  <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px;">
-    <button mat-button (click)="onCancelEdit(item)" style="color: white;">Cancel</button>
-    <button mat-button (click)="onSaveEdit(item)" style="color: white;">Save</button>
-  </div>
-</div>
-
-      <div *ngIf="!item.isEditing" class="link-name-container" style="display: flex; justify-content: space-between; align-items: center;">
-         {{ item.name }}
-         <div style="display: flex; align-items: center;">
-            <!-- Pin & Edit -->
-            <div style="display: flex; gap: 4px; align-items: center;">
-               <div class="pin-icon-wrapper" (click)="onPinIconClick(item, $event)">
-                  <i 
-                     [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'"
-                     style="cursor: pointer;"
-                     ></i>
+            <div class="test-group-list" [ngStyle]="{ '--group-background-color': styleSettings.groupBackgroundColor }">
+               <!-- ✅ Static Pinned Section -->
+               <div class="category-header" style="color: white; font-weight: bold; margin-top: 16px;">
+                  Pinned
                </div>
-               <div class="pin-icon-wrapper" (click)="onEditItem(item, $event)">
-                  <i class="bi bi-pen" style="cursor: pointer;"></i>
+               <div cdkDropList id="Pinned" [cdkDropListData]="groupedTestItems['Pinned']"
+                  [cdkDropListConnectedTo]="objectKeys(groupedTestItems)" class="link-list"
+                  (cdkDropListDropped)="dropTestItem($event)">
+                  <div *ngIf="!groupedTestItems['Pinned']?.length" class="empty-drop-placeholder">
+                     Drop items here to pin them
+                  </div>
+                  <div *ngFor="let item of groupedTestItems['Pinned']" cdkDrag [cdkDragData]="item"
+                     [cdkDragDisabled]="item.isEditing || item.showDetails ||anyItemDetailsVisible" class="link-item"
+                     [class.highlightA]="item.highlightClass === 'highlightA'"
+                     [class.highlightB]="item.highlightClass === 'highlightB'"
+                     [ngStyle]="item.pinned ? { 'border': '2px dotted yellow' } : {}"
+                     (click)="!item.isEditing && toggleDetails(item)">
+                     <!-- Inline Edit Form -->
+                     <!-- Inline Edit Form -->
+                     <!-- Inline Edit Form -->
+                     <div *ngIf="item.isEditing" class="edit-form"
+                        [ngStyle]="{ 'background-color': styleSettings.groupBackgroundColor }"
+                        style="margin-top: 10px; padding: 10px; border-radius: 4px;">
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                           <input [(ngModel)]="item.tempName" placeholder="Item Name" style="flex: 1;"
+                              class="form-control" />
+                           <select [(ngModel)]="item.tempPriority" style="flex: 1;" class="form-select">
+                              <option value="High">High</option>
+                              <option value="Medium">Medium</option>
+                              <option value="Low">Low</option>
+                           </select>
+                           <select [(ngModel)]="item.tempCategoryName" style="flex: 1;" class="form-select">
+                              <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+                           </select>
+                        </div>
+                        <textarea [(ngModel)]="item.tempDescription" rows="4" style="width: 100%;" class="form-control"
+                           placeholder="Item description..."></textarea>
+                        <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px;">
+                           <button mat-button (click)="onCancelEdit(item); $event.stopPropagation();" style="color: white;">Cancel</button>
+                           <button mat-button (click)="onSaveEdit(item); $event.stopPropagation()" style="color: white;">Save</button>
+                        </div>
+                     </div>
+                     <!-- END Inline Edit Form -->
+                     <!-- END Inline Edit Form -->
+                     <!-- END Inline Edit Form -->
+                     <!-- ✅ Wrap the whole non-editing view in a block -->
+                     <div *ngIf="!item.isEditing" style="display: flex; flex-direction: column; width: 100%;">
+                        <!-- ✅ Full-width title + buttons row -->
+                        <div class="link-name-container"
+                           style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: grab !important;">
+
+                           <input type="checkbox" (click)="onCompleteItem(item, $event)" style="margin-right: 8px;" class="custom-completed-checkbox" title="Complete list item."/>
+
+                           <div style="flex: 1; display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                              <!-- Created date badge -->
+                              <span class="badge bg-secondary" style="font-size: 0.75rem;">
+                                 {{ item.createdAt | date: 'shortDate' }}
+                              </span>
+
+                              <!-- Priority dot -->
+                              <span [ngStyle]="{
+                                 'background-color': getPriorityColor(item.tempPriority || ''),
+                                 'border-radius': '50%',
+                                 'width': '10px',
+                                 'height': '10px',
+                                 'display': 'inline-block',
+                                 'flex-shrink': '0'
+                              }" title="{{ item.tempPriority }}"></span>
+
+                              <!-- ✅ Title inline with badge and dot -->
+                              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer !important;">
+                                 {{ item.name }}
+                              </span>
+                           </div>
+
+                           <div style="display: flex; align-items: center; gap: 4px;">
+                              <div class="pin-icon-wrapper" (click)="onPinIconClick(item, $event)">
+                                 <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'"
+                                    style="cursor: pointer; color: rgb(0, 255, 0);"></i>
+                              </div>
+                              <div class="pin-icon-wrapper" (click)="onEditItem(item, $event)">
+                                 <i class="bi bi-pen" style="cursor: pointer;"></i>
+                              </div>
+                              <div class="pin-icon-wrapper" (click)="onDeleteItem(item, $event)">
+                                 <i class="bi bi-x-lg" style="cursor: pointer;"></i>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- ✅ Full-width details panel underneath -->
+                        <div *ngIf="item.showDetails" class="details-panel"
+                           style="margin-top: 10px; padding: 10px; border: 1px dotted white; border-radius: 4px; background-color: rgba(255,255,255,0.05); color: white; width: 100%; cursor: default !important;"
+                           (click)="$event.stopPropagation()">
+                           <strong>Title:</strong>&nbsp;
+                           <span style="white-space: pre-line;">{{ item.name }}</span>
+                           <hr style="margin-top: 8px; margin-bottom: 5px;">
+                           <strong>Description:</strong>&nbsp;
+                           <span style="white-space: pre-line;" *ngIf="!item.tempDescription"><i>No description
+                                 entered.</i></span>
+                           <span style="white-space: pre-line;"
+                              [innerHTML]="getSafeDescription(item.tempDescription) | autoLink"></span>
+                        </div>
+                        <div style="margin-top: 10px; display: flex; justify-content: flex-end;"
+                           *ngIf="item.showDetails">
+                           <button mat-button (click)="item.showDetails = false; $event.stopPropagation()"
+                              style="color: white;">
+                              Close
+                           </button>
+                        </div>
+                     </div>
+                     <!--END Details Panel-->
+                  </div>
                </div>
-               <!-- Delete (right-aligned) -->
-               <div class="pin-icon-wrapper" style="margin-left: auto;" (click)="onDeleteItem(item, $event)">
-                  <i class="bi bi-x-lg" style="cursor: pointer;"></i>
-               </div>
+               <!-- 🔁 Dynamic Categories -->
+               <ng-container *ngFor="let category of objectKeys(filteredGroupedTestItems)">
+                  <ng-container *ngIf="category !== 'Pinned'">
+                     <div class="category-header" style="color: white; font-weight: bold; margin-top: 16px;">
+                        {{ category }}
+                     </div>
+                     <div cdkDropList [id]="category" [cdkDropListData]="filteredGroupedTestItems[category]"
+                        [cdkDropListConnectedTo]="objectKeys(groupedTestItems)" class="link-list"
+                        (cdkDropListDropped)="dropTestItem($event)">
+                        <div *ngIf="!filteredGroupedTestItems[category]?.length" class="empty-drop-placeholder">
+                           Drop items here
+                        </div>
+                        <div *ngFor="let item of filteredGroupedTestItems[category]" cdkDrag [cdkDragData]="item"
+                           [cdkDragDisabled]="item.isEditing || item.showDetails || anyItemDetailsVisible"
+                           class="link-item" [class.highlightA]="item.highlightClass === 'highlightA'"
+                           [class.highlightB]="item.highlightClass === 'highlightB'" [class.highlight]="item.highlight"
+                           (click)="!item.isEditing && toggleDetails(item)" [ngStyle]="{
+                              '--link-bg-color': styleSettings.linkBackgroundColor,
+                              'background-color': styleSettings.linkBackgroundColor
+                           }">
+                           <!-- Inline Edit Form -->
+                           <div *ngIf="item.isEditing" class="edit-form"
+                              style="margin-top: 10px; padding: 10px; border-radius: 4px; background-color: #2e3a46;">
+                              <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                 <input [(ngModel)]="item.tempName" placeholder="Item Name" style="flex: 1;"
+                                    class="form-control" />
+                                 <select [(ngModel)]="item.tempPriority" style="flex: 1;" class="form-select">
+                                    <option value="High">High</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Low">Low</option>
+                                 </select>
+                                 <select [(ngModel)]="item.tempCategoryName" style="flex: 1;" class="form-select">
+                                    <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
+                                 </select>
+                              </div>
+                              <textarea [(ngModel)]="item.tempDescription" rows="4" style="width: 100%;"
+                                 class="form-control" placeholder="Item description..."></textarea>
+                        <div style="margin-top: 10px; display: flex; justify-content: flex-end; gap: 10px;">
+                           <button mat-button (click)="onCancelEdit(item); $event.stopPropagation();" style="color: white;">Cancel</button>
+                           <button mat-button (click)="onSaveEdit(item); $event.stopPropagation()" style="color: white;">Save</button>
+                        </div>
+                           </div>
+                           <!-- Editing panel -->
+                           <!-- ✅ Wrap the whole non-editing view -->
+                           <div *ngIf="!item.isEditing" style="display: flex; flex-direction: column; width: 100%;">
+
+
+
+                              <!-- ✅ Full-width title + buttons row -->
+                              <div class="link-name-container"
+                                 style="display: flex; justify-content: space-between; align-items: center; width: 100%; cursor: grab !important;">
+
+                                 <input type="checkbox" (click)="onCompleteItem(item, $event)" style="margin-right: 8px;" class="custom-completed-checkbox" title="Complete list item."/>
+
+                                 <div style="flex: 1; display: flex; align-items: center; gap: 10px; overflow: hidden;">
+                                    <!-- Created date badge -->
+                                    <span class="badge bg-secondary" style="font-size: 0.75rem;">
+                                       {{ item.createdAt | date: 'shortDate' }}
+                                    </span>
+
+                                    <!-- Priority dot -->
+                                    <span [ngStyle]="{
+                                    'background-color': getPriorityColor(item.tempPriority || ''),
+                                    'border-radius': '50%',
+                                    'width': '10px',
+                                    'height': '10px',
+                                    'display': 'inline-block',
+                                    'flex-shrink': '0'
+                                    }" title="{{ item.tempPriority }}"></span>
+
+                                    <!-- ✅ Title inline with badge and dot -->
+                                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer !important;">
+                                       {{ item.name }}
+                                    </span>
+                                 </div>
+
+                                 <!-- Action icons -->
+                                 <div style="display: flex; align-items: center; gap: 4px;">
+                                    <div class="pin-icon-wrapper" (click)="onPinIconClick(item, $event)">
+                                       <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'"
+                                          style="cursor: pointer;"></i>
+                                    </div>
+                                    <div class="pin-icon-wrapper" (click)="onEditItem(item, $event)">
+                                       <i class="bi bi-pen" style="cursor: pointer;"></i>
+                                    </div>
+                                    <div class="pin-icon-wrapper" (click)="onDeleteItem(item, $event)">
+                                       <i class="bi bi-x-lg" style="cursor: pointer;"></i>
+                                    </div>
+                                 </div>
+
+                              </div>
+
+
+
+
+                              <!-- ✅ Full-width details panel underneath -->
+                              <div *ngIf="item.showDetails" class="details-panel"
+                                 style="margin-top: 10px; padding: 10px; border: 1px dotted white; border-radius: 4px; background-color: rgba(255,255,255,0.05); color: white; width: 100%; cursor: default !important;"
+                                 (click)="$event.stopPropagation()">
+                                 <strong>Title:</strong>&nbsp;
+                                 <span style="white-space: pre-line;">{{ item.name }}</span>
+                                 <hr style="margin-top: 8px; margin-bottom: 5px;">
+                                 <strong>Description:</strong>&nbsp;
+                                 <span style="white-space: pre-line;" *ngIf="!item.tempDescription"><i>No description
+                                       entered.</i></span>
+                                 <span style="white-space: pre-line;"
+                                    [innerHTML]="getSafeDescription(item.tempDescription) | autoLink"></span>
+                              </div>
+                              <div style="margin-top: 10px; display: flex; justify-content: flex-end;"
+                                 *ngIf="item.showDetails">
+                                 <button mat-button (click)="item.showDetails = false; $event.stopPropagation()"
+                                    style="color: white;">
+                                    Close
+                                 </button>
+                              </div>
+                           </div>
+                           <!-- END Editing panel -->
+                        </div>
+                     </div>
+                  </ng-container>
+               </ng-container>
             </div>
+            <!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+            <!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+            <!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+            <!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
          </div>
-      </div>
-      </div>
-      </div>
-   </ng-container>
-</ng-container>
-</div>
-<!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-<!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-<!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-<!-- END 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-</div>
-</ng-container>
-<app-manage-categories *ngIf="isCategoryEditMode" [listId]="list?.id" [styleSettings]="styleSettings" [externalNewCategoryName]="newCategoryName" (newCategoryNameChange)="newCategoryName = $event" (anyEditingChange)="anyCategoryEditing = $event" (categoriesChanged)="categories = $event"
-(categoryAddCompleted)="onCategoryAddCompleted()" (categoryAdded)="onCategoryAdded()"></app-manage-categories>
-</div>
-<div class="p-3">
-   <!-- Buttons when in category edit mode -->
-   <ng-container *ngIf="isCategoryEditMode">
-      <div class="d-flex justify-content-between align-items-center">
-         <!-- Left: Return -->
-         <div>
-            <button mat-button color="warn" (click)="isCategoryEditMode = false; newCategoryName = '';" [style.color]="styleSettings.groupFontColor" [disabled]="anyCategoryEditing" [style.color]="anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
-            Return
-            </button>
-         </div>
-         <!-- Right: Save/Add -->
-         <div class="d-flex gap-2">
-            <button mat-button color="primary" (click)="manageCategoriesComponent.addCategory(true)" [disabled]="!newCategoryName.trim() || anyCategoryEditing" [style.color]="!newCategoryName.trim() || anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
-            Save & Add Another
-            </button>
-            <button mat-button color="primary" (click)="manageCategoriesComponent.addCategory(false)" [disabled]="!newCategoryName.trim() || anyCategoryEditing" [style.color]="!newCategoryName.trim() || anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
-            Add Category
-            </button>
-         </div>
-      </div>
-   </ng-container>
-   <!-- Buttons when in item form or default state -->
-   <!-- Buttons when in item form or default state -->
-   <ng-container *ngIf="!isCategoryEditMode">
-      <div class="d-flex justify-content-between align-items-center w-100">
-         <!-- Left: Return (if item form is open) -->
-         <div>
-            <button *ngIf="showNewItemForm" mat-button color="warn" (click)="showNewItemForm = false; newTitle=''; newDescription='';" [style.color]="styleSettings.groupFontColor">
-            Return
-            </button>
-         </div>
-         <!-- Right: Buttons -->
-         <div class="d-flex gap-2">
-            <ng-container *ngIf="showNewItemForm">
-               <div class="d-flex gap-2 mt-2 justify-content-end">
-                  <button mat-button color="primary" (click)="addListItemComponent?.submit(true)" [disabled]="!addListItemComponent || !addListItemComponent.newTitle.trim()" [style.color]="!addListItemComponent || !addListItemComponent.newTitle.trim()
-                  ? styleSettings.linkBackgroundColor
-                  : styleSettings.groupFontColor">
+      </ng-container>
+      <app-manage-categories 
+         *ngIf="isCategoryEditMode" 
+         [listId]="list?.id" 
+         [styleSettings]="styleSettings"
+         [externalNewCategoryName]="newCategoryName" 
+         (newCategoryNameChange)="newCategoryName = $event"
+         (anyEditingChange)="anyCategoryEditing = $event" 
+         (categoriesChanged)="onCategoriesChanged($event)"
+         (categoryAddCompleted)="onCategoryAddCompleted()" 
+         (categoryAdded)="onCategoryAdded()"
+         (categoryDeleted)="onCategoryDeleted()">
+      </app-manage-categories>
+   </div>
+   <div class="p-3">
+      <!-- Buttons when in category edit mode -->
+      <ng-container *ngIf="isCategoryEditMode">
+         <div class="d-flex justify-content-between align-items-center">
+            <!-- Left: Return -->
+            <div>
+               <button mat-button color="warn" (click)="isCategoryEditMode = false; newCategoryName = '';"
+                  [style.color]="styleSettings.groupFontColor" [disabled]="anyCategoryEditing"
+                  [style.color]="anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
+                  Return
+               </button>
+            </div>
+            <!-- Right: Save/Add -->
+            <div class="d-flex gap-2">
+               <button mat-button color="primary" (click)="manageCategoriesComponent.addCategory(true)"
+                  [disabled]="!newCategoryName.trim() || anyCategoryEditing"
+                  [style.color]="!newCategoryName.trim() || anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
                   Save & Add Another
-                  </button>
-                  <button mat-button color="primary" (click)="addListItemComponent?.submit(false)" [disabled]="!addListItemComponent || !addListItemComponent.newTitle.trim()" [style.color]="!addListItemComponent || !addListItemComponent.newTitle.trim()
-                  ? styleSettings.linkBackgroundColor
-                  : styleSettings.groupFontColor">
-                  Add
-                  </button>
-               </div>
-            </ng-container>
-            <ng-container *ngIf="!showNewItemForm">
-               <button mat-button (click)="toggleCategoryEditMode()" [disabled]="anyItemEditing" [style.color]="anyItemEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
-               Manage Categories
                </button>
-               <button mat-button (click)="setShowNewItemForm(true)" [disabled]="anyItemEditing" [style.color]="anyItemEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
-               <i class="bi bi-plus"></i> Add New List Item
+               <button mat-button color="primary" (click)="manageCategoriesComponent.addCategory(false)"
+                  [disabled]="!newCategoryName.trim() || anyCategoryEditing"
+                  [style.color]="!newCategoryName.trim() || anyCategoryEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
+                  Add Category
                </button>
-            </ng-container>
+            </div>
          </div>
-      </div>
-   </ng-container>
-</div>
+      </ng-container>
+      <!-- Buttons when in item form or default state -->
+      <!-- Buttons when in item form or default state -->
+      <ng-container *ngIf="!isCategoryEditMode">
+  <div class="d-flex justify-content-between align-items-center w-100">
+
+    <!-- Left side -->
+    <!-- Left side -->
+  <!-- Completed items button is always visible unless viewing them -->
+<ng-container *ngIf="!showCompletedItems && !showNewItemForm">
+  <button mat-button (click)="showCompletedItems = true"
+    [style.color]="styleSettings.groupFontColor">
+    Completed list items
+  </button>
+</ng-container>
+
+  <!-- Return from completed or form views -->
+<ng-container *ngIf="showCompletedItems">
+  <div class="d-flex align-items-center w-100 justify-content-between">
+
+    <div>
+      <button mat-button (click)="showCompletedItems = false"
+              [style.color]="styleSettings.groupFontColor">
+        Return
+      </button>
+    </div>
+
+    <div>
+      <button mat-button (click)="onRestoreAllItems()"
+              [style.color]="!completedListComponent?.items?.length ? 'gray' : styleSettings.groupFontColor"
+              [disabled]="!completedListComponent?.items?.length">
+        Restore All List Items
+      </button>
+    </div>
+
+  </div>
+</ng-container>
+
+  <ng-container *ngIf="showNewItemForm">
+    <button mat-button color="warn"
+      (click)="showNewItemForm = false; newTitle=''; newDescription='';"
+      [style.color]="styleSettings.groupFontColor">
+      Return
+    </button>
+  </ng-container>
+
+
+    <!-- Right side -->
+    <div class="d-flex gap-2">
+      <!-- ✅ Only show these if NOT viewing completed items -->
+      <ng-container *ngIf="!showCompletedItems">
+        <ng-container *ngIf="showNewItemForm">
+          <button mat-button color="primary" (click)="addListItemComponent?.submit(true)"
+            [disabled]="!addListItemComponent || !addListItemComponent.newTitle.trim()"
+            [style.color]="!(addListItemComponent?.newTitle || '').trim() ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
+            Save & Add Another
+          </button>
+          <button mat-button color="primary" (click)="addListItemComponent?.submit(false)"
+            [disabled]="!addListItemComponent || !addListItemComponent.newTitle.trim()"
+            [style.color]="!(addListItemComponent?.newTitle || '').trim() ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
+            Add
+          </button>
+        </ng-container>
+        <ng-container *ngIf="!showNewItemForm">
+          <button mat-button (click)="toggleCategoryEditMode()" [disabled]="anyItemEditing"
+            [style.color]="anyItemEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
+            Manage Categories
+          </button>
+          <button mat-button (click)="setShowNewItemForm(true)" [disabled]="anyItemEditing"
+            [style.color]="anyItemEditing ? styleSettings.linkBackgroundColor : styleSettings.groupFontColor">
+            <i class="bi bi-plus"></i> Add New List Item
+          </button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-container>
+
+   </div>
 </div>
