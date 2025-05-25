@@ -73,10 +73,21 @@ export class ThemesComponent {
         if (['SEARCH_FEATURE_BACKGROUND_OPACITY', 'GROUP_BACKGROUND_OPACITY', 'LINK_BACKGROUND_OPACITY'].includes(key)) {
           const num = parseFloat(val);
           parsed[key] = !isNaN(num) ? num.toFixed(1) : '1.0';
-        } else if (['CATEGORY_FONT_WEIGHT', 'CATEGORY_FONT_SIZE', 'GROUP_FONT_WEIGHT', 'GROUP_FONT_SIZE', 'GROUP_BORDER_WIDTH', 'LINK_FONT_WEIGHT', 'LINK_FONT_SIZE'].includes(key)) {
-          const num = parseInt(val, 10);
-          parsed[key] = !isNaN(num) ? num : null;
-        } else {
+        } else if (
+        [
+          'CATEGORY_FONT_WEIGHT',
+          'CATEGORY_FONT_SIZE',
+          'GROUP_FONT_WEIGHT',
+          'GROUP_FONT_SIZE',
+          'GROUP_BORDER_WIDTH',
+          'LINK_FONT_WEIGHT',
+          'LINK_FONT_SIZE',
+          'SEARCH_FEATURE_BORDER_WIDTH' // ✅ Add this
+        ].includes(key)
+      ) {
+        const num = parseInt(val, 10);
+        parsed[key] = !isNaN(num) ? num : null;
+      } else {
           parsed[key] = val;
         }
       }

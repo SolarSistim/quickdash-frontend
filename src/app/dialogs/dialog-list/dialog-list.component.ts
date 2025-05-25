@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UiListEmbedComponent } from '../../ui-components/ui-list-embed/ui-list-embed.component';
 import { SettingsService } from '../../settings-components/app-settings/settings.service';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-dialog-list',
@@ -19,10 +20,11 @@ export class DialogListComponent implements OnInit {
   @Output() listAdded = new EventEmitter<void>();
   groupBackgroundColor = '#2e3a46';
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { list: any },
-    private settingsService: SettingsService
-  ) {}
+constructor(
+  @Inject(MAT_DIALOG_DATA) public data: { list: any },
+  private settingsService: SettingsService,
+  private overlayContainer: OverlayContainer
+) {}
 
   onListAdded() {
     this.listAdded.emit(); // ✅ Pass event up to UiLinkGroupComponent
@@ -38,4 +40,5 @@ export class DialogListComponent implements OnInit {
       }
     });
   }
+
 }

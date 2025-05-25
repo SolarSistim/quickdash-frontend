@@ -24,19 +24,24 @@
       No categories found.
    </div>
    <div
-   *ngFor="let cat of categories"
+   *ngFor="let cat of categories; let i = index"
    cdkDrag
+   [cdkDragDisabled]="cat.isEditing"
    class="list-item d-flex justify-content-between"
    [style.backgroundColor]="styleSettings.linkBackgroundColor"
    >
    <!-- Normal View -->
-   <span *ngIf="!cat.isEditing" [style.color]="styleSettings.groupFontColor">
+   <span *ngIf="!cat.isEditing" [style.color]="styleSettings.groupFontColor" class="d-flex align-items-center gap-2">
+   <span class="badge bg-info" style="font-size: 0.75rem;">
+      <span style="color: rgb(58, 58, 58) !important;">{{ i + 1 }}.</span>
+   </span>
    {{ cat.name }}
    </span>
    <!-- Edit Mode -->
    <ng-container *ngIf="cat.isEditing">
-      <input matInput [(ngModel)]="cat.tempName" class="form-control" style="margin-bottom: 10px;" />
+      <input matInput [(ngModel)]="cat.tempName" class="form-control" style="margin-bottom: 10px; margin-top: 10px;" />
       <button
+      class="mt-2"
       mat-button
       (click)="saveCategoryEdit(cat)"
       [style.color]="styleSettings.groupFontColor"
@@ -44,6 +49,7 @@
       Save
       </button>
       <button
+      class="mt-2"
       mat-button
       (click)="cancelCategoryEdit(cat)"
       [style.color]="styleSettings.groupFontColor"
@@ -69,7 +75,7 @@
 
     <div style="display: flex; align-items: center;" class="edit-delete-buttons-container">
 
-<div class="pin-icon-wrapper"
+<div class="icon-wrapper"
      (click)="editCategory(cat)"
      [ngStyle]="{ 'background-color': hoveredButtonKey === 'edit-' + cat.id ? styleSettings.groupBackgroundColor : 'transparent' }"
      (mouseenter)="hoveredButtonKey = 'edit-' + cat.id"
@@ -78,7 +84,7 @@
   <i class="bi bi-pen" style="cursor: pointer;"></i>
 </div>
 
-<div class="pin-icon-wrapper"
+<div class="icon-wrapper"
      (click)="deleteCategory(cat)"
      [ngStyle]="{ 'background-color': hoveredButtonKey === 'delete-' + cat.id ? styleSettings.groupBackgroundColor : 'transparent' }"
      (mouseenter)="hoveredButtonKey = 'delete-' + cat.id"

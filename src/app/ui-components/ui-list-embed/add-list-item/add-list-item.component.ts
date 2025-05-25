@@ -1,11 +1,12 @@
 // add-list-item.component.ts
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ListsService } from '../../../features/lists/lists.service';
+import { SettingsService } from '../../../settings-components/app-settings/settings.service';
 
 @Component({
   selector: 'app-add-list-item',
@@ -19,22 +20,36 @@ export class AddListItemComponent implements OnChanges {
   @Input() listId!: number;
   @Input() categories: any[] = [];
   @Input() styleSettings: any;
-  
+  @Input() selectedCategoryId: number | null = null;
   @Output() itemCreated = new EventEmitter<{ keepFormOpen: boolean }>();
 
   newTitle = '';
   newDescription = '';
   newPriority: 'High' | 'Medium' | 'Low' = 'Medium';
-  selectedCategoryId: number | null = null;
+  // selectedCategoryId: number | null = null;
 
-  constructor(private listsService: ListsService) {}
+  constructor(private listsService: ListsService, private settingsService: SettingsService) {}
 
-  ngOnChanges(changes: SimpleChanges) {
-    // 👇 Auto-select the first category if not already selected
-    if (changes['categories'] && this.categories?.length > 0 && !this.selectedCategoryId) {
-      this.selectedCategoryId = this.categories[0].id;
+  ngOnInit(): void {
+    this.settingsService.getSettingByKey('LIST_DEFAULT_PRIORITY').subscribe({
+    next: (value) => {
+      const valid = ['High', 'Medium', 'Low'];
+      if (typeof value === 'string' && valid.includes(value)) {
+        this.newPriority = value as 'High' | 'Medium' | 'Low';
+      }
+    },
+    error: (err) => {
+      console.warn('Could not load LIST_DEFAULT_PRIORITY setting:', err);
     }
+  });
+
   }
+
+ngOnChanges(changes: SimpleChanges) {
+  if (changes['categories'] && this.categories?.length > 0 && this.selectedCategoryId == null) {
+    this.selectedCategoryId = this.categories[0].id;
+  }
+}
 
 submit(keepFormOpen: boolean) {
   if (!this.newTitle.trim() || !this.selectedCategoryId || !this.listId) return;
@@ -64,11 +79,25 @@ submit(keepFormOpen: boolean) {
   });
 }
 
+resetForm() {
+  this.newTitle = '';
+  this.newDescription = '';
+  this.selectedCategoryId = this.categories.length > 0 ? this.categories[0].id : null;
 
-  resetForm() {
-    this.newTitle = '';
-    this.newDescription = '';
-    this.newPriority = 'Medium';
-    this.selectedCategoryId = this.categories.length > 0 ? this.categories[0].id : null;
-  }
+  this.settingsService.getSettingByKey('LIST_DEFAULT_PRIORITY').subscribe({
+    next: (value) => {
+      const valid = ['High', 'Medium', 'Low'];
+      if (typeof value === 'string' && valid.includes(value)) {
+        this.newPriority = value as 'High' | 'Medium' | 'Low';
+      } else {
+        this.newPriority = 'Medium';
+      }
+    },
+    error: () => {
+      this.newPriority = 'Medium';
+    }
+  });
+}
+
+
 }

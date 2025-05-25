@@ -28,14 +28,27 @@
       </div>
     </div>
     <div class="col-lg-6">
-      <mat-form-field class="w-100 mb-2">
-        <mat-label>Priority</mat-label>
-        <mat-select [(ngModel)]="newPriority">
-          <mat-option value="High">High</mat-option>
-          <mat-option value="Medium">Medium</mat-option>
-          <mat-option value="Low">Low</mat-option>
-        </mat-select>
-      </mat-form-field>
+<mat-form-field class="w-100 mb-2">
+  <mat-label>Priority</mat-label>
+  <mat-select [(ngModel)]="newPriority">
+    <!-- ✅ Trigger shown when an item is selected -->
+    <mat-select-trigger>
+      <span class="priority-dot" [ngClass]="newPriority.toLowerCase()"></span>
+      {{ newPriority }}
+    </mat-select-trigger>
+
+    <!-- ✅ Dropdown items -->
+    <mat-option value="High">
+      <span class="priority-dot high"></span> High
+    </mat-option>
+    <mat-option value="Medium">
+      <span class="priority-dot medium"></span> Medium
+    </mat-option>
+    <mat-option value="Low">
+      <span class="priority-dot low"></span> Low
+    </mat-option>
+  </mat-select>
+</mat-form-field>
     </div>
   </div>
   <mat-form-field class="w-100 mb-2">

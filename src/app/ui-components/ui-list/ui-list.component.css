@@ -5,13 +5,17 @@
   padding: 4px 6px;
   background-color: #3b4d59;
   border-radius: 3px;
-  cursor: pointer;
+  cursor: grab !important;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   transition: background-color 0.2s ease-in-out;
   margin-bottom: 0px;
+}
+
+.list-name {
+  width: 20% !important;
 }
 
 .custom-list-icon i.bi {
@@ -64,4 +68,12 @@
 
 .menu-trigger:hover .link-menu-icon {
   opacity: 1;
+}
+
+.list-hover {
+  cursor: pointer;
+}
+
+.list-hover:hover {
+  text-decoration: underline;
 }

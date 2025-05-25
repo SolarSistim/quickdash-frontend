@@ -1,6 +1,8 @@
 <div class="custom-list-icon" (click)="open()" title="{{ list.name }}">
   <i class="bi bi-list-columns-reverse"></i>
-  <div class="list-name">{{ list.name }}</div>
+  <div class="list-name">
+    <span class="list-hover">{{ list.name }}</span>
+  </div>
   <button
   mat-icon-button
   [matMenuTriggerFor]="menu"

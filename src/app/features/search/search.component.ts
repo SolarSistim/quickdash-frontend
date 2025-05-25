@@ -43,7 +43,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput', { static: true }) searchInputRef!: ElementRef<HTMLInputElement>;
   @Output() openListRequested = new EventEmitter<{ list: any, groupId?: number }>();
   @ViewChild(MatAutocompleteTrigger) autocompleteTrigger!: MatAutocompleteTrigger;
-
+  allLists: any[] = [];
   searchControl = new FormControl('');
   allLinks: any[] = [];
   filteredLinks: any[] = [];
@@ -53,13 +53,14 @@ export class SearchComponent implements OnInit, AfterViewInit {
   showFilterOptions = false;
   filterByName = true;
   filterByDescription = true;
-  filterByGroup = true;
   filteredLists: any[] = [];
   allListItems: any[] = [];
   filteredListItems: any[] = [];
   filterByListName = true;
   filterByListItem = true;
-
+  searchBorderColor = '#ffffff';
+  searchBorderWidth = 2;
+  searchFontColor = '#ffffff';
   searchBackgroundColor = '#000000';
   searchBackgroundOpacity = 0.4;
 
@@ -81,9 +82,25 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
   // Load links
-  this.dashboardService.getAllLinks().subscribe(links => {
+// this.dashboardService.getAllLinks().subscribe(links => {
+//     this.allLinks = links;
+//   });
+
+//     // Load list items
+// this.listsService.getAllListItems().subscribe(items => {
+//     this.allListItems = items;
+//   });
+
+this.dashboardService.getAllLinks().subscribe(links => {
     this.allLinks = links;
-    console.log('🔗 All Links Loaded:', links);
+  });
+
+  this.listsService.getAllLists().subscribe(lists => {
+    this.allLists = lists;
+  });
+
+  this.listsService.getAllListItems().subscribe(items => {
+    this.allListItems = items;
   });
 
   // Load settings
@@ -94,18 +111,18 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.searchBackgroundColor = settings['SEARCH_FEATURE_BACKGROUND_COLOR'] || '#000000';
     this.searchBackgroundOpacity = parseFloat(settings['SEARCH_FEATURE_BACKGROUND_OPACITY'] || '1.0');
 
+    this.searchBorderColor = settings['SEARCH_FEATURE_BORDER_COLOR'] || '#ffffff';
+    this.searchBorderWidth = parseInt(settings['SEARCH_FEATURE_BORDER_WIDTH'] || '2', 10);
+    this.searchFontColor = settings['SEARCH_FEATURE_FONT_COLOR'] || '#ffffff';
+
     console.log('🎨 SEARCH_FEATURE_BACKGROUND_COLOR:', this.searchBackgroundColor);
     console.log('🟡 SEARCH_FEATURE_BACKGROUND_OPACITY:', this.searchBackgroundOpacity);
   });
 
-  // Load list items
-  this.listsService.getAllListItems().subscribe(items => {
-    this.allListItems = items;
-    console.log('📝 All List Items Loaded:', items);
-  });
+
 
   // Filter links on input
-  this.searchControl.valueChanges
+this.searchControl.valueChanges
     .pipe(
       debounceTime(150),
       startWith(''),
@@ -117,51 +134,40 @@ export class SearchComponent implements OnInit, AfterViewInit {
         return '';
       })
     )
-.subscribe(query => {
-  const lowerQuery = query.toLowerCase();
+    .subscribe(query => {
+      const lowerQuery = query.toLowerCase();
 
-  // Filter links
-  const seenLinks = new Set<string>();
-  this.filteredLinks = this.allLinks
-    .filter(link => {
-      const nameMatch = this.filterByName && link.name?.toLowerCase().includes(lowerQuery);
-      const descMatch = this.filterByDescription && link.description?.toLowerCase().includes(lowerQuery);
-      const groupMatch = this.filterByGroup && link.group?.name?.toLowerCase().includes(lowerQuery);
-      return nameMatch || descMatch || groupMatch;
-    })
-    .filter(link => {
-      const lowerName = link.name.toLowerCase();
-      if (seenLinks.has(lowerName)) return false;
-      seenLinks.add(lowerName);
-      return true;
+      // ✅ Filter links
+      const seenLinks = new Set<string>();
+      this.filteredLinks = this.allLinks
+        .filter(link => {
+          const nameMatch = this.filterByName && link.name?.toLowerCase().includes(lowerQuery);
+          const descMatch = this.filterByDescription && link.description?.toLowerCase().includes(lowerQuery);
+          return nameMatch || descMatch;
+        })
+        .filter(link => {
+          const lowerName = link.name.toLowerCase();
+          if (seenLinks.has(lowerName)) return false;
+          seenLinks.add(lowerName);
+          return true;
+        });
+
+      // ✅ Filter list items
+      this.filteredListItems = this.filterByListItem
+        ? this.allListItems.filter(item => {
+            const titleMatch = item.title?.toLowerCase().includes(lowerQuery);
+            const descMatch = item.description?.toLowerCase().includes(lowerQuery);
+            return titleMatch || descMatch;
+          })
+        : [];
+
+      // ✅ Filter lists directly, not from items
+      this.filteredLists = this.filterByListName
+        ? this.allLists.filter(list =>
+            list.name?.toLowerCase().includes(lowerQuery)
+          )
+        : [];
     });
-
-  // Filter list items
-this.filteredListItems = this.filterByListItem
-  ? this.allListItems.filter(item => {
-      const titleMatch = item.title?.toLowerCase().includes(lowerQuery);
-      const descMatch = item.description?.toLowerCase().includes(lowerQuery);
-      return titleMatch || descMatch;
-    })
-  : [];
-
-
-// Filter unique lists that match
-const seenListIds = new Set<number>();
-this.filteredLists = this.allListItems
-  .filter(item =>
-    this.filterByListName &&
-    item.list?.name?.toLowerCase().includes(lowerQuery)
-  )
-  .map(item => item.list)
-  .filter(list => {
-    if (seenListIds.has(list.id)) return false;
-    seenListIds.add(list.id);
-    return true;
-  });
-});
-
-
 }
 
 onListSelected(list: any): void {
@@ -219,7 +225,7 @@ openListDialog(list: any, groupId?: number) {
   deselectAllFilters(): void {
     this.filterByName = false;
     this.filterByDescription = false;
-    this.filterByGroup = false;
+    //this.filterByGroup = false;
     this.filterByListName = false;
     this.filterByListItem = false;
   }
@@ -227,7 +233,7 @@ openListDialog(list: any, groupId?: number) {
   get allFiltersSelected(): boolean {
   return this.filterByName &&
          this.filterByDescription &&
-         this.filterByGroup &&
+         //this.filterByGroup &&
          this.filterByListName &&
          this.filterByListItem;
 }
@@ -236,9 +242,26 @@ toggleAllFilters(): void {
   const newState = !this.allFiltersSelected;
   this.filterByName = newState;
   this.filterByDescription = newState;
-  this.filterByGroup = newState;
+  //this.filterByGroup = newState;
   this.filterByListName = newState;
   this.filterByListItem = newState;
+  this.updateSearchControlState(); // 👈 Add this
+}
+
+get isSearchDisabled(): boolean {
+  return !this.filterByName &&
+         !this.filterByDescription &&
+         //!this.filterByGroup &&
+         !this.filterByListName &&
+         !this.filterByListItem;
+}
+
+updateSearchControlState(): void {
+  if (this.isSearchDisabled) {
+    this.searchControl.disable({ emitEvent: false });
+  } else {
+    this.searchControl.enable({ emitEvent: false });
+  }
 }
 
   clearSearch(): void {

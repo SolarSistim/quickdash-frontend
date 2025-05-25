@@ -1,7 +1,7 @@
-import { Component, OnInit, AfterViewChecked, ElementRef, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, AfterViewChecked, ElementRef, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray } from '@angular/cdk/drag-drop';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabsModule, MatTabGroup } from '@angular/material/tabs';
 import { DashboardDropService } from './dashboard-drop.service';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,6 +38,7 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
   dashboardTutorialId: number | null = null;
   
   @ViewChildren('groupNameContainer') groupNameContainers!: QueryList<ElementRef>;
+  @ViewChild(MatTabGroup) tabGroup!: MatTabGroup;
 
   constructor(
     private dropService: DashboardDropService,

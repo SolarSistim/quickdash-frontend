@@ -89,10 +89,11 @@ dontShowAgain() {
         this.selectedFileName = null;
         this.selectedFile = null;
       },
-      error: () => {
-        alert('Import failed.');
-        this.importing = false;
-      }
+      error: (err) => {
+      console.error('Import error:', err);
+      alert('Import failed. Please check the ZIP file and try again.');
+      this.importing = false;
+    }
     });
   }
 }

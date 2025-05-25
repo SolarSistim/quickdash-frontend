@@ -249,6 +249,29 @@
 
 </ng-container>
 
+<!-- LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS  -->
+<!-- LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS  -->
+<!-- LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS LIST SETTINGS  -->
+
+<app-small-title title="Lists"></app-small-title>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Default List Item Priority</h4>
+      <small style="color: #ccc;">Select the default list item priority when creating a new list item.</small>
+    </div>
+    <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+      <mat-label>Default List Item Priority</mat-label>
+      <mat-select [(ngModel)]="formValues['LIST_DEFAULT_PRIORITY']" (selectionChange)="onValueChange()">
+        <mat-option value="High">High</mat-option>
+        <mat-option value="Medium">Medium</mat-option>
+        <mat-option value="Low">Low</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-card>
+
  <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
 <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
 <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->

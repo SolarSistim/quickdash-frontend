@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable, forkJoin } from 'rxjs';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -53,7 +53,8 @@ export class UiLinkGroupComponent {
     private statusService: StatusMessageService,
     private settingsService: SettingsService,
     private sanitizer: DomSanitizer,
-    private breakpointObserver: BreakpointObserver
+    private breakpointObserver: BreakpointObserver,
+    private cdr: ChangeDetectorRef
   ) {}
 
 ngOnInit(): void {
@@ -256,6 +257,7 @@ private handleItemDrop(event: CdkDragDrop<any[]>, targetGroupData: any, itemType
         sourceCombinedItems.splice(itemIndexInSource, 1);
         sourceCombinedItems.forEach((item, index) => item.position = index);
         this.combinedItemsMap.set(sourceGroup.id, sourceCombinedItems);
+        this.cdr.detectChanges();
       } else {
         console.warn(`⚠️ Moved ${itemType} (ID: ${movedItemId}) not found in source group (${sourceGroup.id}) cache for removal.`);
       }
@@ -294,7 +296,10 @@ private handleItemDrop(event: CdkDragDrop<any[]>, targetGroupData: any, itemType
       }
     });
   }
-  this.combinedItemsMap.set(destinationGroup.id, destinationCombinedItems);
+destinationGroup.links = destinationCombinedItems.filter(i => i.type === 'link');
+destinationGroup.lists = destinationCombinedItems.filter(i => i.type === 'list');
+this.rebuildCombinedItems(destinationGroup);
+this.cdr.detectChanges();
 }
 
 
@@ -558,5 +563,25 @@ clearCombinedItemsForGroup(groupId: number) {
       error: err => console.error('Failed to move group', err)
     });
   }
+
+  rebuildCombinedItems(group: any) {
+  const links = (group.links || [])
+    .filter((item: any) => item && typeof item.id === 'number')
+    .map((item: any) => ({
+      ...item,
+      type: 'link'
+    }));
+
+  const lists = (group.lists || [])
+    .map((item: any) => ({
+      ...item,
+      id: Number(item.id),
+      type: 'list'
+    }))
+    .filter((item: any) => typeof item.id === 'number' && !isNaN(item.id));
+
+  const combined = [...lists, ...links].sort((a, b) => a.position - b.position);
+  this.combinedItemsMap.set(group.id, combined);
+}
 
 }

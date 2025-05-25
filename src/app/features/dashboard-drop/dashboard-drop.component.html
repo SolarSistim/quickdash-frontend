@@ -1,4 +1,10 @@
-<mat-tab-group *ngIf="categories.length" [(selectedIndex)]="selectedTabIndex" (selectedTabChange)="onTabChange($event)" dynamicHeight animationDuration="125ms" style="margin-bottom: 25px; margin-top: 25px;">
+<mat-tab-group *ngIf="categories.length"
+               [(selectedIndex)]="selectedTabIndex" 
+               (selectedTabChange)="onTabChange($event)" 
+               animationDuration="125ms" 
+               style="margin-bottom: 25px; margin-top: 25px;"
+               mat-stretch-tabs
+               >
   <mat-tab *ngFor="let category of categories" [label]="category.name">
 
     <ng-template mat-tab-label>

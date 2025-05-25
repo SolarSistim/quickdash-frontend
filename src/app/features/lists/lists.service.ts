@@ -142,5 +142,9 @@ getAllListItems(): Observable<any[]> {
   return this.http.get<any[]>(`${environment.apiUrl}/items`);
 }
 
+getAllLists(): Observable<List[]> {
+  return this.http.get<List[]>(`${environment.apiUrl}/lists`);
+}
+
 }
 

@@ -38,6 +38,7 @@ export class ManageCategoriesComponent {
     this.newCategoryNameChange.emit(this.newCategoryName); // keep in sync
   }
   @Output() anyEditingChange = new EventEmitter<boolean>();
+  @Output() returnClicked = new EventEmitter<void>();
 
   @Input() styleSettings: {
     groupBackgroundColor?: string;
@@ -69,7 +70,7 @@ export class ManageCategoriesComponent {
 
   cancelEditMode() {
     this.newCategoryName = '';
-    this.exit.emit(); // tells the parent to exit category mode
+    this.exit.emit();
   }
 
   get anyCategoryEditing(): boolean {

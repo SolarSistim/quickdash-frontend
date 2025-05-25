@@ -217,7 +217,7 @@
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
          <div style="color: white;">
-            <h4 style="margin: 0;">Search Field Background Color</h4>
+            <h4 style="margin: 0;">Search Feature Background Color</h4>
             <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
          </div>
          <div style="display: flex; align-items: center; margin-left: 16px;">
@@ -242,10 +242,11 @@
          </div>
       </div>
    </mat-card>
+
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between;">
          <div style="color: white;">
-            <h4 style="margin: 0;">Search Field Background Opacity</h4>
+            <h4 style="margin: 0;">Search Feature Background Opacity</h4>
             <small style="color: #ccc;">This sets the transparency of the search field's background from 0% to 100%.</small>
          </div>
          <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
@@ -256,6 +257,85 @@
          </mat-form-field>
       </div>
    </mat-card>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Search Feature Border Color</h4>
+      <small style="color: #ccc;">This sets the border color of the search component.</small>
+    </div>
+    <div style="display: flex; align-items: center; margin-left: 16px;">
+      <input
+        [(colorPicker)]="formValues['SEARCH_FEATURE_BORDER_COLOR']"
+        [style.background]="formValues['SEARCH_FEATURE_BORDER_COLOR']"
+        [cpOutputFormat]="'hex'"
+        [cpAlphaChannel]="'disabled'"
+        [cpPosition]="'left'"
+        [cpDialogDisplay]="'popup'"
+        (colorPickerChange)="onValueChange()"
+        class="color-picker-field"
+      />
+      <mat-form-field appearance="fill" class="hex-output-field">
+        <mat-label>HEX</mat-label>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="formValues['SEARCH_FEATURE_BORDER_COLOR']"
+          (ngModelChange)="onValueChange()" />
+      </mat-form-field>
+    </div>
+  </div>
+</mat-card>
+
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Search Feature Border Width</h4>
+      <small style="color: #ccc;">This sets the width of the search component's border.</small>
+    </div>
+    <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+      <mat-label>Border Width</mat-label>
+      <mat-select [(ngModel)]="formValues['SEARCH_FEATURE_BORDER_WIDTH']" (ngModelChange)="onValueChange()">
+        <mat-option [value]="1">1</mat-option>
+        <mat-option [value]="2">2</mat-option>
+        <mat-option [value]="3">3</mat-option>
+        <mat-option [value]="4">4</mat-option>
+        <mat-option [value]="5">5</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</mat-card>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Search Feature Font Color</h4>
+      <small style="color: #ccc;">This sets the color of the fonts inside the search feature panel.</small>
+    </div>
+    <div style="display: flex; align-items: center; margin-left: 16px;">
+      <input
+        [(colorPicker)]="formValues['SEARCH_FEATURE_FONT_COLOR']"
+        [style.background]="formValues['SEARCH_FEATURE_FONT_COLOR']"
+        [cpOutputFormat]="'hex'"
+        [cpAlphaChannel]="'disabled'"
+        [cpPosition]="'left'"
+        [cpDialogDisplay]="'popup'"
+        (colorPickerChange)="onValueChange()"
+        class="color-picker-field"
+      />
+      <mat-form-field appearance="fill" class="hex-output-field">
+        <mat-label>HEX</mat-label>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="formValues['SEARCH_FEATURE_FONT_COLOR']"
+          (ngModelChange)="onValueChange()" />
+      </mat-form-field>
+    </div>
+  </div>
+</mat-card>
+
 
 <!-- Settings Button --><!-- Settings Button --><!-- Settings Button --><!-- Settings Button --><!-- Settings Button -->
 <!-- Settings Button --><!-- Settings Button --><!-- Settings Button --><!-- Settings Button --><!-- Settings Button -->

@@ -1,13 +1,4 @@
-import {
-  Component,
-  Input,
-  OnInit,
-  ChangeDetectorRef,
-  Output,
-  EventEmitter,
-  viewChild,
-  ViewChild,
-} from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectorRef, Output, EventEmitter, viewChild, ViewChild,} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -16,12 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {
-  DragDropModule,
-  CdkDragDrop,
-  moveItemInArray,
-  transferArrayItem,
-} from '@angular/cdk/drag-drop';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem,} from '@angular/cdk/drag-drop';
 import { ListsService } from '../../features/lists/lists.service';
 import { SettingsService } from '../../settings-components/app-settings/settings.service';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -30,11 +16,13 @@ import { Optional } from '@angular/core';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { ManageCategoriesComponent } from './manage-categories/manage-categories.component';
 import { AddListItemComponent } from './add-list-item/add-list-item.component';
-import { ListItemComponent } from './list-item/list-item.component';
 import { MatMenuModule } from '@angular/material/menu';
 import { AutoLinkPipe } from '../../pipes/pipes/auto-link.pipe';
 import { FilterListComponent } from './filter-list/filter-list.component';
 import { CompletedListItemsComponent } from './completed-list-items/completed-list-items.component';
+import { ExportListComponent } from './export-list/export-list.component';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 interface ListItem {
   id: number;
@@ -70,10 +58,8 @@ interface TestItem {
   categoryName: string;
   pinned: boolean;
   createdAt?: string;
-  // ✅ Add these:
   priority?: 'High' | 'Medium' | 'Low';
   description?: string;
-
   isEditing?: boolean;
   tempName?: string;
   tempPriority?: 'High' | 'Medium' | 'Low';
@@ -82,6 +68,9 @@ interface TestItem {
   showDetails?: boolean;
   highlight?: boolean;
   highlightClass?: 'highlightA' | 'highlightB';
+  showPriorityPanel?: boolean;
+  categoryId?: number | null;
+  confirmingComplete?: boolean;
 }
 // END drag and drop testing
 
@@ -101,24 +90,31 @@ interface TestItem {
     ScrollingModule,
     ManageCategoriesComponent,
     AddListItemComponent,
-    ListItemComponent,
     MatMenuModule,
     AutoLinkPipe,
     FilterListComponent,
     CompletedListItemsComponent,
+    ExportListComponent
   ],
   templateUrl: './ui-list-embed.component.html',
   styleUrls: ['./ui-list-embed.component.css'],
 })
 export class UiListEmbedComponent implements OnInit {
 
+  @Input() listId!: number;
+  isExportValid = false;
   filterText = '';
   filterByName = true;
   filterByDescription = true;
   filterByCategory = true;
-
+  showPriorityPanel?: boolean;
   showCompletedItems = false;
-  
+  completedItemCount = 0;
+  wasFilteringBeforeEdit: boolean = false;
+  @ViewChild(FilterListComponent)
+  filterListComponent!: FilterListComponent;
+  public showFilterOptions = false;
+  showExportPanel = false;  
   @ViewChild(ManageCategoriesComponent)
   manageCategoriesComponent!: ManageCategoriesComponent;
   @ViewChild('addListItemComponent')
@@ -127,7 +123,6 @@ export class UiListEmbedComponent implements OnInit {
   @Input() list: any;
   @ViewChild(CompletedListItemsComponent)
   completedListComponent!: CompletedListItemsComponent;
-
   isMobile = false;
   items: ListItem[] = [];
   loading = true;
@@ -139,33 +134,41 @@ export class UiListEmbedComponent implements OnInit {
   newCategoryName = '';
   categories: Category[] = [];
   anyCategoryEditing = false;
-
   groupBackgroundColor: string = '';
   groupFontColor: string = '';
-
   newPriority: 'High' | 'Medium' | 'Low' = 'Medium';
-
   styleSettings = {
     groupBackgroundColor: '',
     groupFontColor: '',
     linkBackgroundColor: '',
     linkFontColor: '',
   };
-
   showCategoryManager = false;
   selectedCategoryId: number | null = null;
-
   groupedItems: { [key: string | number]: ListItem[] } = {};
   objectKeys = Object.keys;
+  @ViewChild(ExportListComponent)
+  exportListComponent!: ExportListComponent;
+  isFullscreen = false;
+  @Output() toggleFullscreenRequest = new EventEmitter<boolean>();
 
   constructor(
     private listsService: ListsService,
     private settingsService: SettingsService,
     private cdr: ChangeDetectorRef,
-    @Optional() private dialogRef: MatDialogRef<DialogListComponent>
+    @Optional() public dialogRef: MatDialogRef<DialogListComponent>,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
+    this.loadList();
+    this.isFullscreen = this.router.url.includes('/list-full');
+    this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe((event: NavigationEnd) => {
+      this.isFullscreen = event.urlAfterRedirects.includes('/list-full');
+      this.cdr.detectChanges(); // Trigger UI update
+    });
     // Drag and drop testing
     this.testItems = this.items.map((item, index) => ({
       id: item.id,
@@ -199,6 +202,83 @@ export class UiListEmbedComponent implements OnInit {
     });
   }
 
+  get isFilterActiveAndEmpty(): boolean {
+  if (!this.filterText.trim()) return false;
+
+  return Object.keys(this.filteredGroupedTestItems).every(
+    key => !this.filteredGroupedTestItems[key]?.length
+  );
+}
+
+loadList() {
+  const id = this.listId;
+  if (!id) return;
+
+  this.listsService.getListById(id).subscribe({
+    next: (list) => {
+      this.list = list;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('❌ Failed to load list details:', err);
+    }
+  });
+}
+
+goToFullscreen(): void {
+  const id = this.list?.id || this.listId;
+  if (!id) {
+    console.warn('⚠️ No list ID found to open fullscreen view.');
+    return;
+  }
+
+  if (this.dialogRef) {
+    this.dialogRef.close();
+    setTimeout(() => {
+      this.router.navigate(['/list-full', id]);
+    }, 100);
+  } else {
+    this.router.navigate(['/list-full', id]);
+  }
+}
+
+goBackHome(): void {
+  this.router.navigate(['/']);
+}
+
+// Priority panel
+togglePriorityPanel(item: TestItem, event: MouseEvent): void {
+  event.stopPropagation();
+  // Close all other panels
+  for (const cat of Object.keys(this.groupedTestItems)) {
+    for (const otherItem of this.groupedTestItems[cat]) {
+      if (otherItem !== item) otherItem.showPriorityPanel = false;
+    }
+  }
+  // Toggle this one
+  item.showPriorityPanel = !item.showPriorityPanel;
+}
+
+  setPriority(item: TestItem, level: 'High' | 'Medium' | 'Low'): void {
+  item.tempPriority = level;
+  item.priority = level;
+  item.showPriorityPanel = false;
+
+  // Optional: persist immediately
+  this.listsService.updateItem(item.id, {
+    priority: level,
+    title: item.name,
+    description: item.tempDescription ?? '',
+    categoryId: this.categories.find(cat => cat.name === item.categoryName)?.id ?? null,
+    pinned: item.pinned
+  }).subscribe({
+    next: () => console.log(`✅ Updated priority to ${level}`),
+    error: (err) => console.error('❌ Failed to update priority:', err)
+  });
+}
+
+// END priority panel
+
 get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
   if (!this.filterText.trim()) return this.groupedTestItems;
 
@@ -223,6 +303,7 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
 
   return filtered;
 }
+
 
 
 // END filter list items
@@ -398,11 +479,14 @@ toggleDetails(item: TestItem) {
     event.stopPropagation();
     event.preventDefault();
 
+    // Save whether we were filtering when entering edit mode
+    this.wasFilteringBeforeEdit = !!this.filterText.trim();
+
     item.isEditing = true;
     item.tempName = item.name;
     item.tempPriority = item.priority || 'Medium';
     item.tempCategoryName = item.categoryName;
-    item.tempDescription = item.tempDescription || ''; // Replace if you support real desc
+    item.tempDescription = item.tempDescription || '';
   }
 
 onCancelEdit(item: TestItem) {
@@ -412,36 +496,45 @@ onCancelEdit(item: TestItem) {
 }
 
   onSaveEdit(item: TestItem) {
-    item.name = item.tempName || item.name;
-    item.priority = item.tempPriority || 'Medium';
-    item.categoryName = item.tempCategoryName || item.categoryName;
-    item.tempDescription = item.tempDescription || '';
+  item.name = item.tempName || item.name;
+  item.priority = item.tempPriority || 'Medium';
+  item.categoryName = item.tempCategoryName || item.categoryName;
+  item.tempDescription = item.tempDescription || '';
 
-    // Update backend
-    const matchingCategory = this.categories.find(
-      (cat) => cat.name === item.categoryName
-    );
-    const matchingItem = this.items.find((i) => i.id === item.id);
+  const matchingCategory = this.categories.find(
+    (cat) => cat.name === item.categoryName
+  );
+  const matchingItem = this.items.find((i) => i.id === item.id);
 
-    const payload = {
-      title: item.name,
-      description: item.tempDescription,
-      priority: item.priority,
-      categoryId: matchingCategory?.id || matchingItem?.categoryId || null,
-      pinned: item.pinned,
-    };
+  const payload = {
+    title: item.name,
+    description: item.tempDescription,
+    priority: item.priority,
+    categoryId: matchingCategory?.id || matchingItem?.categoryId || null,
+    pinned: item.pinned,
+  };
 
-    this.listsService.updateItem(item.id, payload).subscribe({
-      next: () => {
-        item.isEditing = false;
-        this.loadItems(); // Refresh UI
-      },
-      error: (err) => {
-        console.error('❌ Failed to update item:', err);
-        alert('Failed to save changes');
-      },
-    });
-  }
+  this.listsService.updateItem(item.id, payload).subscribe({
+    next: () => {
+      item.isEditing = false;
+      this.loadItems();
+
+      // ✅ Restore filter panel if we were filtering before edit
+      if (this.wasFilteringBeforeEdit) {
+        setTimeout(() => {
+          if (this.filterListComponent) {
+            this.filterListComponent.showFilterPanel();
+          }
+          this.wasFilteringBeforeEdit = false; // reset flag
+        });
+      }
+    },
+    error: (err) => {
+      console.error('❌ Failed to update item:', err);
+      alert('Failed to save changes');
+    },
+  });
+}
 
   onDeleteItem(item: TestItem, event: MouseEvent) {
     event.preventDefault();
@@ -550,8 +643,25 @@ onCategoryAdded() {
 
 onCategoriesChanged(updatedCategories: Category[]) {
   console.log('📬 Parent received updated categories:', updatedCategories);
+
+  // 1. Build a quick lookup map of old category names by ID
+  const oldCategoryMap = new Map(this.categories.map(cat => [cat.id, cat.name]));
+
+  // 2. Update internal categories reference
   this.categories = updatedCategories;
 
+  // 3. Update categoryName in each testItem if its category name changed
+  this.testItems.forEach(item => {
+    const matchingCategory = this.categories.find(cat => cat.id === item.categoryId);
+    const oldName = item.categoryName;
+    const newName = matchingCategory?.name;
+
+    if (matchingCategory && newName && newName !== oldName) {
+      item.categoryName = newName;
+    }
+  });
+
+  // 4. Rebuild groupedTestItems using updated category names
   this.groupedTestItems = {
     Pinned: [],
     ...this.categories.reduce((acc, cat) => {
@@ -573,75 +683,77 @@ onCategoriesChanged(updatedCategories: Category[]) {
 
 
 
+
   loadItems() {
-    const listId = this.list?.id;
-    if (!listId) return;
-
-    this.loading = true;
-
-    this.listsService.getCategoriesForList(listId).subscribe({
-      next: (categories) => {
-        this.categories = categories.sort((a, b) => a.position - b.position);
-        console.log('✅ Categories loaded:', categories);
-
-        // Now fetch items AFTER categories are known
-        this.listsService.getListItems(listId).subscribe({
-          next: (items) => {
-            console.log('✅ List items loaded:', items);
-
-            // ✅ Add originalCategoryId to each item
-            this.items = items.map((item) => ({
-              ...item,
-              originalCategoryId:
-                item.originalCategoryId ?? item.category?.id ?? null,
-            }));
-
-            // Drag and drop testing
-            this.testItems = this.items.map((item, index) => ({
-              id: item.id,
-              name: item.title || `Item ${index + 1}`,
-              position: index,
-              categoryName: item.category?.name || 'Uncategorized',
-              pinned: item.pinned,
-              createdAt: item.createdAt, // ✅ include createdAt
-              priority: item.priority || 'Medium', // optional: store raw priority
-              tempPriority: item.priority || 'Medium',
-              tempDescription: item.description ?? '',
-            }));
-
-            this.groupedTestItems = {
-              Pinned: [],
-              ...this.categories.reduce((acc, cat) => {
-                acc[cat.name] = [];
-                return acc;
-              }, {} as { [categoryName: string]: TestItem[] }),
-            };
-
-            // Distribute items
-            for (const item of this.testItems) {
-              const key = item.pinned ? 'Pinned' : item.categoryName;
-              if (!this.groupedTestItems[key]) {
-                this.groupedTestItems[key] = [];
-              }
-              this.groupedTestItems[key].push(item);
-            }
-            // END Drag and drop testing
-
-            this.groupItemsByCategory(this.items);
-            this.loading = false;
-          },
-          error: (err) => {
-            console.error('❌ Failed to load items:', err);
-            this.loading = false;
-          },
-        });
-      },
-      error: (err) => {
-        console.error('❌ Failed to load categories:', err);
-        this.loading = false;
-      },
-    });
+  const listId = this.listId || this.list?.id;
+  if (!listId) {
+    console.warn('⚠️ No list ID provided. Cannot load items.');
+    return;
   }
+
+  this.loading = true;
+
+  this.listsService.getCategoriesForList(listId).subscribe({
+    next: (categories) => {
+      this.categories = categories.sort((a, b) => a.position - b.position);
+      console.log('✅ Categories loaded:', categories);
+
+      // Fetch items AFTER categories are known
+      this.listsService.getListItems(listId).subscribe({
+        next: (items) => {
+          console.log('✅ List items loaded:', items);
+
+          this.items = items.map((item) => ({
+            ...item,
+            originalCategoryId:
+              item.originalCategoryId ?? item.category?.id ?? null,
+          }));
+
+          // Drag and drop transformation
+          this.testItems = this.items.map((item, index) => ({
+            id: item.id,
+            name: item.title || `Item ${index + 1}`,
+            position: index,
+            categoryName: item.category?.name || 'Uncategorized',
+            pinned: item.pinned,
+            createdAt: item.createdAt,
+            priority: item.priority || 'Medium',
+            tempPriority: item.priority || 'Medium',
+            tempDescription: item.description ?? '',
+          }));
+
+          this.groupedTestItems = {
+            Pinned: [],
+            ...this.categories.reduce((acc, cat) => {
+              acc[cat.name] = [];
+              return acc;
+            }, {} as { [categoryName: string]: TestItem[] }),
+          };
+
+          for (const item of this.testItems) {
+            const key = item.pinned ? 'Pinned' : item.categoryName;
+            if (!this.groupedTestItems[key]) {
+              this.groupedTestItems[key] = [];
+            }
+            this.groupedTestItems[key].push(item);
+          }
+
+          this.groupItemsByCategory(this.items);
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('❌ Failed to load items:', err);
+          this.loading = false;
+        },
+      });
+    },
+    error: (err) => {
+      console.error('❌ Failed to load categories:', err);
+      this.loading = false;
+    },
+  });
+}
+
 
   private groupItemsByCategory(items: ListItem[]) {
     this.groupedItems = { pinned: [] };
@@ -678,9 +790,16 @@ onCategoriesChanged(updatedCategories: Category[]) {
     this.showCategoryManager = !this.showCategoryManager;
   }
 
-  toggleCategoryEditMode() {
-    this.isCategoryEditMode = !this.isCategoryEditMode;
+toggleCategoryEditMode() {
+  console.log('toggleCategoryEditMode triggered');
+  this.isCategoryEditMode = !this.isCategoryEditMode;
+
+  if (!this.isCategoryEditMode) {
+    this.newCategoryName = '';
+    this.loadItems();
+    console.log('Categories refreshed');
   }
+}
 
   onCategoryAddCompleted() {
     this.isCategoryEditMode = false;
@@ -879,24 +998,52 @@ onCategoriesChanged(updatedCategories: Category[]) {
     });
   }
 
+confirmComplete(item: TestItem, event: Event) {
+  event.stopPropagation();
+  item.confirmingComplete = true;
+
+  // Automatically revert if no action is taken within 2 seconds
+  setTimeout(() => {
+    item.confirmingComplete = false;
+  }, 5000);
+}
+
+cancelConfirmComplete(item: TestItem) {
+  item.confirmingComplete = false;
+}
+
 onCompleteItem(item: TestItem, event: Event) {
   event.stopPropagation();
 
-  // Disable checkbox temporarily
-  (event.target as HTMLInputElement).disabled = true;
+  item.confirmingComplete = false; // reset state
 
   this.listsService.completeItem(item.id).subscribe({
     next: () => {
-      // ✅ Only remove item after backend confirms
-      this.loadItems();
+      this.loadItems(); // refresh after confirmed completion
     },
     error: (err) => {
       console.error('❌ Failed to complete item:', err);
       alert('Failed to mark item as complete');
-      (event.target as HTMLInputElement).disabled = false;
     }
   });
 }
+
+setShowNewItemFormWithCategory(categoryName: string) {
+  this.showNewItemForm = true;
+
+  const category = this.categories.find(c => c.name === categoryName);
+  if (category) {
+    this.selectedCategoryId = category.id;
+
+    // If the component is already loaded, set it directly
+    setTimeout(() => {
+      if (this.addListItemComponent) {
+        this.addListItemComponent.selectedCategoryId = category.id;
+      }
+    });
+  }
+}
+
 
 onItemRestored(item: any) {
   this.items.push(item);
@@ -943,6 +1090,27 @@ onRestoreAllItems() {
       console.error('❌ Failed to restore all items:', err);
       alert('Failed to restore all items.');
     });
+}
+
+onExportClicked() {
+    this.showExportPanel = true;
+  }
+
+  onCloseExport() {
+    this.showExportPanel = false;
+  }
+
+onConfirmExport() {
+  this.exportListComponent?.exportToTxt();
+  this.showExportPanel = false;
+}
+
+  onExportOptionsValidChange(valid: boolean) {
+  this.isExportValid = valid;
+}
+
+get isFiltering(): boolean {
+  return !!this.filterText.trim();
 }
 
 }

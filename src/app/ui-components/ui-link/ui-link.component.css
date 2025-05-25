@@ -246,3 +246,11 @@
     flex-shrink: 0;
     cursor: pointer;            /* if you want clicking it to do something later */
   }
+
+.link-hover {
+  cursor: pointer !important;
+}
+
+.link-hover:hover {
+  text-decoration: underline;
+}

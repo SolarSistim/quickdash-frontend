@@ -1,6 +1,7 @@
 .custom-mat-card {
     background-color: #3b4d59;
     padding: 15px;
+    border: 2px solid green;
 }
 
 .filter-checkboxes label {
