@@ -155,40 +155,8 @@
 
 <app-small-title title="Search Feature"></app-small-title>
 
-      <!-- Begin Alert -->
-         <div *ngIf="showSearchTutorial" class="alert alert-info fade show mt-3" role="alert">
-  <h4 class="alert-heading"><i class="bi bi-info-circle"></i> Using Bolero's Search Bar</h4>
-  <p>
-    You can configure Bolero’s search feature to work with any search engine that supports URL-based searches. Bolero will automatically append your search terms to the end of the URL you provide.
-  </p>
+<app-tutorial-search-bar></app-tutorial-search-bar>
 
-  <p>
-    Go to the search engine you want to use, perform a sample search, then in the address bar, copy the full URL up to (but not including) your actual search terms. Then paste that URL into the "URL Query" field, then click save, and Bolero will take care of the rest.
-  </p>
-
-    <p>
-      Examples:
-    </p>
-
-    <ul>
-      <li><b>Google</b>: https://www.google.com/search?q=</li>
-      <li><b>Duckduckgo</b>: https://duckduckgo.com/?t=h_&q=</li>
-      <li><b>Yahoo</b>: https://search.yahoo.com/search?p=</li>
-    </ul>
-
-  <p class="mb-0 d-flex justify-content-between align-items-center">
-    <span>&nbsp;</span>
-    <span class="button-group ms-3">
-      <button mat-stroked-button style="margin-right: 10px;" [disabled]="!showSearchTutorial" (click)="dismissSearchTutorial()">
-        <i class="bi bi-x-lg"></i> Don’t Show Again
-      </button>
-      <button type="button" mat-stroked-button (click)="showSearchTutorial = false">
-        <i class="bi bi-caret-down"></i> Hide
-      </button>
-    </span>
-  </p>
-</div>
-         <!-- End Alert -->
 
 <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">

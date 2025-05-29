@@ -79,7 +79,6 @@ mat-dialog-actions {
   top: 24px;
   right: 22px;
   font-size: 1.1rem;
-  color: #fff !important;
   cursor: pointer;
 }
 
@@ -87,7 +86,6 @@ mat-dialog-actions {
   font-size: 18px;
   margin-top: 10px;
   margin-bottom: 10px;
-  color: var(--group-font-color, white);
 }
 
 .visually-hidden {
@@ -223,12 +221,11 @@ button[mat-icon-button] {
 
 .empty-drop-placeholder {
   height: 36px;
-  border: 2px dotted rgba(255, 255, 255, 0.3);
+  border: 2px dotted;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
   font-style: italic;
   margin-bottom: 6px;
   transition: background-color 0.2s;
@@ -259,7 +256,7 @@ button[mat-icon-button] {
   flex-direction: column;
   background-color: #2e3a46;
   padding: 10px;
-  padding-top: 0px;
+  padding-top: 15px;
   border-radius: 6px;
 }
 
@@ -463,6 +460,12 @@ button[mat-icon-button] {
   cursor: pointer;
 }
 
+.item-name-hover {
+  transition: text-decoration 0.2s;
+}
 
+.item-name-hover:hover {
+  text-decoration: underline;
+}
 
 

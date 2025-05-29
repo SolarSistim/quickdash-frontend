@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -10,7 +10,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
   templateUrl: './export-list.component.html',
   styleUrls: ['./export-list.component.css']
 })
-export class ExportListComponent {
+export class ExportListComponent implements OnInit {
 
   @Input() listName: string = '';
   @Output() closeExport = new EventEmitter<void>();
@@ -22,6 +22,10 @@ export class ExportListComponent {
   exportTitle = true;
   exportCategories = true;
   justExportItems = false;
+
+  ngOnInit(): void {
+    this.emitExportOptionsValid();
+  }
 
   onJustExportItemsChanged() {
     if (this.justExportItems) {

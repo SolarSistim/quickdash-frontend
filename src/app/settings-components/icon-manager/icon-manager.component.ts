@@ -13,6 +13,8 @@ import { IconManagerService } from './icon-manager.service';
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
 import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
 import { TutorialsService } from '../tutorials/tutorials.service';
+import { TutorialNoteOnIconsComponent } from '../tutorials/tutorial-components/tutorial-note-on-icons/tutorial-note-on-icons.component';
+import { IconProducerComponent } from '../icon-producer/icon-producer.component';
 
 @Component({
   selector: 'app-icon-manager',
@@ -24,7 +26,9 @@ import { TutorialsService } from '../tutorials/tutorials.service';
     MatTooltipModule,
     MatMenuModule,
     MatTabsModule,
-    UiStatusComponent],
+    UiStatusComponent,
+    TutorialNoteOnIconsComponent,
+    IconProducerComponent],
   templateUrl: './icon-manager.component.html',
   styleUrl: './icon-manager.component.css'
 })

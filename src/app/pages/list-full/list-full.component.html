@@ -1,3 +1,3 @@
-<div style="background-color: #2e3a46; height: 100vh;">
-<app-ui-list-embed *ngIf="listId" [listId]="listId" />
+<div [style.background-color]="groupBackgroundColor" style="height: 100vh;">
+  <app-ui-list-embed *ngIf="listId" [listId]="listId" />
 </div>

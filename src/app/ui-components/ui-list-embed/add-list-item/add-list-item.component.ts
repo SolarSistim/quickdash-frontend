@@ -82,7 +82,9 @@ submit(keepFormOpen: boolean) {
 resetForm() {
   this.newTitle = '';
   this.newDescription = '';
-  this.selectedCategoryId = this.categories.length > 0 ? this.categories[0].id : null;
+
+  // ✅ Preserve selectedCategoryId instead of resetting it
+  // (Do nothing here unless you explicitly want to change it)
 
   this.settingsService.getSettingByKey('LIST_DEFAULT_PRIORITY').subscribe({
     next: (value) => {

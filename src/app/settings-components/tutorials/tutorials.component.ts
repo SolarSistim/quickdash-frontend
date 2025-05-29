@@ -4,10 +4,16 @@ import { HttpClient } from '@angular/common/http';
 import { TutorialsService } from './tutorials.service';
 import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
+// tutorials
+import { TutorialANoteOnImportsComponent } from './tutorial-components/tutorial-a-note-on-imports/tutorial-a-note-on-imports.component';
+import { TutorialCrashCourseComponent } from './tutorial-components/tutorial-crash-course/tutorial-crash-course.component';
+import { TutorialCustomizingYourThemeComponent } from './tutorial-components/tutorial-customizing-your-theme/tutorial-customizing-your-theme.component';
+import { TutorialNoteOnIconsComponent } from './tutorial-components/tutorial-note-on-icons/tutorial-note-on-icons.component';
+import { TutorialSearchBarComponent } from './tutorial-components/tutorial-search-bar/tutorial-search-bar.component';
 
 @Component({
   selector: 'app-tutorials',
-  imports: [MatButtonModule,UiStatusComponent],
+  imports: [MatButtonModule,UiStatusComponent,TutorialCrashCourseComponent,TutorialANoteOnImportsComponent,TutorialCustomizingYourThemeComponent,TutorialNoteOnIconsComponent,TutorialSearchBarComponent],
   templateUrl: './tutorials.component.html',
   styleUrl: './tutorials.component.css'
 })

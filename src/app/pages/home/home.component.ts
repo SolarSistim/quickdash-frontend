@@ -11,11 +11,12 @@ import { StatusMessageService } from '../../ui-components/ui-status/ui-status.se
 import { DialogManageIconsComponent } from '../../dialogs/dialog-manage-icons/dialog-manage-icons.component';
 import { SettingsButtonComponent } from '../../ui-components/settings-button/settings-button.component';
 import { SettingsService } from '../../settings-components/app-settings/settings.service';
+import { UiLoaderComponent } from '../../ui-components/ui-loader/ui-loader.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [SearchComponent,CommonModule,MatMenuModule,DashboardDropComponent,UiStatusComponent,SettingsButtonComponent],
+  imports: [SearchComponent,CommonModule,MatMenuModule,DashboardDropComponent,UiStatusComponent,SettingsButtonComponent,UiLoaderComponent],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })

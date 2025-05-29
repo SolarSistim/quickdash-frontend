@@ -8,10 +8,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { SmallTitleComponent } from '../../ui-components/small-title/small-title.component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { TutorialsService } from '../tutorials/tutorials.service';
+import { TutorialANoteOnImportsComponent } from '../tutorials/tutorial-components/tutorial-a-note-on-imports/tutorial-a-note-on-imports.component';
 
 @Component({
   selector: 'app-import-export',
-  imports: [MatButtonModule,MatIconModule,NgIf,SmallTitleComponent,MatProgressSpinner],
+  imports: [MatButtonModule,MatIconModule,NgIf,SmallTitleComponent,MatProgressSpinner,TutorialANoteOnImportsComponent],
   templateUrl: './import-export.component.html',
   styleUrl: './import-export.component.css'
 })

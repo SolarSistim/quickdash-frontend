@@ -13,11 +13,13 @@ import { UiLinkGroupComponent } from '../../ui-components/ui-link-group/ui-link-
 import { MatButtonModule } from '@angular/material/button';
 import { SettingsService } from '../../settings-components/app-settings/settings.service';
 import { TutorialsService } from '../../settings-components/tutorials/tutorials.service';
+// tutorials
+import { TutorialCrashCourseComponent } from '../../settings-components/tutorials/tutorial-components/tutorial-crash-course/tutorial-crash-course.component';
 
 @Component({
   selector: 'app-dashboard-drop',
   standalone: true,
-  imports: [CommonModule, MatTabsModule,MatMenuModule,UiLinkGroupComponent,MatButtonModule],
+  imports: [CommonModule, MatTabsModule,MatMenuModule,UiLinkGroupComponent,MatButtonModule,TutorialCrashCourseComponent],
   templateUrl: './dashboard-drop.component.html',
   styleUrls: ['./dashboard-drop.component.css']
 })
@@ -159,7 +161,7 @@ export class DashboardDropComponent implements OnInit, AfterViewChecked {
           category.groups = fullData.groups || [];
           category.loaded = true;
         },
-        error: (err) => console.error('Error loading full category', err)
+        error: (err) => console.error('Error loading full category', err),
       });
     }
   }
@@ -241,7 +243,7 @@ refreshCategories(): void {
         }
       }
     },
-    error: (err: any) => console.error('Error loading categories', err)
+    error: (err: any) => console.error('Error loading categories', err),
   });
 }
 
@@ -270,7 +272,7 @@ refreshCategories(): void {
         }
       }
     },
-    error: (err: any) => console.error('Error loading categories', err)
+    error: (err: any) => console.error('Error loading categories', err),
   });
 }
 

@@ -27,6 +27,7 @@ export class UiLinkComponent {
   @Input() link: any;
   @Output() linkDeleted = new EventEmitter<void>();
   @Output() linkMoved = new EventEmitter<{ movedLinkId: number, newGroupId: number, oldGroupId: number }>();
+  @Output() linkUpdated = new EventEmitter<any>();
 
   private saveTimer: any = null;
   private lastSavedPositions: string = '';
@@ -57,32 +58,41 @@ export class UiLinkComponent {
     }
   }
 
-  private loadStyles(): void {
-    this.settingsService.loadSettings().subscribe(settings => {
-      const bgHex = settings['LINK_BACKGROUND_COLOR'] || '#000000';
-      const opacity = parseFloat(settings['LINK_BACKGROUND_OPACITY'] || '0.2');
-      const r = parseInt(bgHex.substring(1, 3), 16);
-      const g = parseInt(bgHex.substring(3, 5), 16);
-      const b = parseInt(bgHex.substring(5, 7), 16);
-      this.linkStyles.backgroundColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+private loadStyles(): void {
+  this.settingsService.loadSettings().subscribe(settings => {
+    const bgHex = settings['LINK_BACKGROUND_COLOR'] || '#000000';
+    const opacity = parseFloat(settings['LINK_BACKGROUND_OPACITY'] || '0.2');
+    const r = parseInt(bgHex.substring(1, 3), 16);
+    const g = parseInt(bgHex.substring(3, 5), 16);
+    const b = parseInt(bgHex.substring(5, 7), 16);
+    this.linkStyles.backgroundColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    this.linkStyles.fontColor = settings['LINK_FONT_COLOR'] || '#ff0000';
+    this.linkStyles.fontWeight = settings['LINK_FONT_WEIGHT'] || '400';
+    this.linkStyles.fontSize = parseInt(settings['LINK_FONT_SIZE'] || '13', 10);
+    this.linkStyles.borderColor = settings['LINK_BORDER_COLOR'] || '#ffffff';
+    this.linkStyles.borderWidth = settings['LINK_BORDER_WIDTH'];
+    this.linkStyles.borderRadius = settings['LINK_BORDER_CORNER_RADIUS'] || '3px';
+    console.log('Link border width: ', this.linkStyles.borderWidth)
+  });
+}
 
-      this.linkStyles.fontColor = settings['LINK_FONT_COLOR'] || '#ff0000';
-      this.linkStyles.fontWeight = settings['LINK_FONT_WEIGHT'] || '400';
-      this.linkStyles.fontSize = parseInt(settings['LINK_FONT_SIZE'] || '13', 10);
-    });
-  }
-
-  linkStyles: {
-    backgroundColor: string;
-    fontColor: string;
-    fontWeight: string;
-    fontSize: number; // ✅ fix this
-  } = {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
-    fontColor: '#ff0000',
-    fontWeight: '400',
-    fontSize: 13 // ✅ and this must match (number, not '13px')
-  };
+linkStyles: {
+  backgroundColor: string;
+  fontColor: string;
+  fontWeight: string;
+  fontSize: number;
+  borderColor: string;
+  borderWidth: string;
+  borderRadius: string;
+} = {
+  backgroundColor: 'rgba(0, 0, 0, 0.2)',
+  fontColor: '#ff0000',
+  fontWeight: '400',
+  fontSize: 13,
+  borderColor: '#ffffff',
+  borderWidth: '1px',
+  borderRadius: '3px'
+};
 
   trackById(index: number, item: any): number {
     return item.id;
@@ -114,9 +124,19 @@ export class UiLinkComponent {
       data: { linkId: link.id }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.refreshLinks();
+    dialogRef.afterClosed().subscribe((wasUpdated) => {
+      if (wasUpdated) {
+        this.dropService.getFullDashboard().subscribe((categories) => {
+          for (const cat of categories) {
+            for (const group of cat.groups) {
+              const updated = group.links.find((l: any) => l.id === this.link.id);
+              if (updated) {
+                this.linkUpdated.emit(updated); // ✅ emit updated link
+                break;
+              }
+            }
+          }
+        });
       }
     });
   }

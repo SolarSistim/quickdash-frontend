@@ -39,28 +39,7 @@
       </div>
    </div>
 
-         <!-- Begin Alert -->
-         <!-- Begin Tutorial Alert -->
-         <div *ngIf="showThemeTutorial" class="alert alert-info fade show mt-3" role="alert">
-         <h4 class="alert-heading">
-            <i class="bi bi-info-circle"></i> Customizing Your Theme
-         </h4>
-         <p>
-            Use this panel to fully customize the appearance of your dashboard. You can change fonts, colors, background styles, and more—then save your work as a new theme or overwrite an existing one.
-         </p>
-         <p class="mb-0 d-flex justify-content-between align-items-center">
-            <span>&nbsp;</span>
-            <span class="button-group ms-3">
-               <button mat-stroked-button style="margin-right: 10px;" (click)="dismissThemeTutorial()">
-               <i class="bi bi-x-lg"></i> Don’t Show Again
-               </button>
-               <button mat-stroked-button (click)="showThemeTutorial = false">
-               <i class="bi bi-caret-down"></i> Hide
-               </button>
-            </span>
-         </p>
-         </div>
-         <!-- End Tutorial Alert -->
+<app-tutorial-customizing-your-theme></app-tutorial-customizing-your-theme>
 
          <!-- End Alert -->
 
@@ -306,6 +285,40 @@
     </mat-form-field>
   </div>
 </mat-card>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">Search Feature Border Corner Radius</h4>
+            <small style="color: #ccc;">Search Feature Border Corner Radius.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Corner Radius</mat-label>
+            <mat-select [(ngModel)]="formValues['SEARCH_FEATURE_CORNER_RADIUS']" (ngModelChange)="onValueChange()">
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+            <mat-option [value]="4">4</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            <mat-option [value]="6">6</mat-option>
+            <mat-option [value]="7">7</mat-option>
+            <mat-option [value]="8">8</mat-option>
+            <mat-option [value]="9">9</mat-option>
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="11">11</mat-option>
+            <mat-option [value]="12">12</mat-option>
+            <mat-option [value]="13">13</mat-option>
+            <mat-option [value]="14">14</mat-option>
+            <mat-option [value]="15">15</mat-option>
+            <mat-option [value]="16">16</mat-option>
+            <mat-option [value]="17">17</mat-option>
+            <mat-option [value]="18">18</mat-option>
+            <mat-option [value]="19">19</mat-option>
+            <mat-option [value]="20">20</mat-option>
+            </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
 
 <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -653,6 +666,40 @@
    </mat-card>
 
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">Group Border Corner Radius</h4>
+            <small style="color: #ccc;">Group Border Corner Radius.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Border Width</mat-label>
+            <mat-select [(ngModel)]="formValues['GROUP_BORDER_CORNER_RADIUS']" (ngModelChange)="onValueChange()">
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+            <mat-option [value]="4">4</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            <mat-option [value]="6">6</mat-option>
+            <mat-option [value]="7">7</mat-option>
+            <mat-option [value]="8">8</mat-option>
+            <mat-option [value]="9">9</mat-option>
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="11">11</mat-option>
+            <mat-option [value]="12">12</mat-option>
+            <mat-option [value]="13">13</mat-option>
+            <mat-option [value]="14">14</mat-option>
+            <mat-option [value]="15">15</mat-option>
+            <mat-option [value]="16">16</mat-option>
+            <mat-option [value]="17">17</mat-option>
+            <mat-option [value]="18">18</mat-option>
+            <mat-option [value]="19">19</mat-option>
+            <mat-option [value]="20">20</mat-option>
+            </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
          <div style="color: white;">
             <h4 style="margin: 0;">Group Footer Icon Color</h4>
@@ -729,7 +776,7 @@
 <!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links -->
 <!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links --><!-- Links -->
 
-   <app-small-title title="Link"></app-small-title>
+   <app-small-title title="Links"></app-small-title>
 
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -830,6 +877,279 @@
             <mat-select [(ngModel)]="formValues['LINK_FONT_SIZE']" (ngModelChange)="onValueChange()">
                <mat-option *ngFor="let size of fontSizeOptions" [value]="size">{{ size }}</mat-option>
              </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Link Border Color</h4>
+      <small style="color: #ccc;">This sets the border color of the link items within a group.</small>
+    </div>
+    <div style="display: flex; align-items: center; margin-left: 16px;">
+      <input
+        [(colorPicker)]="formValues['LINK_BORDER_COLOR']"
+        [style.background]="formValues['LINK_BORDER_COLOR']"
+        [cpOutputFormat]="'hex'"
+        [cpAlphaChannel]="'disabled'"
+        [cpPosition]="'left'"
+        [cpDialogDisplay]="'popup'"
+        (colorPickerChange)="onValueChange()"
+        class="color-picker-field"
+      />
+      <mat-form-field appearance="fill" class="hex-output-field">
+        <mat-label>HEX</mat-label>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="formValues['LINK_BORDER_COLOR']"
+          (ngModelChange)="onValueChange()" />
+      </mat-form-field>
+    </div>
+  </div>
+</mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">Link Border Width</h4>
+            <small style="color: #ccc;">Link Border Width, 1px through 5px.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Border Width</mat-label>
+            <mat-select [(ngModel)]="formValues['LINK_BORDER_WIDTH']" (ngModelChange)="onValueChange()">
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+            <mat-option [value]="4">4</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+         <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">Link Border Corner Radius</h4>
+            <small style="color: #ccc;">Link Border Corner Radius.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Border Width</mat-label>
+            <mat-select [(ngModel)]="formValues['LINK_BORDER_CORNER_RADIUS']" (ngModelChange)="onValueChange()">
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+            <mat-option [value]="4">4</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            <mat-option [value]="6">6</mat-option>
+            <mat-option [value]="7">7</mat-option>
+            <mat-option [value]="8">8</mat-option>
+            <mat-option [value]="9">9</mat-option>
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="11">11</mat-option>
+            <mat-option [value]="12">12</mat-option>
+            <mat-option [value]="13">13</mat-option>
+            <mat-option [value]="14">14</mat-option>
+            <mat-option [value]="15">15</mat-option>
+            <mat-option [value]="16">16</mat-option>
+            <mat-option [value]="17">17</mat-option>
+            <mat-option [value]="18">18</mat-option>
+            <mat-option [value]="19">19</mat-option>
+            <mat-option [value]="20">20</mat-option>
+            </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+<!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> 
+<!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> 
+<!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> <!-- Lists --> 
+
+   <app-small-title title="Lists"></app-small-title>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Background Color</h4>
+            <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
+         </div>
+         <div style="display: flex; align-items: center; margin-left: 16px;">
+            <input
+            [(colorPicker)]="formValues['LIST_BACKGROUND_COLOR']"
+            [style.background]="formValues['LIST_BACKGROUND_COLOR']"
+            [cpOutputFormat]="'hex'"
+            [cpAlphaChannel]="'disabled'"
+            [cpPosition]="'left'"
+            [cpDialogDisplay]="'popup'"
+            (colorPickerChange)="onValueChange()"
+            class="color-picker-field"
+            />
+            <mat-form-field appearance="fill" class="hex-output-field">
+               <mat-label>HEX</mat-label>
+               <input
+                  matInput
+                  type="text"
+                  [(ngModel)]="formValues['LIST_BACKGROUND_COLOR']"
+                  (ngModelChange)="onValueChange()" />
+            </mat-form-field>
+         </div>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Background Opacity</h4>
+            <small style="color: #ccc;">This sets the transparency of the link item's background from 0% to 100%.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Background Opacity</mat-label>
+            <mat-select [(ngModel)]="formValues['LIST_BACKGROUND_OPACITY']" (ngModelChange)="onValueChange()">
+               <mat-option *ngFor="let option of opacityOptions" [value]="option.value">{{ option.label }}</mat-option>
+             </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Font Color</h4>
+            <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
+         </div>
+         <div style="display: flex; align-items: center; margin-left: 16px;">
+            <input
+            [(colorPicker)]="formValues['LIST_FONT_COLOR']"
+            [style.background]="formValues['LIST_FONT_COLOR']"
+            [cpOutputFormat]="'hex'"
+            [cpAlphaChannel]="'disabled'"
+            [cpPosition]="'left'"
+            [cpDialogDisplay]="'popup'"
+            (colorPickerChange)="onValueChange()"
+            class="color-picker-field"
+            />
+            <mat-form-field appearance="fill" class="hex-output-field">
+               <mat-label>HEX</mat-label>
+               <input
+                  matInput
+                  type="text"
+                  [(ngModel)]="formValues['LIST_FONT_COLOR']"
+                  (ngModelChange)="onValueChange()" />
+            </mat-form-field>
+         </div>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Font Weight</h4>
+            <small style="color: #ccc;">Link font weight. 100 = light weight, 900 = heavy & bold.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Font Weight</mat-label>
+            <mat-select [(ngModel)]="formValues['LIST_FONT_WEIGHT']" (ngModelChange)="onValueChange()">
+               <mat-option *ngFor="let weight of fontWeightOptions" [value]="weight">{{ weight }}</mat-option>
+             </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Font Size</h4>
+            <small style="color: #ccc;">Link font size, 1px through 30px.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Font Size</mat-label>
+            <mat-select [(ngModel)]="formValues['LIST_FONT_SIZE']" (ngModelChange)="onValueChange()">
+               <mat-option *ngFor="let size of fontSizeOptions" [value]="size">{{ size }}</mat-option>
+             </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">List Border Color</h4>
+      <small style="color: #ccc;">This sets the border color of the list items within a group..</small>
+    </div>
+    <div style="display: flex; align-items: center; margin-left: 16px;">
+      <input
+        [(colorPicker)]="formValues['LIST_BORDER_COLOR']"
+        [style.background]="formValues['LIST_BORDER_COLOR']"
+        [cpOutputFormat]="'hex'"
+        [cpAlphaChannel]="'disabled'"
+        [cpPosition]="'left'"
+        [cpDialogDisplay]="'popup'"
+        (colorPickerChange)="onValueChange()"
+        class="color-picker-field"
+      />
+      <mat-form-field appearance="fill" class="hex-output-field">
+        <mat-label>HEX</mat-label>
+        <input
+          matInput
+          type="text"
+          [(ngModel)]="formValues['LIST_BORDER_COLOR']"
+          (ngModelChange)="onValueChange()" />
+      </mat-form-field>
+    </div>
+  </div>
+</mat-card>
+
+   <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Border Width</h4>
+            <small style="color: #ccc;">List Border Width, 1px through 5px.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Border Width</mat-label>
+            <mat-select [(ngModel)]="formValues['LIST_BORDER_WIDTH']" (ngModelChange)="onValueChange()">
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+            <mat-option [value]="4">4</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            </mat-select>
+         </mat-form-field>
+      </div>
+   </mat-card>
+
+      <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Border Corner Radius</h4>
+            <small style="color: #ccc;">List Border Corner Radius.</small>
+         </div>
+         <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
+            <mat-label>Border Width</mat-label>
+            <mat-select [(ngModel)]="formValues['LIST_BORDER_CORNER_RADIUS']" (ngModelChange)="onValueChange()">
+            <mat-option [value]="1">1</mat-option>
+            <mat-option [value]="2">2</mat-option>
+            <mat-option [value]="3">3</mat-option>
+            <mat-option [value]="4">4</mat-option>
+            <mat-option [value]="5">5</mat-option>
+            <mat-option [value]="6">6</mat-option>
+            <mat-option [value]="7">7</mat-option>
+            <mat-option [value]="8">8</mat-option>
+            <mat-option [value]="9">9</mat-option>
+            <mat-option [value]="10">10</mat-option>
+            <mat-option [value]="11">11</mat-option>
+            <mat-option [value]="12">12</mat-option>
+            <mat-option [value]="13">13</mat-option>
+            <mat-option [value]="14">14</mat-option>
+            <mat-option [value]="15">15</mat-option>
+            <mat-option [value]="16">16</mat-option>
+            <mat-option [value]="17">17</mat-option>
+            <mat-option [value]="18">18</mat-option>
+            <mat-option [value]="19">19</mat-option>
+            <mat-option [value]="20">20</mat-option>
+            </mat-select>
          </mat-form-field>
       </div>
    </mat-card>

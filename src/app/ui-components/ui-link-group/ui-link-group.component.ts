@@ -70,6 +70,7 @@ ngOnInit(): void {
     const footerBgHex = settings['GROUP_FOOTER_BACKGROUND_COLOR'] || '#2e3a46';
     const footerOpacity = parseFloat(settings['GROUP_FOOTER_BACKGROUND_OPACITY'] || '1.0');
     const footerBgRgba = this.hexToRgba(footerBgHex, footerOpacity);
+    const borderRadius = settings['GROUP_BORDER_CORNER_RADIUS'] || '2'
 
     const rgba = this.hexToRgba(bgColor, opacity); // 🔹 rgba defined here
 
@@ -79,11 +80,14 @@ ngOnInit(): void {
     this.groupBoxStyle = this.sanitizer.bypassSecurityTrustStyle(`
       background-color: ${rgba};
       border: ${borderWidth}px solid ${borderColor};
+      border-radius: ${borderRadius}px;
     `);
 
     this.iconRowStyle = this.sanitizer.bypassSecurityTrustStyle(`
       background-color: ${footerBgRgba};
       color: ${iconColor};
+      border-bottom-left-radius: ${borderRadius}px;
+      border-bottom-right-radius: ${borderRadius}px;
     `);
 
     this.groupFontStyle = this.sanitizer.bypassSecurityTrustStyle(`
@@ -443,6 +447,7 @@ dialogRef.componentInstance.linkAdded
 handleLinkDeleted(groupId: number) {
   this.clearCombinedItemsForGroup(groupId);
   this.refreshGroups();
+  this.cdr.detectChanges();
 }
   
   openEditLinksDialog(categoryId: number, groupId: number): void {
@@ -519,7 +524,7 @@ refreshGroups() {
     next: (data) => {
       const currentCategory = data.find(c => c.id === this.category.id);
       if (currentCategory) {
-        this.category.groups = currentCategory.groups.map((group: any) => {
+        const updatedGroups = currentCategory.groups.map((group: any) => {
           const links = [...(group.links || [])];
           const lists = [...(group.lists || [])];
           const combined = [...lists.map(l => ({ ...l, type: 'list' })), ...links.map(l => ({ ...l, type: 'link' }))];
@@ -527,10 +532,28 @@ refreshGroups() {
           this.combinedItemsMap.set(group.id, combined); // ✅ Force-rebuild cache here
           return { ...group, links, lists };
         });
+
+        this.category = {
+          ...this.category,
+          groups: updatedGroups
+        };
       }
+      this.cdr.detectChanges(); // ✅ Ensures view updates
     },
     error: (err) => console.error('Error refreshing groups', err)
   });
+}
+
+handleLinkUpdated(groupId: number, updatedLink: any) {
+  const group = this.category.groups.find((g: { id: number; }) => g.id === groupId);
+  if (group) {
+    const index = group.links.findIndex((l: { id: any; }) => l.id === updatedLink.id);
+    if (index > -1) {
+      group.links[index] = updatedLink;
+      this.rebuildCombinedItems(group); // ✅ update combined cache
+      this.cdr.detectChanges();         // ✅ force UI refresh
+    }
+  }
 }
 
 clearCombinedItemsForGroup(groupId: number) {

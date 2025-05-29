@@ -23,6 +23,7 @@ import { CompletedListItemsComponent } from './completed-list-items/completed-li
 import { ExportListComponent } from './export-list/export-list.component';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { UiLoaderComponent } from '../ui-loader/ui-loader.component';
 
 interface ListItem {
   id: number;
@@ -94,7 +95,8 @@ interface TestItem {
     AutoLinkPipe,
     FilterListComponent,
     CompletedListItemsComponent,
-    ExportListComponent
+    ExportListComponent,
+    UiLoaderComponent
   ],
   templateUrl: './ui-list-embed.component.html',
   styleUrls: ['./ui-list-embed.component.css'],

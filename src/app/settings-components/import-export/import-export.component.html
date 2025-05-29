@@ -62,26 +62,7 @@
 
    <app-small-title title="Import"></app-small-title>
 
-<div *ngIf="showImportTutorial" class="alert alert-danger fade show" role="alert">
-  <h4 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> A Note on Imports</h4>
-  <p>
-    Importing a backup .ZIP file will <strong>erase</strong> all current Bolero settings and replace them with what's in the file. This includes links, categories, icons, images, and themes.
-  </p>
-  <p>
-    Make sure you've exported your current data before proceeding.
-  </p>
-  <p class="mb-0 d-flex justify-content-between align-items-center">
-    <span>&nbsp;</span>
-    <span class="button-group ms-3">
-      <button mat-stroked-button style="margin-right: 10px;" [disabled]="!tutorialId" (click)="dontShowAgain()">
-        <i class="bi bi-x-lg"></i> Don’t Show Again
-      </button>
-      <button type="button" mat-stroked-button (click)="showImportTutorial = false">
-        <i class="bi bi-caret-down"></i> Hide
-      </button>
-    </span>
-  </p>
-</div>
+   <app-tutorial-a-note-on-imports></app-tutorial-a-note-on-imports>
 
 <p>
   <strong>Important:</strong> Importing a backup will <em>permanently erase</em> all current data, including your saved links, link groups, categories, themes, icons, favicons, logos, and background images. Once cleared, the system will automatically populate the database and restore all assets from the contents of the uploaded backup.

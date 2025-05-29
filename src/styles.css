@@ -9,6 +9,10 @@ html, body {
   overflow-y: auto;
 }
 
+::ng-deep .custom-list-icon {
+  border-radius: var(--custom-radius) !important;
+}
+
 app-root {
   display: block;
   min-height: 100vh;

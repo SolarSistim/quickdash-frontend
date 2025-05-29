@@ -63,6 +63,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   searchFontColor = '#ffffff';
   searchBackgroundColor = '#000000';
   searchBackgroundOpacity = 0.4;
+  searchCornerRadius: any;
 
   constructor(
   private dashboardService: DashboardDropService,
@@ -114,9 +115,8 @@ this.dashboardService.getAllLinks().subscribe(links => {
     this.searchBorderColor = settings['SEARCH_FEATURE_BORDER_COLOR'] || '#ffffff';
     this.searchBorderWidth = parseInt(settings['SEARCH_FEATURE_BORDER_WIDTH'] || '2', 10);
     this.searchFontColor = settings['SEARCH_FEATURE_FONT_COLOR'] || '#ffffff';
-
-    console.log('🎨 SEARCH_FEATURE_BACKGROUND_COLOR:', this.searchBackgroundColor);
-    console.log('🟡 SEARCH_FEATURE_BACKGROUND_OPACITY:', this.searchBackgroundOpacity);
+    this.searchCornerRadius = parseInt(settings['SEARCH_FEATURE_CORNER_RADIUS']);
+    console.log('Corner radius: ', this.searchCornerRadius)
   });
 
 

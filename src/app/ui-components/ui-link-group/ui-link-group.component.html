@@ -102,6 +102,7 @@
         [showHandles]="showHandles"
         [refreshTrigger]="selectedThemeName"
         (linkDeleted)="handleLinkDeleted(group.id)"
+        (linkUpdated)="handleLinkUpdated(group.id, $event)"
       ></app-ui-link>
     </div>
   </div>

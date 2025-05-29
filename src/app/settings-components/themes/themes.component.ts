@@ -19,6 +19,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { DialogManageBackgroundImagesComponent } from './dialog-manage-background-images/dialog-manage-background-images.component';
 import { TutorialsService } from '../tutorials/tutorials.service';
+import { TutorialCustomizingYourThemeComponent } from '../tutorials/tutorial-components/tutorial-customizing-your-theme/tutorial-customizing-your-theme.component';
 
 interface ThemePreset {
   name: string;
@@ -36,7 +37,8 @@ interface ThemePreset {
             UiStatusComponent,
             MatCardModule,
             SmallTitleComponent,
-            ColorPickerDirective,],
+            ColorPickerDirective,
+            TutorialCustomizingYourThemeComponent],
   templateUrl: './themes.component.html',
   styleUrl: './themes.component.css'
 })
@@ -75,15 +77,17 @@ export class ThemesComponent {
           parsed[key] = !isNaN(num) ? num.toFixed(1) : '1.0';
         } else if (
         [
-          'CATEGORY_FONT_WEIGHT',
-          'CATEGORY_FONT_SIZE',
-          'GROUP_FONT_WEIGHT',
-          'GROUP_FONT_SIZE',
-          'GROUP_BORDER_WIDTH',
-          'LINK_FONT_WEIGHT',
-          'LINK_FONT_SIZE',
-          'SEARCH_FEATURE_BORDER_WIDTH' // ✅ Add this
-        ].includes(key)
+        'CATEGORY_FONT_WEIGHT',
+        'CATEGORY_FONT_SIZE',
+        'GROUP_FONT_WEIGHT',
+        'GROUP_FONT_SIZE',
+        'GROUP_BORDER_WIDTH',
+        'LINK_FONT_WEIGHT',
+        'LINK_FONT_SIZE',
+        'LIST_FONT_WEIGHT',           // ✅ Fix: Add this
+        'LIST_FONT_SIZE',             // ✅ Fix: Add this
+        'SEARCH_FEATURE_BORDER_WIDTH'
+      ].includes(key)
       ) {
         const num = parseInt(val, 10);
         parsed[key] = !isNaN(num) ? num : null;
@@ -114,12 +118,12 @@ export class ThemesComponent {
         this.selectedThemeName = 'Unsaved Theme';
       }
     });  
-    this.themesService.loadThemes().subscribe((themes) => {
-      this.themePresets = themes.map(t => ({
-        name: t.name,
-        ...JSON.parse(t.data)
-      }));
-    });
+    // this.themesService.loadThemes().subscribe((themes) => {
+    //   this.themePresets = themes.map(t => ({
+    //     name: t.name,
+    //     ...JSON.parse(t.data)
+    //   }));
+    // });
     this.loadThemeEditorTutorial();
   }
 
@@ -201,17 +205,13 @@ dismissThemeTutorial() {
         }
       }
     }
-    
-    
-  
-    // Save the theme JSON settings
+
     this.themesService.saveTheme(name, data).subscribe(() => {
       this.statusService.show('Theme imported!', 'success');
       this.settingsService.clearCache?.();
       this.ngOnInit();
     });
-  }
-  
+  }  
 
   importTheme() {
     const input = document.createElement('input');
@@ -427,7 +427,20 @@ dismissThemeTutorial() {
       'LINK_BACKGROUND_OPACITY',
       'LINK_FONT_COLOR',
       'LINK_FONT_WEIGHT',
-      'LINK_FONT_SIZE'
+      'LINK_FONT_SIZE',
+      'LIST_BACKGROUND_COLOR',
+      'LIST_BACKGROUND_OPACITY',
+      'LIST_FONT_COLOR',
+      'LIST_FONT_WEIGHT',
+      'LIST_FONT_SIZE',
+      'LIST_BORDER_COLOR',
+      'LIST_BORDER_WIDTH',
+      'LINK_BORDER_COLOR',
+      'LINK_BORDER_WIDTH',
+      'LIST_BORDER_CORNER_RADIUS',
+      'LINK_BORDER_CORNER_RADIUS',
+      'GROUP_BORDER_CORNER_RADIUS',
+      'SEARCH_FEATURE_CORNER_RADIUS'
     ];
   
     const data = Object.fromEntries(
@@ -476,7 +489,20 @@ dismissThemeTutorial() {
       'LINK_BACKGROUND_OPACITY',
       'LINK_FONT_COLOR',
       'LINK_FONT_WEIGHT',
-      'LINK_FONT_SIZE'
+      'LINK_FONT_SIZE',
+      'LIST_BACKGROUND_COLOR',
+      'LIST_BACKGROUND_OPACITY',
+      'LIST_FONT_COLOR',
+      'LIST_FONT_WEIGHT',
+      'LIST_FONT_SIZE',
+      'LIST_BORDER_COLOR',
+      'LIST_BORDER_WIDTH',
+      'LINK_BORDER_COLOR',
+      'LINK_BORDER_WIDTH',
+      'LIST_BORDER_CORNER_RADIUS',
+      'LINK_BORDER_CORNER_RADIUS',
+      'GROUP_BORDER_CORNER_RADIUS',
+      'SEARCH_FEATURE_CORNER_RADIUS'
     ];
   
     const themeOnly = Object.fromEntries(
@@ -513,39 +539,6 @@ dismissThemeTutorial() {
     const safeName = exportData.name.replace(/[^a-z0-9_-]+/gi, '_').toLowerCase();
     saveAs(content, `theme-${safeName}.zip`);
   }
-  
-  
-  
-  // importTheme() {
-  //   const input = document.createElement('input');
-  //   input.type = 'file';
-  //   input.accept = '.json';
-  //   input.onchange = (e: any) => {
-  //     const file = e.target.files?.[0];
-  //     if (!file) return;
-  
-  //     const reader = new FileReader();
-  //     reader.onload = () => {
-  //       try {
-  //         const parsed = JSON.parse(reader.result as string);
-  //         const name = parsed.name || 'Unnamed Theme';
-  //         const data = parsed.data;  // ✅ just the inner `data` block
-  
-  //         if (!data || typeof data !== 'object') throw new Error('Invalid format');
-  
-  //         this.themesService.saveTheme(name, data).subscribe(() => {
-  //           this.statusService.show('Theme imported!', 'success');
-  //           this.settingsService.clearCache?.();
-  //           this.ngOnInit();
-  //         });
-  //       } catch (err) {
-  //         this.statusService.show('Invalid theme file.', 'error');
-  //       }
-  //     };
-  //     reader.readAsText(file);
-  //   };
-  //   input.click();
-  // }
 
   saveAsNewTheme() {
     const dialogRef = this.dialog.open(DialogNameThemeComponent, {
@@ -582,7 +575,20 @@ dismissThemeTutorial() {
       'LINK_BACKGROUND_OPACITY',
       'LINK_FONT_COLOR',
       'LINK_FONT_WEIGHT',
-      'LINK_FONT_SIZE'
+      'LINK_FONT_SIZE',
+      'LIST_BACKGROUND_COLOR',
+      'LIST_BACKGROUND_OPACITY',
+      'LIST_FONT_COLOR',
+      'LIST_FONT_WEIGHT',
+      'LIST_FONT_SIZE',
+      'LIST_BORDER_COLOR',
+      'LIST_BORDER_WIDTH',
+      'LINK_BORDER_COLOR',
+      'LINK_BORDER_WIDTH',
+      'LIST_BORDER_CORNER_RADIUS',
+      'LINK_BORDER_CORNER_RADIUS',
+      'GROUP_BORDER_CORNER_RADIUS',
+      'SEARCH_FEATURE_CORNER_RADIUS'
     ];
   
     const data = Object.fromEntries(

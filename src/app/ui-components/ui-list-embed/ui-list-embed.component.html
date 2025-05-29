@@ -3,7 +3,7 @@
 <div class="dialog-header" [style.color]="styleSettings.groupFontColor">
   <h3 class="pb-2" [style.color]="styleSettings.groupFontColor">
   <!-- Export Mode -->
-  <ng-container *ngIf="showExportPanel; else normalHeader">
+  <ng-container *ngIf="showExportPanel; else normalHeader" [style.background-color]="groupBackgroundColor">
     Export list "<span style="font-weight: 500;">{{ list?.name || ('#' + listId) }}</span>"
   </ng-container>
 
@@ -68,6 +68,7 @@
   <!-- Only show close icon in dialog mode -->
 <!-- Show fullscreen icon if NOT in fullscreen mode -->
 <i
+  [style.color]="groupBackgroundColor"
   *ngIf="!isFullscreen"
   class="bi bi-fullscreen"
   style="position: relative; top: -12px; left: -25px; cursor: pointer;"
@@ -85,10 +86,10 @@
 
 <!-- Close icon for dialog -->
 <i
+  [style.color]="groupBackgroundColor"
   *ngIf="dialogRef"
   class="bi bi-x-lg close-icon"
   title="Close"
-  style="color: white !important;"
   (click)="closeDialog()"
 ></i>
 
@@ -125,7 +126,7 @@
          #addListItemComponent>
          </app-add-list-item>
       <ng-container *ngIf="!isCategoryEditMode && !showNewItemForm && !showCompletedItems">
-         <div *ngIf="loading">Loading items...</div>
+
          <div *ngIf="!loading && items.length === 0" class="mt-3" [style.color]="styleSettings.groupFontColor">
             No items found.
             <div (click)="setShowNewItemForm(true)"
@@ -148,10 +149,10 @@
                *ngIf="!showExportPanel"
                />
 
-            <div class="test-group-list" [ngStyle]="{ '--group-background-color': styleSettings.groupBackgroundColor }" *ngIf="!showExportPanel">
+            <div class="test-group-list" [ngStyle]="{ 'background-color': styleSettings.groupBackgroundColor }" *ngIf="!showExportPanel">
                <!-- ✅ Static Pinned Section -->
-            <ng-container *ngIf="filteredGroupedTestItems['Pinned']?.length === 0">
-            <div class="category-header" style="color: white; font-weight: bold; margin-top: 16px;">
+            <ng-container>
+            <div class="category-header" style="font-weight: bold; margin-top: 0px;" [style.color]="styleSettings.groupFontColor">
                Pinned |
                <span style="font-size: 0.90rem;">
                   <i>
@@ -165,7 +166,7 @@
                   [cdkDropListConnectedTo]="objectKeys(groupedTestItems)" class="link-list"
                   (cdkDropListDropped)="dropTestItem($event)">
                   <ng-container *ngIf="filteredGroupedTestItems['Pinned']?.length === 0">
-                  <div class="empty-drop-placeholder">
+                  <div class="empty-drop-placeholder" [style.color]="styleSettings.groupFontColor" [style.border-color]="styleSettings.groupFontColor">
                      Drop items here to pin them
                   </div>
                   </ng-container>
@@ -173,7 +174,10 @@
                      [cdkDragDisabled]="item.isEditing || item.showDetails ||anyItemDetailsVisible" class="link-item"
                      [class.highlightA]="item.highlightClass === 'highlightA'"
                      [class.highlightB]="item.highlightClass === 'highlightB'"
-                     [ngStyle]="item.pinned ? { 'border': '2px dotted yellow' } : {}"
+                     [ngStyle]="{
+                        'border': item.pinned ? '2px dotted yellow' : '',
+                        'background-color': styleSettings.linkBackgroundColor
+                     }"
                      (click)="!item.isEditing && toggleDetails(item)">
                      <!-- Inline Edit Form -->
                      <!-- Inline Edit Form -->
@@ -283,30 +287,45 @@
                               ></span>
 
                               <!-- ✅ Title inline with badge and dot -->
-                              <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%; cursor: pointer !important;">
+                              <span
+                              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%; cursor: pointer !important;"
+                              >
                               <i
                                  *ngIf="item.tempDescription"
                                  class="bi bi-info-circle"
                                  title="This item has more info in the description."
-                                 style="margin-right: 2px; color: #ccc; cursor: pointer;"
+                                 style="margin-right: 10px; color: #ccc; cursor: pointer;"
                                  (click)="$event.stopPropagation()"
                               ></i>
-                              {{ item.name }}
+
+                              <span class="item-name-hover">{{ item.name }}</span>
                               </span>
                            </div>
 
-                           <div style="display: flex; align-items: center; gap: 4px;">
-                              <div class="pin-icon-wrapper" (click)="onPinIconClick(item, $event)">
-                                 <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'"
-                                    style="cursor: pointer; color: rgb(0, 255, 0);"></i>
-                              </div>
-                              <div class="pin-icon-wrapper" (click)="onEditItem(item, $event)">
-                                 <i class="bi bi-pen" style="cursor: pointer;"></i>
-                              </div>
-                              <div class="pin-icon-wrapper" (click)="onDeleteItem(item, $event)">
-                                 <i class="bi bi-x-lg" style="cursor: pointer;"></i>
-                              </div>
-                           </div>
+                                 <!-- Action icons -->
+                                 <div style="display: flex; align-items: center; gap: 4px;">
+                                 <div
+                                    class="pin-icon-wrapper"
+                                    (click)="onPinIconClick(item, $event)"
+                                    [style.--group-background-color]="styleSettings.groupBackgroundColor"
+                                 >
+                                    <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'" style="cursor: pointer;"></i>
+                                 </div>
+                                 <div
+                                    class="pin-icon-wrapper"
+                                    (click)="onEditItem(item, $event)"
+                                    [style.--group-background-color]="styleSettings.groupBackgroundColor"
+                                 >
+                                    <i class="bi bi-pen" style="cursor: pointer;"></i>
+                                 </div>
+                                 <div
+                                    class="pin-icon-wrapper"
+                                    (click)="onDeleteItem(item, $event)"
+                                    [style.--group-background-color]="styleSettings.groupBackgroundColor"
+                                 >
+                                    <i class="bi bi-x-lg" style="cursor: pointer;"></i>
+                                 </div>
+                                 </div>
                         </div>
                         <!-- Priority Panel -->
                         <div
@@ -372,7 +391,7 @@
                <!-- 🔁 Dynamic Categories -->
                <ng-container *ngFor="let category of objectKeys(filteredGroupedTestItems); let catIndex = index">
                   <ng-container *ngIf="category !== 'Pinned'">
-                     <div class="category-header" style="color: white; font-weight: bold; margin-top: 16px;">
+                     <div class="category-header" style="font-weight: bold; margin-top: 16px;" [style.color]="styleSettings.groupFontColor">
                      {{ category }} |
                      <span *ngIf="filteredGroupedTestItems[category]?.length !== undefined">
                         <i>
@@ -390,7 +409,7 @@
                      <div cdkDropList [id]="category" [cdkDropListData]="filteredGroupedTestItems[category]"
                         [cdkDropListConnectedTo]="objectKeys(groupedTestItems)" class="link-list"
                         (cdkDropListDropped)="dropTestItem($event)">
-                        <div *ngIf="!filteredGroupedTestItems[category]?.length" class="empty-drop-placeholder">
+                        <div *ngIf="!filteredGroupedTestItems[category]?.length" class="empty-drop-placeholder" [style.color]="styleSettings.groupFontColor" [style.border-color]="styleSettings.groupFontColor">
                            Drop items here
                            </div>
                         <div *ngFor="let item of filteredGroupedTestItems[category]; let itemIndex = index" cdkDrag [cdkDragData]="item"
@@ -501,25 +520,36 @@
                                           *ngIf="item.tempDescription"
                                           class="bi bi-info-circle"
                                           title="This item has more info in the description."
-                                          style="margin-right: 2px; color: #ccc; cursor: pointer;"
+                                          style="margin-right: 10px; color: #ccc; cursor: pointer;"
                                           (click)="$event.stopPropagation()"
                                        ></i>
-                                       {{ item.name }}
+                                       <span class="item-name-hover">{{ item.name }}</span>
                                     </span>
                                  </div>
 
                                  <!-- Action icons -->
                                  <div style="display: flex; align-items: center; gap: 4px;">
-                                    <div class="pin-icon-wrapper" (click)="onPinIconClick(item, $event)">
-                                       <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'"
-                                          style="cursor: pointer;"></i>
-                                    </div>
-                                    <div class="pin-icon-wrapper" (click)="onEditItem(item, $event)">
-                                       <i class="bi bi-pen" style="cursor: pointer;"></i>
-                                    </div>
-                                    <div class="pin-icon-wrapper" (click)="onDeleteItem(item, $event)">
-                                       <i class="bi bi-x-lg" style="cursor: pointer;"></i>
-                                    </div>
+                                 <div
+                                    class="pin-icon-wrapper"
+                                    (click)="onPinIconClick(item, $event)"
+                                    [style.--group-background-color]="styleSettings.groupBackgroundColor"
+                                 >
+                                    <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'" style="cursor: pointer;"></i>
+                                 </div>
+                                 <div
+                                    class="pin-icon-wrapper"
+                                    (click)="onEditItem(item, $event)"
+                                    [style.--group-background-color]="styleSettings.groupBackgroundColor"
+                                 >
+                                    <i class="bi bi-pen" style="cursor: pointer;"></i>
+                                 </div>
+                                 <div
+                                    class="pin-icon-wrapper"
+                                    (click)="onDeleteItem(item, $event)"
+                                    [style.--group-background-color]="styleSettings.groupBackgroundColor"
+                                 >
+                                    <i class="bi bi-x-lg" style="cursor: pointer;"></i>
+                                 </div>
                                  </div>
 
                               </div>

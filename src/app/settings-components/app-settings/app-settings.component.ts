@@ -3,14 +3,7 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import {
-  FormControl,
-  FormGroupDirective,
-  NgForm,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { FormControl, FormGroupDirective, NgForm, Validators, FormsModule, ReactiveFormsModule,} from '@angular/forms';
 import { SettingsService } from './settings.service';
 import { StatusMessageService } from '../../ui-components/ui-status/ui-status.service';
 import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.component';
@@ -19,10 +12,11 @@ import { MatCardModule } from '@angular/material/card';
 import { ViewChild, ElementRef } from '@angular/core';
 import { SmallTitleComponent } from '../../ui-components/small-title/small-title.component';
 import { TutorialsService } from '../tutorials/tutorials.service';
+import { TutorialSearchBarComponent } from '../tutorials/tutorial-components/tutorial-search-bar/tutorial-search-bar.component';
 
 @Component({
   selector: 'app-app-settings',
-  imports: [MatButtonModule,MatInputModule,MatSelectModule,FormsModule,ReactiveFormsModule,CommonModule,UiStatusComponent,MatCardModule,SmallTitleComponent],
+  imports: [MatButtonModule,MatInputModule,MatSelectModule,FormsModule,ReactiveFormsModule,CommonModule,UiStatusComponent,MatCardModule,SmallTitleComponent,TutorialSearchBarComponent],
   templateUrl: './app-settings.component.html',
   styleUrl: './app-settings.component.css'
 })

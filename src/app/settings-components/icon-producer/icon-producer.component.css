@@ -1,0 +1,37 @@
+ 
+  mat-dialog-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+  }
+
+  mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .input-field {
+    width: 100%;
+  }
+
+  .button-panel {
+    background-color: #2e3a46;
+    padding: 15px;
+    border-radius: 3px;
+  }
+
+  .nav-button {
+    background-color: #3b4d59;
+    text-align: left;
+    color: white;
+  }
+
+  .nav-button-disabled {
+    background-color: #3b4d59;
+    text-align: left;
+    color: gray;
+  }
+
+  
