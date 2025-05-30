@@ -110,9 +110,10 @@ export class DialogManageCategoriesComponent implements OnInit {
     delete cat.originalName;
   }
 
-  closeDialog() {
-    this.dialogRef.close(false); // 🚪 exit without saving
-  }
+closeDialog() {
+  this.dialogRef.close(false); // ❌ No changes made, just close
+}
+
 
   saveEdit(cat: any) {
     this.dropService.updateCategory(cat.id, { name: cat.name }).subscribe({

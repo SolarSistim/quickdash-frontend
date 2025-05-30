@@ -1,5 +1,5 @@
 <div class="dialog-flex-container">
-  <mat-dialog-content class="dialog-content">
+  <mat-dialog-content class="dialog-content" style="padding-bottom: 0px;">
     <h3 mat-dialog-title class="pb-2" *ngIf="!showGroupEditor">Manage Links</h3>
     <h3 mat-dialog-title class="pb-2" *ngIf="showGroupEditor">Edit Group</h3>
 
@@ -63,54 +63,6 @@
       </form>
     </div>
 
-    <div *ngIf="!showAddForm" class="mt-1 mb-3">
-      <span style="cursor: pointer;" (click)="showAddForm = true">&nbsp;[+] Add New Link Here</span>
-    </div>
-
-    <!-- No Links Message -->
-    <div *ngIf="editableLinks.length === 0" class="text-muted mb-3 ps-1">
-      No links yet. Click <strong>"Add New Link Here"</strong> to add one.
-    </div>
-
-    <!-- Link List -->
-    <div cdkDropList (cdkDropListDropped)="drop($event)" style="overflow-y: auto;">
-      <div *ngFor="let link of editableLinks" cdkDrag class="category-row" style="display: flex; align-items: center; gap: 10px;">
-        
-        <span cdkDragHandle><i class="bi bi-list" style="font-size: 1.2rem;"></i></span>
-
-        <div *ngIf="!link.isEditing" style="display: flex; align-items: center; width: 100%;">
-          <i class="bi bi-pencil" (click)="enableEdit(link)" style="cursor: pointer; margin-right: 8px;"></i>
-          <span>{{ link.name }}</span>
-
-          <!-- Spacer to push the X to the right -->
-          <span style="flex: 1 1 auto;"></span>
-
-          <i class="bi bi-x-lg" style="color: red; cursor: pointer;" (click)="deleteLink(link)"></i>
-        </div>
-
-        <div *ngIf="link.isEditing" class="w-100 mt-2">
-          <mat-form-field appearance="fill" class="mb-2" style="width: 100%;">
-            <mat-label>Link Name</mat-label>
-            <input matInput autocomplete="off" [(ngModel)]="link.name" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="mb-2" style="width: 100%;">
-            <mat-label>Link URL</mat-label>
-            <input matInput autocomplete="off" [(ngModel)]="link.url" />
-          </mat-form-field>
-
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <mat-form-field appearance="fill" style="flex: 1;">
-              <mat-label>Link Description</mat-label>
-              <input matInput autocomplete="off" [(ngModel)]="link.description" />
-            </mat-form-field>
-
-            <button mat-button color="warn" (click)="cancelEdit(link)">Cancel</button>
-            <button mat-raised-button color="primary" (click)="saveEdit(link)">Save</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </mat-dialog-content>
 
   <mat-dialog-actions class="dialog-actions">

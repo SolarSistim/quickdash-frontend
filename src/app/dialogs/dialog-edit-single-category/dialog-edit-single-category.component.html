@@ -15,6 +15,7 @@
       autocomplete="off"
       type="text"
       [(ngModel)]="category.name"
+      (keydown.enter)="save()"
       placeholder="Category Name"
     />
   </mat-form-field>

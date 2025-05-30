@@ -16,6 +16,30 @@ interface Category {
   tempName?: string;
 }
 
+// Assuming TestItem interface is also available, either imported or defined here
+interface TestItem {
+    id: number;
+    name: string;
+    position: number;
+    categoryName: string; // Ensure this is always up-to-date
+    pinned: boolean;
+    createdAt?: string;
+    priority?: 'High' | 'Medium' | 'Low';
+    description?: string;
+    isEditing?: boolean;
+    tempName?: string;
+    tempPriority?: 'High' | 'Medium' | 'Low';
+    tempCategoryName?: string;
+    tempDescription?: string;
+    showDetails?: boolean;
+    highlight?: boolean;
+    highlightClass?: 'highlightA' | 'highlightB';
+    showPriorityPanel?: boolean;
+    categoryId?: number | null; // This is the numerical ID
+    confirmingComplete?: boolean;
+}
+
+
 @Component({
   selector: 'app-manage-categories',
   standalone: true,
@@ -29,7 +53,6 @@ export class ManageCategoriesComponent {
   @Output() categoryAdded = new EventEmitter<void>();
   @Output() categoryAddCompleted = new EventEmitter<void>();
   @Input() listId: number | null = null;
-  // @Input() styleSettings: any;
   @Output() exit = new EventEmitter<void>();
   @Output() newCategoryNameChange = new EventEmitter<string>();
   @Output() categoriesChanged = new EventEmitter<Category[]>();
@@ -39,7 +62,7 @@ export class ManageCategoriesComponent {
   }
   @Output() anyEditingChange = new EventEmitter<boolean>();
   @Output() returnClicked = new EventEmitter<void>();
-
+  @Input() testItems: TestItem[] = []; // Explicitly type testItems
   @Input() styleSettings: {
     groupBackgroundColor?: string;
     groupFontColor?: string;
@@ -56,11 +79,11 @@ export class ManageCategoriesComponent {
   constructor(private listsService: ListsService) {}
 
   ngOnInit(): void {
+    console.log('📋 Categories loaded:', this.categories.map(c => c.id));
     this.loadCategories();
   }
 
   ngDoCheck() {
-    // Notify parent about current editing state
     this.anyEditingChange.emit(this.anyCategoryEditing);
   }
 
@@ -77,54 +100,68 @@ export class ManageCategoriesComponent {
     return this.categories.some(cat => cat.isEditing);
   }
 
-addCategory(keepFormOpen = false) {
-  const name = this.newCategoryName.trim();
-  const listId = this.listId;
-  if (!name || !listId) return;
+  // MODIFIED METHOD
+  getItemCountForCategory(categoryId: number): number {
+    const category = this.categories.find(cat => cat.id === categoryId);
+    if (!category) {
+      return 0; // Category not found
+    }
+    const categoryName = category.name;
 
-  this.listsService.addCategoryForList(listId, name).subscribe({
-    next: () => {
-      this.newCategoryName = '';
+    const count = this.testItems.filter(item =>
+      !item.pinned && item.categoryName === categoryName
+    ).length;
 
-      // Reload categories, then emit updated list to parent
-      this.listsService.getCategoriesForList(listId).subscribe({
-        next: (categories) => {
-          this.categories = categories.sort((a, b) => a.position - b.position);
-          this.categoriesChanged.emit(this.categories); // ✅ This was missing
-          this.categoryAdded.emit(); // still needed
-          if (!keepFormOpen) {
-            this.categoryAddCompleted.emit(); // still needed
+    // console.log(`📊 Category: "${categoryName}" (ID: ${categoryId}), Items found: ${count}`);
+    return count;
+  }
+
+
+  addCategory(keepFormOpen = false) {
+    const name = this.newCategoryName.trim();
+    const listId = this.listId;
+    if (!name || !listId) return;
+
+    this.listsService.addCategoryForList(listId, name).subscribe({
+      next: () => {
+        this.newCategoryName = '';
+
+        this.listsService.getCategoriesForList(listId).subscribe({
+          next: (categories) => {
+            this.categories = categories.sort((a, b) => a.position - b.position);
+            this.categoriesChanged.emit(this.categories);
+            this.categoryAdded.emit();
+            if (!keepFormOpen) {
+              this.categoryAddCompleted.emit();
+            }
+          },
+          error: (err) => {
+            console.error('❌ Failed to fetch categories after add:', err);
           }
-        },
-        error: (err) => {
-          console.error('❌ Failed to fetch categories after add:', err);
-        }
-      });
-    },
-    error: (err) => {
-      console.error('❌ Failed to add category:', err);
-      alert(err?.error?.message || 'Failed to add category');
-    }
-  });
-}
+        });
+      },
+      error: (err) => {
+        console.error('❌ Failed to add category:', err);
+        alert(err?.error?.message || 'Failed to add category');
+      }
+    });
+  }
 
-
-
-loadCategories() {
-  if (!this.listId) return;
-  this.isLoading = true;
-  this.listsService.getCategoriesForList(this.listId).subscribe({
-    next: (categories) => {
-      this.categories = categories.sort((a, b) => a.position - b.position);
-      this.categoriesChanged.emit(this.categories); // ✅ emit to parent
-      this.isLoading = false;
-    },
-    error: (err) => {
-      console.error('❌ Failed to load categories:', err);
-      this.isLoading = false;
-    }
-  });
-}
+  loadCategories() {
+    if (!this.listId) return;
+    this.isLoading = true;
+    this.listsService.getCategoriesForList(this.listId).subscribe({
+      next: (categories) => {
+        this.categories = categories.sort((a, b) => a.position - b.position);
+        this.categoriesChanged.emit(this.categories);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('❌ Failed to load categories:', err);
+        this.isLoading = false;
+      }
+    });
+  }
 
   editCategory(cat: Category) {
     cat.isEditing = true;
@@ -148,6 +185,8 @@ loadCategories() {
         cat.name = trimmedName;
         cat.isEditing = false;
         cat.tempName = '';
+        // Reload categories to ensure the parent UiListEmbedComponent also gets the updated names
+        this.loadCategories();
       },
       error: (err) => {
         console.error('❌ Failed to update category name:', err);
@@ -156,41 +195,39 @@ loadCategories() {
     });
   }
 
-deleteCategory(cat: Category) {
-  if (!this.listId) return;
+  deleteCategory(cat: Category) {
+    if (!this.listId) return;
 
-  const confirmed = window.confirm(`Are you sure you want to delete category "${cat.name}"?`);
-  if (!confirmed) return;
+    const confirmed = window.confirm(`Are you sure you want to delete category "${cat.name}"?`);
+    if (!confirmed) return;
 
-  this.listsService.deleteCategoryForList(this.listId, cat.id).subscribe({
-    next: () => {
-      this.categories = this.categories.filter(c => c.id !== cat.id);
-      console.log(`✅ Deleted category with ID ${cat.id}`);
-      this.categoryDeleted.emit();
-      this.categoriesChanged.emit(this.categories); // ✅ ADD THIS
-    },
-    error: (err) => {
-      console.error('❌ Failed to delete category:', err);
-      alert(err?.error?.message || 'Failed to delete category');
-    }
-  });
-}
+    this.listsService.deleteCategoryForList(this.listId, cat.id).subscribe({
+      next: () => {
+        this.categories = this.categories.filter(c => c.id !== cat.id);
+        console.log(`✅ Deleted category with ID ${cat.id}`);
+        this.categoryDeleted.emit();
+        this.categoriesChanged.emit(this.categories);
+        // Refresh testItems in parent after deletion to ensure counts are accurate
+        // This is handled by the parent's onCategoryDeleted calling loadItems()
+      },
+      error: (err) => {
+        console.error('❌ Failed to delete category:', err);
+        alert(err?.error?.message || 'Failed to delete category');
+      }
+    });
+  }
 
+  onDrop(event: CdkDragDrop<Category[]>) {
+    moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
 
-onDrop(event: CdkDragDrop<Category[]>) {
-  moveItemInArray(this.categories, event.previousIndex, event.currentIndex);
+    const payload = this.categories.map((cat, index) => ({
+      id: cat.id,
+      position: index
+    }));
 
-  const payload = this.categories.map((cat, index) => ({
-    id: cat.id,
-    position: index
-  }));
-
-  this.listsService.reorderCategoriesForList(this.listId!, payload).subscribe({
-    next: () => console.log('✅ Categories reordered'),
-    error: (err) => console.error('❌ Failed to reorder categories', err),
-  });
-}
-
-
-
+    this.listsService.reorderCategoriesForList(this.listId!, payload).subscribe({
+      next: () => console.log('✅ Categories reordered'),
+      error: (err) => console.error('❌ Failed to reorder categories', err),
+    });
+  }
 }

@@ -297,5 +297,18 @@
     color: inherit;
     padding-top: 3px;
   }
-  
+
+  @media (max-width: 768px) {
+  .group-box .icon-row {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .group-box .icon-row {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
   

@@ -75,3 +75,23 @@
 .list-hover:hover {
   text-decoration: underline;
 }
+
+.list-drag-handle {
+  cursor: grab;
+  font-size: 16px;
+  color: #aaa;
+  opacity: 0;
+  transform: scale(0.8);
+  pointer-events: none;
+  transition: opacity 0.1s ease, transform 0.1s ease;
+}
+
+.handles-visible .list-drag-handle {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
+.list-drag-handle:hover {
+  color: #777;
+}

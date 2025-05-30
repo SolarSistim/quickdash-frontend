@@ -46,6 +46,7 @@ export class UiLinkGroupComponent {
   iconRowStyle: SafeStyle = '';
   groupFontStyle: SafeStyle = '';
   groupBackgroundColor: string = '';
+  isSmallScreen = false;
 
   constructor(
     private dropService: DashboardDropService,
@@ -96,6 +97,10 @@ ngOnInit(): void {
       font-size: ${fontSize}px;
     `);
   });
+  this.breakpointObserver.observe([Breakpoints.Tablet, Breakpoints.Handset])
+    .subscribe(result => {
+      this.isSmallScreen = result.matches;
+    });
 }
 
 

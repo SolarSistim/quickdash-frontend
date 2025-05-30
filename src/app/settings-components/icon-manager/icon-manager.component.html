@@ -4,6 +4,8 @@
    <!-- start Single icon upload -->
    <mat-tab label="Icon Manager">
 
+      <app-tutorial-note-on-icons></app-tutorial-note-on-icons>
+
       <div class="mat-elevation-z4">
          <div class="upload-section" *ngIf="!editingIconId" class="mt-4">
             <div class="mat-card button-panel" *ngIf="!previewUrl">
@@ -84,8 +86,6 @@
          </div>
       </div>
 
-      <app-tutorial-note-on-icons></app-tutorial-note-on-icons>
-
       <div class="icon-grid-container" *ngIf="!editingIconId" style="padding-bottom: 10px;">
          <div class="scrollable-icon-grid">
             <div class="icon-grid">
@@ -153,6 +153,9 @@
 </mat-tab>
 
 <mat-tab label="Multi-Icon Uploader">
+
+   <app-tutorial-multi-icon-uploader [isSettingsComponent]="false"></app-tutorial-multi-icon-uploader>
+
 <div class="multi-upload-section multi-preview-list mt-4">
    <div class="mat-card button-panel mt-3" *ngIf="multiUploadFiles.length === 0 && duplicateFiles.length === 0">
       <div class="row">

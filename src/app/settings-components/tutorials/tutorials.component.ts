@@ -10,10 +10,13 @@ import { TutorialCrashCourseComponent } from './tutorial-components/tutorial-cra
 import { TutorialCustomizingYourThemeComponent } from './tutorial-components/tutorial-customizing-your-theme/tutorial-customizing-your-theme.component';
 import { TutorialNoteOnIconsComponent } from './tutorial-components/tutorial-note-on-icons/tutorial-note-on-icons.component';
 import { TutorialSearchBarComponent } from './tutorial-components/tutorial-search-bar/tutorial-search-bar.component';
+import { TutorialIconProducerComponent } from "./tutorial-components/tutorial-icon-producer/tutorial-icon-producer.component";
+import { TutorialMultiIconUploaderComponent } from './tutorial-components/tutorial-multi-icon-uploader/tutorial-multi-icon-uploader.component';
+import { TutorialListComponent } from "./tutorial-components/tutorial-list/tutorial-list.component";
 
 @Component({
   selector: 'app-tutorials',
-  imports: [MatButtonModule,UiStatusComponent,TutorialCrashCourseComponent,TutorialANoteOnImportsComponent,TutorialCustomizingYourThemeComponent,TutorialNoteOnIconsComponent,TutorialSearchBarComponent],
+  imports: [MatButtonModule, UiStatusComponent, TutorialCrashCourseComponent, TutorialANoteOnImportsComponent, TutorialCustomizingYourThemeComponent, TutorialNoteOnIconsComponent, TutorialSearchBarComponent, TutorialIconProducerComponent, TutorialMultiIconUploaderComponent, TutorialListComponent],
   templateUrl: './tutorials.component.html',
   styleUrl: './tutorials.component.css'
 })

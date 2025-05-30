@@ -12,6 +12,7 @@
         name="newCategoryName"
         placeholder="Enter category name"
         [(ngModel)]="newCategoryName"
+        (keydown.enter)="saveAndClose()"
       />
     </mat-form-field>
   </form>

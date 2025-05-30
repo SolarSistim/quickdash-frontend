@@ -135,10 +135,8 @@
             </div>
          </div>
          <div *ngIf="!loading && items.length > 0">
-            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
-            <!-- 🔧 BASIC DRAG-AND-DROP TEST AREA -->
+
+            <app-tutorial-list [isSettingsComponent]="false"></app-tutorial-list>
 
             <app-filter-list
                [(filterText)]="filterText"
@@ -641,7 +639,8 @@
          (categoriesChanged)="onCategoriesChanged($event)"
          (categoryAddCompleted)="onCategoryAddCompleted()" 
          (categoryAdded)="onCategoryAdded()"
-         (categoryDeleted)="onCategoryDeleted()">
+         (categoryDeleted)="onCategoryDeleted()"
+         [testItems]="testItems">
       </app-manage-categories>
    </div>
    <div class="p-3">

@@ -9,7 +9,7 @@
     class="group-box"
     cdkDrag
     [style]="groupBoxStyle"
-    [cdkDragDisabled]="isGroupDraggable"
+    [cdkDragDisabled]="!showHandles"
   >
     <div class="group-header d-flex align-items-center justify-content-between">
       <i
@@ -35,9 +35,6 @@
         </button>
         <button mat-menu-item (click)="openEditLinksDialog(category.id, group.id)">
           <i class="bi bi-pencil"></i> Edit Group
-        </button>
-        <button mat-menu-item (click)="openManageGroupsDialog(category.id, group.id)">
-          <i class="bi bi-sliders"></i> Group Manager
         </button>
         <button mat-menu-item [matMenuTriggerFor]="moveGroupSubMenu">
           <i class="bi bi-send"></i> Move Group
@@ -83,6 +80,7 @@
     cdkDrag
     [cdkDragData]="item"
     [class.handles-visible]="showHandles"
+    [cdkDragDisabled]="!showHandles"
   >
     <app-ui-list
       *ngIf="item.type === 'list'"

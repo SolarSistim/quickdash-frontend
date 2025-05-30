@@ -24,6 +24,7 @@ import { ExportListComponent } from './export-list/export-list.component';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { UiLoaderComponent } from '../ui-loader/ui-loader.component';
+import { TutorialListComponent } from '../../settings-components/tutorials/tutorial-components/tutorial-list/tutorial-list.component';
 
 interface ListItem {
   id: number;
@@ -96,7 +97,8 @@ interface TestItem {
     FilterListComponent,
     CompletedListItemsComponent,
     ExportListComponent,
-    UiLoaderComponent
+    UiLoaderComponent,
+    TutorialListComponent
   ],
   templateUrl: './ui-list-embed.component.html',
   styleUrls: ['./ui-list-embed.component.css'],
@@ -163,6 +165,7 @@ export class UiListEmbedComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    console.log('📦 testItems categoryIds:', this.testItems.map(i => i.categoryId));
     this.loadList();
     this.isFullscreen = this.router.url.includes('/list-full');
     this.router.events
@@ -173,16 +176,17 @@ export class UiListEmbedComponent implements OnInit {
     });
     // Drag and drop testing
     this.testItems = this.items.map((item, index) => ({
-      id: item.id,
-      name: item.title || `Item ${index + 1}`,
-      position: index,
-      categoryName: item.category?.name || 'Uncategorized',
-      pinned: item.pinned,
-      createdAt: item.createdAt, // ✅ include createdAt
-      priority: item.priority || 'Medium', // optional: store raw priority
-      tempPriority: item.priority || 'Medium',
-      tempDescription: item.description ?? '',
-    }));
+  id: item.id,
+  name: item.title || `Item ${index + 1}`,
+  position: index,
+  categoryId: item.category?.id ?? null, // ✅ Needed for counting
+  categoryName: item.category?.name || 'Uncategorized',
+  pinned: item.pinned,
+  createdAt: item.createdAt,
+  priority: item.priority || 'Medium',
+  tempPriority: item.priority || 'Medium',
+  tempDescription: item.description ?? '',
+}));
     // End drag and drop testing
     this.isMobile = window.innerWidth < 576; // Bootstrap "xs" breakpoint
     window.addEventListener('resize', this.onResize.bind(this));

@@ -10,6 +10,7 @@
       type="text"
       name="newGroupName"
       [(ngModel)]="newGroupName"
+      (keydown.enter)="saveAndClose()"
     />
   </mat-form-field>
 </mat-dialog-content>

@@ -15,6 +15,7 @@ import { UiStatusComponent } from '../../ui-components/ui-status/ui-status.compo
 import { TutorialsService } from '../tutorials/tutorials.service';
 import { TutorialNoteOnIconsComponent } from '../tutorials/tutorial-components/tutorial-note-on-icons/tutorial-note-on-icons.component';
 import { IconProducerComponent } from '../icon-producer/icon-producer.component';
+import { TutorialMultiIconUploaderComponent } from '../tutorials/tutorial-components/tutorial-multi-icon-uploader/tutorial-multi-icon-uploader.component';
 
 @Component({
   selector: 'app-icon-manager',
@@ -28,7 +29,8 @@ import { IconProducerComponent } from '../icon-producer/icon-producer.component'
     MatTabsModule,
     UiStatusComponent,
     TutorialNoteOnIconsComponent,
-    IconProducerComponent],
+    IconProducerComponent,
+    TutorialMultiIconUploaderComponent],
   templateUrl: './icon-manager.component.html',
   styleUrl: './icon-manager.component.css'
 })

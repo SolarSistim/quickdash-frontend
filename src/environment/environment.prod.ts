@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://quickdashcss.visualetl.com/api' // 👈 Add /api here
+  apiUrl: 'https://quickdash.visualetl.com/api'
 };

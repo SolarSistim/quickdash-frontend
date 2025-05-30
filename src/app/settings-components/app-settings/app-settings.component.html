@@ -240,28 +240,6 @@
   </div>
 </mat-card>
 
- <!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
-<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
-<!-- HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL HOSTING/ROOT URL -->
-
-<app-small-title title="Hosting"></app-small-title>
-
-<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
-  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-    <div style="color: white;">
-      <h4 style="margin: 0;">Base URL</h4>
-      <small style="color: #ccc;">Select the base path where Quickdash is hosted.</small>
-    </div>
-    <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
-      <mat-label>Base URL</mat-label>
-      <mat-select [(ngModel)]="formValues['BASE_URL']" (selectionChange)="onValueChange()">
-        <mat-option [value]="'\\'">Use Root</mat-option>
-        <mat-option [value]="'/quickdash'">Specify Subfolder</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
-</mat-card>
-
 <mat-card *ngIf="formValues['BASE_URL'] !== '\\'" style="background-color: #2e3a46; padding: 16px;" class="mb-2">
   <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
     <div style="color: white;">

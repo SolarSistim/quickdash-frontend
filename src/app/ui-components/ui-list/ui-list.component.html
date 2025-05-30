@@ -3,6 +3,7 @@
   (click)="open()"
   title="{{ list.name }}"
   style="border-radius: 10px;"
+  [ngClass]="{ 'handles-visible': showHandles }"
   [ngStyle]="{
     'background-color': listStyles.backgroundColor,
     'color': listStyles.fontColor,
@@ -15,6 +16,12 @@
 [style.border-style]="'solid'"
 [style.border-radius.px]="listStyles.borderRadius"
 >
+<i
+  *ngIf="showHandles"
+  class="bi bi-list list-drag-handle"
+  cdkDragHandle
+  title="Drag List"
+></i>
   <i class="bi bi-list-columns-reverse"></i>
   <div class="list-name">
     <span class="list-hover">{{ list.name }}</span>
