@@ -74,7 +74,7 @@
   }
 
   .group-drag-handle {
-    cursor: grab;
+    cursor: pointer;
     font-size: 18px;
     color: #888;
     margin-right: 10px;
@@ -138,7 +138,7 @@
     padding: 4px 6px;
     background-color: #3b4d59;
     border-radius: 3px;
-    cursor: grab;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: space-between; /* Keep space-between for the outer elements */
@@ -176,7 +176,7 @@
     text-align: left; /* Align the text within the container to the left */
     overflow: hidden; /* Optional: for long names */
     text-overflow: ellipsis; /* Optional: for long names */
-    cursor: grab !important;
+    cursor: pointer !important;
   }
 
   .link-menu-icon {

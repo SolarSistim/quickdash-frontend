@@ -3,7 +3,7 @@
   padding-left: 24px;
   color: white;
   padding: 4px 6px;
-  cursor: grab !important;
+  cursor: pointer !important;
   display: flex;
   align-items: center;
   justify-content: space-between;

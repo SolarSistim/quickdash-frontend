@@ -298,17 +298,10 @@
     padding-top: 3px;
   }
 
-  @media (max-width: 768px) {
-  .group-box .icon-row {
-    opacity: 1 !important;
-    pointer-events: auto !important;
-  }
-}
-
+  /* Always show icon row on tablets and smaller (e.g. iPad or mobile) */
 @media (max-width: 1024px) {
-  .group-box .icon-row {
+  .icon-row {
     opacity: 1 !important;
     pointer-events: auto !important;
   }
 }
-  

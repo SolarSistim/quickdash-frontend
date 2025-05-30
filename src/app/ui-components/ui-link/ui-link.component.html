@@ -22,9 +22,6 @@
 
   <div
   class="link-item"
-  cdkDrag
-  [cdkDragData]="link"
-  [cdkDragDisabled]="isLinkDraggable"
   [class.handles-visible]="showHandles"
   [ngStyle]="{
     'background-color': linkStyles.backgroundColor,
@@ -37,10 +34,12 @@
   <i
     *ngIf="showHandles"
     class="bi bi-list link-drag-handle"
-    cdkDragHandle
+    
+  cdkDrag
+  [class.handles-visible]="showHandles"
+  [cdkDragData]="link"
+  [cdkDragDisabled]="isLinkDraggable"
     title="Drag link"
-    (mouseover)="allowLinkDrag()"
-    (mouseout)="preventLinkDrag()"
   ></i>
 
   <a
