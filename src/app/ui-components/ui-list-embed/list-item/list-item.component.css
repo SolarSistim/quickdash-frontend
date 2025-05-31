@@ -48,7 +48,6 @@
   cursor: pointer;
 }
 
-/* Hide scrollbar in WebKit browsers */
 .cdk-drag-preview::-webkit-scrollbar {
   display: none;
 }
@@ -66,7 +65,6 @@
   cursor: pointer;
 }
 
-/* Style the delete button (x) if needed */
 button[mat-icon-button] {
   margin-left: -12px;
   padding: 0;

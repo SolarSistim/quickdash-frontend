@@ -1,20 +1,20 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
 
-export type StatusType = 'loading' | 'success' | 'error';
+export type StatusType = "loading" | "success" | "error";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class StatusMessageService {
   private _message = new BehaviorSubject<string | null>(null);
-  private _status = new BehaviorSubject<StatusType>('loading');
+  private _status = new BehaviorSubject<StatusType>("loading");
 
   readonly message$ = this._message.asObservable();
   readonly status$ = this._status.asObservable();
 
   private persistentMessage: string | null = null;
-  private persistentStatus: StatusType = 'success';
+  private persistentStatus: StatusType = "success";
 
   private lastShownTimestamp: number | null = null;
   private clearTimeoutRef: any;
@@ -22,25 +22,30 @@ export class StatusMessageService {
   private readonly MIN_DISPLAY_MS = 500;
   private readonly AUTO_CLEAR_MS = 3000;
 
-  show(message: string, status: StatusType = 'loading', persistent = false, customDurationMs?: number) {
-  this._message.next(message);
-  this._status.next(status);
-  this.lastShownTimestamp = Date.now();
+  show(
+    message: string,
+    status: StatusType = "loading",
+    persistent = false,
+    customDurationMs?: number
+  ) {
+    this._message.next(message);
+    this._status.next(status);
+    this.lastShownTimestamp = Date.now();
 
-  if (persistent) {
-    this.persistentMessage = message;
-    this.persistentStatus = status;
+    if (persistent) {
+      this.persistentMessage = message;
+      this.persistentStatus = status;
+    }
+
+    clearTimeout(this.clearTimeoutRef);
+
+    const timeout =
+      status === "loading"
+        ? customDurationMs ?? this.AUTO_CLEAR_MS
+        : customDurationMs ?? 2000;
+
+    this.clearTimeoutRef = setTimeout(() => this.clear(), timeout);
   }
-
-  clearTimeout(this.clearTimeoutRef);
-
-  const timeout =
-  status === 'loading'
-    ? customDurationMs ?? this.AUTO_CLEAR_MS
-    : customDurationMs ?? 2000;
-
-  this.clearTimeoutRef = setTimeout(() => this.clear(), timeout);
-}
 
   clear() {
     const elapsed = Date.now() - (this.lastShownTimestamp ?? 0);
@@ -65,10 +70,13 @@ export class StatusMessageService {
 
   clearPersistent() {
     this.persistentMessage = null;
-    this.persistentStatus = 'success';
+    this.persistentStatus = "success";
   }
 
-  showDebug(message: string = 'Debug status test', status: StatusType = 'loading') {
+  showDebug(
+    message: string = "Debug status test",
+    status: StatusType = "loading"
+  ) {
     this.show(message, status);
   }
 }

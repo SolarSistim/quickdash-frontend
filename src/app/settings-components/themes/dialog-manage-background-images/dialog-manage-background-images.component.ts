@@ -1,26 +1,20 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { NgFor, NgIf } from '@angular/common';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog'; // ⬅️ add this
-import { ThemesService } from '../themes.service';
-import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
+import { Component, OnInit, inject } from "@angular/core";
+import { NgFor, NgIf } from "@angular/common";
+import { MatDialogRef, MatDialogModule } from "@angular/material/dialog";
+import { ThemesService } from "../themes.service";
+import { MatButtonModule } from "@angular/material/button";
+import { MatMenuModule } from "@angular/material/menu";
 
 @Component({
-  selector: 'app-dialog-manage-background-images',
+  selector: "app-dialog-manage-background-images",
   standalone: true,
-  templateUrl: './dialog-manage-background-images.component.html',
-  styleUrl: './dialog-manage-background-images.component.css',
-  imports: [
-    NgFor,
-    MatDialogModule,
-    MatButtonModule,
-    NgIf,
-    MatMenuModule
-  ]
+  templateUrl: "./dialog-manage-background-images.component.html",
+  styleUrl: "./dialog-manage-background-images.component.css",
+  imports: [NgFor, MatDialogModule, MatButtonModule, NgIf, MatMenuModule],
 })
 export class DialogManageBackgroundImagesComponent implements OnInit {
-  images: { filename: string; uploadedAt: string }[] = [];
 
+  images: { filename: string; uploadedAt: string }[] = [];
   dialogRef = inject(MatDialogRef<DialogManageBackgroundImagesComponent>);
 
   constructor(private themesService: ThemesService) {}
@@ -40,25 +34,23 @@ export class DialogManageBackgroundImagesComponent implements OnInit {
   }
 
   selectImage(filename: string) {
-    this.dialogRef.close(filename); // ✅ return the filename to parent
+    this.dialogRef.close(filename);
   }
 
   confirmDelete(filename: string, event: MouseEvent) {
-    event.stopPropagation(); // prevent triggering selectImage
-  
+    event.stopPropagation();
+
     const confirmed = confirm(`Are you sure you want to delete "${filename}"?`);
     if (!confirmed) return;
-  
+
     this.themesService.deleteImage(filename).subscribe({
       next: () => {
-        // Remove from the current images list
-        this.images = this.images.filter(img => img.filename !== filename);
+        this.images = this.images.filter((img) => img.filename !== filename);
       },
       error: (err) => {
-        console.error('Failed to delete image:', err);
-        alert('Failed to delete image.');
-      }
+        console.error("Failed to delete image:", err);
+        alert("Failed to delete image.");
+      },
     });
   }
-
 }

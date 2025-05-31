@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environment/environment';
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { environment } from "../../../environment/environment";
 
 export interface List {
   id: number;
@@ -13,7 +13,7 @@ export interface List {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ListsService {
   
@@ -53,7 +53,7 @@ export class ListsService {
     return this.http.put(`${this.baseUrl}/reorder`, {
       movedListId,
       newGroupId,
-      reorderedLists
+      reorderedLists,
     });
   }
 
@@ -61,31 +61,31 @@ export class ListsService {
     return this.http.get<any[]>(`${this.baseUrl}/${listId}/items`);
   }
 
-addItemToList(payload: {
-  listId: number;
-  categoryId: number;
-  title: string;
-  description: string;
-  priority: 'High' | 'Medium' | 'Low'; // ✅ Add this line
-}): Observable<any> {
-  return this.http.post(`${environment.apiUrl}/items`, payload);
-}
+  addItemToList(payload: {
+    listId: number;
+    categoryId: number;
+    title: string;
+    description: string;
+    priority: "High" | "Medium" | "Low"; // ✅ Add this line
+  }): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/items`, payload);
+  }
 
   getDefaultCategory(listId: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/${listId}/default-category`);
   }
 
-  // ✅ Add Category to a List
   addCategoryForList(listId: number, categoryName: string): Observable<any> {
     return this.http.post(`${this.baseUrl}/${listId}/categories`, {
-      name: categoryName
+      name: categoryName,
     });
   }
 
-  // ✅ Delete Category from a List
-deleteCategoryForList(listId: number, categoryId: number): Observable<any> {
-  return this.http.delete(`${this.baseUrl}/${listId}/categories/id/${categoryId}`);
-}
+  deleteCategoryForList(listId: number, categoryId: number): Observable<any> {
+    return this.http.delete(
+      `${this.baseUrl}/${listId}/categories/id/${categoryId}`
+    );
+  }
 
   getCategoriesForList(listId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/${listId}/categories`);
@@ -95,56 +95,75 @@ deleteCategoryForList(listId: number, categoryId: number): Observable<any> {
     return this.http.delete(`${environment.apiUrl}/items/${itemId}`);
   }
 
-reorderItems(payload: { id: number; position: number; categoryId: number | null; pinned: boolean }[]): Observable<any> {
-  return this.http.put(`${environment.apiUrl}/items/reorder`, { items: payload });
-}
+  reorderItems(
+    payload: {
+      id: number;
+      position: number;
+      categoryId: number | null;
+      pinned: boolean;
+    }[]
+  ): Observable<any> {
+    return this.http.put(`${environment.apiUrl}/items/reorder`, {
+      items: payload,
+    });
+  }
 
-reorderCategoriesForList(
-  listId: number,
-  reorderedCategories: { id: number; position: number }[]
-): Observable<any> {
-  return this.http.put(`${this.baseUrl}/${listId}/categories/reorder`, {
-    categories: reorderedCategories
-  });
-}
+  reorderCategoriesForList(
+    listId: number,
+    reorderedCategories: { id: number; position: number }[]
+  ): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${listId}/categories/reorder`, {
+      categories: reorderedCategories,
+    });
+  }
 
-updateCategoryName(listId: number, categoryId: number, newName: string): Observable<any> {
-  return this.http.put(`${this.baseUrl}/${listId}/categories/${categoryId}`, { name: newName });
-}
+  updateCategoryName(
+    listId: number,
+    categoryId: number,
+    newName: string
+  ): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${listId}/categories/${categoryId}`, {
+      name: newName,
+    });
+  }
 
-togglePin(id: number, pinned: boolean) {
-  return this.http.put(`${environment.apiUrl}/items/${id}/pin`, { pinned });
-}
+  togglePin(id: number, pinned: boolean) {
+    return this.http.put(`${environment.apiUrl}/items/${id}/pin`, { pinned });
+  }
 
-updateItem(id: number, payload: {
-  title: string;
-  description: string;
-  priority: 'High' | 'Medium' | 'Low';
-  categoryId: number | null;
-  pinned?: boolean; // ✅ make it optional
-}) {
-  return this.http.put(`${environment.apiUrl}/items/${id}`, payload);
-}
+  updateItem(
+    id: number,
+    payload: {
+      title: string;
+      description: string;
+      priority: "High" | "Medium" | "Low";
+      categoryId: number | null;
+      pinned?: boolean;
+    }
+  ) {
+    return this.http.put(`${environment.apiUrl}/items/${id}`, payload);
+  }
 
-completeItem(itemId: number): Observable<any> {
-  return this.http.post(`${environment.apiUrl}/items/complete/${itemId}`, {});
-}
+  completeItem(itemId: number): Observable<any> {
+    return this.http.post(`${environment.apiUrl}/items/complete/${itemId}`, {});
+  }
 
-uncompleteItem(itemId: number): Observable<any> {
-  return this.http.post(`${environment.apiUrl}/items/uncomplete/${itemId}`, {});
-}
+  uncompleteItem(itemId: number): Observable<any> {
+    return this.http.post(
+      `${environment.apiUrl}/items/uncomplete/${itemId}`,
+      {}
+    );
+  }
 
-getCompletedItems(listId: number): Observable<any[]> {
-  return this.http.get<any[]>(`${this.baseUrl}/${listId}/completed-items`);
-}
+  getCompletedItems(listId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/${listId}/completed-items`);
+  }
 
-getAllListItems(): Observable<any[]> {
-  return this.http.get<any[]>(`${environment.apiUrl}/items`);
-}
+  getAllListItems(): Observable<any[]> {
+    return this.http.get<any[]>(`${environment.apiUrl}/items`);
+  }
 
-getAllLists(): Observable<List[]> {
-  return this.http.get<List[]>(`${environment.apiUrl}/lists`);
+  getAllLists(): Observable<List[]> {
+    return this.http.get<List[]>(`${environment.apiUrl}/lists`);
+  }
 }
-
-}
-

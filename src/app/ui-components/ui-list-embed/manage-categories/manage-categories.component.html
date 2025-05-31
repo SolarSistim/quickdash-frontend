@@ -10,7 +10,7 @@
    </mat-form-field>
    <div class="mt-3">
       <h5 [style.color]="styleSettings.groupFontColor" class="pb-2">
-      Current Categories | {{ categories.length }} item{{ categories.length === 1 ? '' : 's' }}
+         Current Categories | {{ categories.length }} item{{ categories.length === 1 ? '' : 's' }}
       </h5>
       <div
       cdkDropList
@@ -32,14 +32,12 @@
    class="list-item d-flex justify-content-between"
    [style.backgroundColor]="styleSettings.linkBackgroundColor"
    >
-   <!-- Normal View -->
    <span *ngIf="!cat.isEditing" [style.color]="styleSettings.groupFontColor" class="d-flex align-items-center gap-2">
    <span class="badge bg-info" style="font-size: 0.75rem;">
-      <span style="color: rgb(58, 58, 58) !important;">{{ i + 1 }}.</span>
+   <span style="color: rgb(58, 58, 58) !important;">{{ i + 1 }}.</span>
    </span>
    {{ cat.name }} | {{ getItemCountForCategory(cat.id) }} item{{ getItemCountForCategory(cat.id) === 1 ? '' : 's' }}
    </span>
-   <!-- Edit Mode -->
    <ng-container *ngIf="cat.isEditing">
       <input matInput [(ngModel)]="cat.tempName" class="form-control" style="margin-bottom: 10px; margin-top: 10px;" />
       <button
@@ -59,44 +57,24 @@
       Cancel
       </button>
    </ng-container>
-
-   <!-- Action Buttons -->
-   <!-- <div>
-      <i
-      class="bi bi-pencil list-item-delete-button"
+   <div style="display: flex; align-items: center;" class="edit-delete-buttons-container">
+      <div class="icon-wrapper"
       (click)="editCategory(cat)"
-      style="padding-right: 10px;"
-      [style.color]="styleSettings.groupFontColor"
-      ></i>
-      <i
-      class="bi bi-x-lg list-item-delete-button"
-      (click)="deleteCategory(cat)"
-      [style.color]="styleSettings.groupFontColor"
-      ></i>
-   </div> -->
-
-    <div style="display: flex; align-items: center;" class="edit-delete-buttons-container">
-
-<div class="icon-wrapper"
-     (click)="editCategory(cat)"
-     [ngStyle]="{ 'background-color': hoveredButtonKey === 'edit-' + cat.id ? styleSettings.groupBackgroundColor : 'transparent' }"
-     (mouseenter)="hoveredButtonKey = 'edit-' + cat.id"
-     (mouseleave)="hoveredButtonKey = null"
-     [style.color]="styleSettings.groupFontColor">
-  <i class="bi bi-pen" style="cursor: pointer;"></i>
+      [ngStyle]="{ 'background-color': hoveredButtonKey === 'edit-' + cat.id ? styleSettings.groupBackgroundColor : 'transparent' }"
+      (mouseenter)="hoveredButtonKey = 'edit-' + cat.id"
+      (mouseleave)="hoveredButtonKey = null"
+      [style.color]="styleSettings.groupFontColor">
+      <i class="bi bi-pen" style="cursor: pointer;"></i>
+   </div>
+   <div class="icon-wrapper"
+   (click)="deleteCategory(cat)"
+   [ngStyle]="{ 'background-color': hoveredButtonKey === 'delete-' + cat.id ? styleSettings.groupBackgroundColor : 'transparent' }"
+   (mouseenter)="hoveredButtonKey = 'delete-' + cat.id"
+   (mouseleave)="hoveredButtonKey = null"
+   [style.color]="styleSettings.groupFontColor">
+   <i class="bi bi-x-lg" style="cursor: pointer;"></i>
 </div>
-
-<div class="icon-wrapper"
-     (click)="deleteCategory(cat)"
-     [ngStyle]="{ 'background-color': hoveredButtonKey === 'delete-' + cat.id ? styleSettings.groupBackgroundColor : 'transparent' }"
-     (mouseenter)="hoveredButtonKey = 'delete-' + cat.id"
-     (mouseleave)="hoveredButtonKey = null"
-     [style.color]="styleSettings.groupFontColor">
-  <i class="bi bi-x-lg" style="cursor: pointer;"></i>
 </div>
-
-  </div>
-
 </div>
 </div>
 </div>

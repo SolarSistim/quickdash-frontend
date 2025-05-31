@@ -1,23 +1,29 @@
-import { Component, Output, EventEmitter, OnInit, Renderer2, ElementRef } from '@angular/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog } from '@angular/material/dialog';
-import { DialogManageCategoriesComponent } from '../../dialogs/dialog-manage-categories/dialog-manage-categories.component';
-import { DialogManageLinkGroupsComponent } from '../../dialogs/dialog-manage-link-groups/dialog-manage-link-groups.component';
-import { DialogManageLinksComponent } from '../../dialogs/dialog-manage-links/dialog-manage-links.component';
-import { DialogManageSettingsComponent } from '../../dialogs/dialog-manage-settings/dialog-manage-settings.component';
-import { DialogManageIconsComponent } from '../../dialogs/dialog-manage-icons/dialog-manage-icons.component';
-import { RouterModule } from '@angular/router';
-import { SettingsService } from '../../settings-components/app-settings/settings.service';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  OnInit,
+  Renderer2,
+  ElementRef,
+} from "@angular/core";
+import { MatButtonModule } from "@angular/material/button";
+import { MatMenuModule } from "@angular/material/menu";
+import { MatDialog } from "@angular/material/dialog";
+import { DialogManageCategoriesComponent } from "../../dialogs/dialog-manage-categories/dialog-manage-categories.component";
+import { DialogManageLinkGroupsComponent } from "../../dialogs/dialog-manage-link-groups/dialog-manage-link-groups.component";
+import { DialogManageLinksComponent } from "../../dialogs/dialog-manage-links/dialog-manage-links.component";
+import { DialogManageSettingsComponent } from "../../dialogs/dialog-manage-settings/dialog-manage-settings.component";
+import { DialogManageIconsComponent } from "../../dialogs/dialog-manage-icons/dialog-manage-icons.component";
+import { RouterModule } from "@angular/router";
+import { SettingsService } from "../../settings-components/app-settings/settings.service";
 
 @Component({
-  selector: 'app-settings-button',
-  imports: [MatButtonModule,MatMenuModule,RouterModule],
-  templateUrl: './settings-button.component.html',
-  styleUrls: ['./settings-button.component.css']
+  selector: "app-settings-button",
+  imports: [MatButtonModule, MatMenuModule, RouterModule],
+  templateUrl: "./settings-button.component.html",
+  styleUrls: ["./settings-button.component.css"],
 })
 export class SettingsButtonComponent {
-  
   @Output() refreshRequested = new EventEmitter<void>();
 
   constructor(
@@ -28,22 +34,25 @@ export class SettingsButtonComponent {
   ) {}
 
   ngOnInit(): void {
-    this.settingsService.loadSettings().subscribe(settings => {
-      const hex = settings['SETTINGS_BUTTON_BACKGROUND_COLOR'] || '#ffffff';
-      const opacity = parseFloat(settings['SETTINGS_BUTTON_BACKGROUND_OPACITY'] || '1.0');
+    this.settingsService.loadSettings().subscribe((settings) => {
+      const hex = settings["SETTINGS_BUTTON_BACKGROUND_COLOR"] || "#ffffff";
+      const opacity = parseFloat(
+        settings["SETTINGS_BUTTON_BACKGROUND_OPACITY"] || "1.0"
+      );
       const rgba = this.hexToRgba(hex, opacity);
 
-      // Apply the computed background color
-      const btn = this.el.nativeElement.querySelector('.settings-button');
+      const btn = this.el.nativeElement.querySelector(".settings-button");
       if (btn) {
-        this.renderer.setStyle(btn, 'background-color', rgba);
+        this.renderer.setStyle(btn, "background-color", rgba);
       }
     });
   }
 
   private hexToRgba(hex: string, opacity: number): string {
-    let r = 0, g = 0, b = 0;
-    hex = hex.replace('#', '');
+    let r = 0,
+      g = 0,
+      b = 0;
+    hex = hex.replace("#", "");
 
     if (hex.length === 3) {
       r = parseInt(hex[0] + hex[0], 16);
@@ -60,9 +69,9 @@ export class SettingsButtonComponent {
 
   DialogManageIconsComponent(): void {
     const dialogRef = this.dialog.open(DialogManageIconsComponent, {
-      width: '650px',
+      width: "650px",
     });
-  
+
     dialogRef.afterClosed().subscribe(() => {
       this.refreshRequested.emit();
     });
@@ -70,13 +79,13 @@ export class SettingsButtonComponent {
 
   openManageGroupsDialog(categoryId?: number, groupId?: number): void {
     const dialogRef = this.dialog.open(DialogManageLinkGroupsComponent, {
-      width: '600px',
+      width: "600px",
       data: {
         categoryId,
-        groupId
-      }
+        groupId,
+      },
     });
-  
+
     dialogRef.afterClosed().subscribe(() => {
       this.refreshRequested.emit();
     });
@@ -84,13 +93,13 @@ export class SettingsButtonComponent {
 
   openManageCategoryDialog(categoryId?: number, groupId?: number): void {
     const dialogRef = this.dialog.open(DialogManageCategoriesComponent, {
-      width: '600px',
+      width: "600px",
       data: {
         categoryId,
-        groupId
-      }
+        groupId,
+      },
     });
-  
+
     dialogRef.afterClosed().subscribe(() => {
       this.refreshRequested.emit();
     });
@@ -98,13 +107,13 @@ export class SettingsButtonComponent {
 
   openManageLinksDialog(categoryId?: number, groupId?: number): void {
     const dialogRef = this.dialog.open(DialogManageLinksComponent, {
-      width: '600px',
+      width: "600px",
       data: {
         categoryId,
-        groupId
-      }
+        groupId,
+      },
     });
-  
+
     dialogRef.afterClosed().subscribe(() => {
       this.refreshRequested.emit();
     });
@@ -112,16 +121,15 @@ export class SettingsButtonComponent {
 
   openSettingsDialog(categoryId?: number, groupId?: number): void {
     const dialogRef = this.dialog.open(DialogManageSettingsComponent, {
-      width: '600px',
+      width: "600px",
       data: {
         categoryId,
-        groupId
-      }
+        groupId,
+      },
     });
-  
+
     dialogRef.afterClosed().subscribe(() => {
       this.refreshRequested.emit();
     });
   }
-
 }

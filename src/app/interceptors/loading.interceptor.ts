@@ -1,14 +1,14 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { inject } from '@angular/core';
-import { StatusMessageService } from '../ui-components/ui-status/ui-status.service';
+import { HttpInterceptorFn } from "@angular/common/http";
+import { inject } from "@angular/core";
+import { StatusMessageService } from "../ui-components/ui-status/ui-status.service";
 import {
   HttpRequest,
   HttpHandlerFn,
   HttpEvent,
   HttpResponse,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, tap, finalize } from 'rxjs';
+  HttpErrorResponse,
+} from "@angular/common/http";
+import { Observable, tap, finalize } from "rxjs";
 
 let activeRequests = 0;
 let isDelayingError = false;
@@ -20,7 +20,7 @@ export const LoadingInterceptor: HttpInterceptorFn = (
   const status = inject(StatusMessageService);
 
   if (activeRequests === 0) {
-    status.show('Loading...', 'loading');
+    status.show("Loading...", "loading");
   }
 
   activeRequests++;
@@ -30,17 +30,16 @@ export const LoadingInterceptor: HttpInterceptorFn = (
       error: (err: HttpErrorResponse) => {
         isDelayingError = true;
         setTimeout(() => {
-          status.show('Error loading data.', 'error');
+          status.show("Error loading data.", "error");
           isDelayingError = false;
-        }, 5000); // wait 5s before showing error
-      }
+        }, 5000);
+      },
     }),
     finalize(() => {
       activeRequests--;
       if (activeRequests === 0 && !isDelayingError) {
         status.clear();
       } else if (activeRequests === 0 && isDelayingError) {
-        // Wait a bit longer to clear, just in case
         setTimeout(() => {
           if (!isDelayingError) {
             status.clear();

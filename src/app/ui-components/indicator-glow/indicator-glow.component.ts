@@ -12,8 +12,8 @@ export class IndicatorCurrentlyFilteringComponent {
   @Output() iconClicked = new EventEmitter<void>();
 
   onIconClick(event: MouseEvent): void {
-    event.stopPropagation(); // ⛔ prevent bubbling
-    this.iconClicked.emit(); // ✅ emit the event
+    event.stopPropagation();
+    this.iconClicked.emit();
   }
 
 }

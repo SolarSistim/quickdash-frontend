@@ -1,17 +1,30 @@
-import { Component, Inject, OnInit, ViewChild, ElementRef, inject, Output, EventEmitter } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { FormsModule } from '@angular/forms';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatDialogContent, MatDialogActions } from '@angular/material/dialog';
-import { DragDropModule, CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { DashboardDropService } from '../../features/dashboard-drop/dashboard-drop.service';
+import {
+  Component,
+  Inject,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  inject,
+  Output,
+  EventEmitter,
+} from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { CommonModule } from "@angular/common";
+import { MatButtonModule } from "@angular/material/button";
+import { FormsModule } from "@angular/forms";
+import { MatIconModule } from "@angular/material/icon";
+import { MatInputModule } from "@angular/material/input";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatDialogContent, MatDialogActions } from "@angular/material/dialog";
+import {
+  DragDropModule,
+  CdkDragDrop,
+  moveItemInArray,
+} from "@angular/cdk/drag-drop";
+import { DashboardDropService } from "../../features/dashboard-drop/dashboard-drop.service";
 
 @Component({
-  selector: 'app-dialog-manage-categories',
+  selector: "app-dialog-manage-categories",
   standalone: true,
   imports: [
     CommonModule,
@@ -22,17 +35,16 @@ import { DashboardDropService } from '../../features/dashboard-drop/dashboard-dr
     MatFormFieldModule,
     MatDialogContent,
     MatDialogActions,
-    DragDropModule
+    DragDropModule,
   ],
-  templateUrl: './dialog-manage-categories.component.html',
-  styleUrls: ['./dialog-manage-categories.component.css']
+  templateUrl: "./dialog-manage-categories.component.html",
+  styleUrls: ["./dialog-manage-categories.component.css"],
 })
 export class DialogManageCategoriesComponent implements OnInit {
-
-  @ViewChild('categoryInput') categoryInputRef!: ElementRef;
-
+  
+  @ViewChild("categoryInput") categoryInputRef!: ElementRef;
   editableCategories: { id: number; name: string; isEditing?: boolean }[] = [];
-  newCategoryName = '';
+  newCategoryName = "";
   originalOrder: number[] = [];
   showAddForm = false;
 
@@ -46,28 +58,27 @@ export class DialogManageCategoriesComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.data?.categories) {
-      // Opened from a dialog WITH pre-passed categories
       const passedCategories = this.data.categories;
-      this.editableCategories = passedCategories.map((cat: any) => ({ ...cat }));
-      this.originalOrder = this.editableCategories.map(cat => cat.id);
+      this.editableCategories = passedCategories.map((cat: any) => ({
+        ...cat,
+      }));
+      this.originalOrder = this.editableCategories.map((cat) => cat.id);
     } else {
-      // Opened embedded (like in config panel) -> fetch from API
       this.dropService.fetchCategories().subscribe({
         next: (categories) => {
           this.editableCategories = categories.map((cat: any) => ({ ...cat }));
-          this.originalOrder = this.editableCategories.map(cat => cat.id);
+          this.originalOrder = this.editableCategories.map((cat) => cat.id);
         },
         error: (err) => {
-          console.error('Failed to load categories', err);
-          alert('Failed to load categories.');
-        }
+          console.error("Failed to load categories", err);
+          alert("Failed to load categories.");
+        },
       });
     }
   }
-  
 
   get isUnchanged(): boolean {
-    const currentOrder = this.editableCategories.map(cat => cat.id);
+    const currentOrder = this.editableCategories.map((cat) => cat.id);
     return (
       currentOrder.length === this.originalOrder.length &&
       currentOrder.every((id, index) => id === this.originalOrder[index])
@@ -75,28 +86,31 @@ export class DialogManageCategoriesComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<any[]>) {
-    moveItemInArray(this.editableCategories, event.previousIndex, event.currentIndex);
+    moveItemInArray(
+      this.editableCategories,
+      event.previousIndex,
+      event.currentIndex
+    );
   }
 
   saveChanges() {
     const reordered = this.editableCategories.map((cat, index) => ({
       id: cat.id,
-      position: index
+      position: index,
     }));
 
     this.dropService.reorderCategories(reordered).subscribe({
       next: () => {
-        console.log('Reorder saved');
-        this.originalOrder = this.editableCategories.map(cat => cat.id);
+        this.originalOrder = this.editableCategories.map((cat) => cat.id);
         this.categoriesUpdated.emit();
       },
-      error: err => alert('Failed to save reorder: ' + err.message)
+      error: (err) => alert("Failed to save reorder: " + err.message),
     });
   }
 
   saveAndClose() {
     this.saveChanges();
-    this.dialogRef.close(true); // ✅ signal changes were made
+    this.dialogRef.close(true);
   }
 
   enableEdit(cat: any) {
@@ -110,10 +124,9 @@ export class DialogManageCategoriesComponent implements OnInit {
     delete cat.originalName;
   }
 
-closeDialog() {
-  this.dialogRef.close(false); // ❌ No changes made, just close
-}
-
+  closeDialog() {
+    this.dialogRef.close(false);
+  }
 
   saveEdit(cat: any) {
     this.dropService.updateCategory(cat.id, { name: cat.name }).subscribe({
@@ -122,9 +135,9 @@ closeDialog() {
         this.categoriesUpdated.emit();
       },
       error: (err) => {
-        console.error('Failed to update category', err);
-        alert('Failed to save changes.');
-      }
+        console.error("Failed to update category", err);
+        alert("Failed to save changes.");
+      },
     });
   }
 
@@ -132,14 +145,16 @@ closeDialog() {
     if (confirm(`Are you sure you want to delete "${cat.name}"?`)) {
       this.dropService.deleteCategory(cat.id).subscribe({
         next: () => {
-          this.editableCategories = this.editableCategories.filter(c => c.id !== cat.id);
-          this.originalOrder = this.editableCategories.map(cat => cat.id);
+          this.editableCategories = this.editableCategories.filter(
+            (c) => c.id !== cat.id
+          );
+          this.originalOrder = this.editableCategories.map((cat) => cat.id);
           this.categoriesUpdated.emit();
         },
         error: (err) => {
-          console.error('Failed to delete category', err);
-          alert('Failed to delete category.');
-        }
+          console.error("Failed to delete category", err);
+          alert("Failed to delete category.");
+        },
       });
     }
   }
@@ -147,27 +162,24 @@ closeDialog() {
   addCategory() {
     const name = this.newCategoryName.trim();
     if (!name) return;
-  
+
     this.dropService.createCategory({ name }).subscribe({
       next: (created: any) => {
         this.editableCategories.push(created);
-        this.originalOrder = this.editableCategories.map(cat => cat.id);
-        this.newCategoryName = '';
-  
+        this.originalOrder = this.editableCategories.map((cat) => cat.id);
+        this.newCategoryName = "";
+
         setTimeout(() => {
           if (this.categoryInputRef?.nativeElement) {
             this.categoryInputRef.nativeElement.focus();
           }
         });
-  
-        // ✅ Optionally: keep form open so they can keep adding more
-        // this.showAddForm = false;  <-- Only hide if you really want
+
       },
       error: (err) => {
-        console.error('Failed to create category', err);
-        alert('Failed to create category.');
-      }
+        console.error("Failed to create category", err);
+        alert("Failed to create category.");
+      },
     });
   }
-
 }

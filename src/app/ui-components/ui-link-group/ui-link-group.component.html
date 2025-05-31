@@ -1,17 +1,17 @@
 <div
-  cdkDropList
-  cdkDropListOrientation="mixed"
-  class="group-list"
-  (cdkDropListDropped)="dropGroup($event, category)"
->
-  <div
-    *ngFor="let group of category.groups; trackBy: trackLinkById"
-    class="group-box"
-    cdkDrag
-    [style]="groupBoxStyle"
-    [cdkDragDisabled]="!showHandles"
-  >
-    <div class="group-header d-flex align-items-center justify-content-between">
+   cdkDropList
+   cdkDropListOrientation="mixed"
+   class="group-list"
+   (cdkDropListDropped)="dropGroup($event, category)"
+   >
+   <div
+   *ngFor="let group of category.groups; trackBy: trackLinkById"
+   class="group-box"
+   cdkDrag
+   [style]="groupBoxStyle"
+   [cdkDragDisabled]="!showHandles"
+   >
+   <div class="group-header d-flex align-items-center justify-content-between">
       <i
       *ngIf="showHandles"
       class="bi bi-list group-drag-handle"
@@ -19,108 +19,96 @@
       title="Drag group"
       (mouseover)="allowGroupDrag()"
       (mouseout)="preventGroupDrag()"></i>
-
       <i class="bi bi-box-seam" style="color: white; margin-right: 8px;" [style]="groupFontStyle"></i>
       <div class="group-name-container d-flex align-items-center" #groupNameContainer>
-        <div class="group-name" [style]="groupFontStyle">{{ group.name }}</div>
+         <div class="group-name" [style]="groupFontStyle">{{ group.name }}</div>
       </div>
-
       <i class="bi bi-three-dots-vertical group-menu-icon" [matMenuTriggerFor]="groupMenu"></i>
       <mat-menu #groupMenu="matMenu">
-        <button mat-menu-item (click)="openAddLinkDialog(group.id)">
-          <i class="bi bi-plus-lg"></i> Add Link
-        </button>
-        <button mat-menu-item (click)="openAddListDialog(group.id)">
-          <i class="bi bi-journal-plus"></i> Add List
-        </button>
-        <button mat-menu-item (click)="openEditLinksDialog(category.id, group.id)">
-          <i class="bi bi-pencil"></i> Edit Group
-        </button>
-        <button mat-menu-item [matMenuTriggerFor]="moveGroupSubMenu">
-          <i class="bi bi-send"></i> Move Group
-        </button>
-        <button mat-menu-item (click)="deleteGroup(group)">
-          <i class="bi bi-x-lg"></i> Delete Group
-        </button>
+         <button mat-menu-item (click)="openAddLinkDialog(group.id)">
+         <i class="bi bi-plus-lg"></i> Add Link
+         </button>
+         <button mat-menu-item (click)="openAddListDialog(group.id)">
+         <i class="bi bi-journal-plus"></i> Add List
+         </button>
+         <button mat-menu-item (click)="openEditLinksDialog(category.id, group.id)">
+         <i class="bi bi-pencil"></i> Edit Group
+         </button>
+         <button mat-menu-item [matMenuTriggerFor]="moveGroupSubMenu">
+         <i class="bi bi-send"></i> Move Group
+         </button>
+         <button mat-menu-item (click)="deleteGroup(group)">
+         <i class="bi bi-x-lg"></i> Delete Group
+         </button>
       </mat-menu>
-
       <mat-menu #moveGroupSubMenu="matMenu">
-        <ng-container *ngFor="let cat of categories">
-          <button
+         <ng-container *ngFor="let cat of categories">
+            <button
             mat-menu-item
             *ngIf="cat.id !== category.id"
             (click)="onMoveGroup({ group, newCategoryId: cat.id })"
-          >
-          <i class="bi bi-box-seam"></i> {{ cat.name }}
-          </button>
-        </ng-container>
+            >
+            <i class="bi bi-box-seam"></i> {{ cat.name }}
+            </button>
+         </ng-container>
       </mat-menu>
-    </div>
-
-    <div
-  cdkDropList
-  class="link-list"
-  [cdkDropListData]="getCombinedItemsCached(group)"
-  [cdkDropListConnectedTo]="getConnectedDropLists()"
-  (cdkDropListDropped)="dropCombined($event, group)"
-  [id]="'combined-drop-' + group.id"
+   </div>
+   <div
+   cdkDropList
+   class="link-list"
+   [cdkDropListData]="getCombinedItemsCached(group)"
+   [cdkDropListConnectedTo]="getConnectedDropLists()"
+   (cdkDropListDropped)="dropCombined($event, group)"
+   [id]="'combined-drop-' + group.id"
+   >
+   <div
+   *ngIf="getCombinedItemsCached(group)?.length === 0"
+   class="empty-drop-placeholder"
+   (click)="openAddLinkDialog(group.id)"
+   style="cursor: pointer; text-align: center; padding: 12px; font-style: italic; color: white;"
+   >
+   Drop link here or <span style="text-decoration: underline;">click here</span> to add new link.
+</div>
+<div
+*ngFor="let item of getCombinedItemsCached(group); trackBy: trackLinkById"
+cdkDrag
+[cdkDragData]="item"
+[class.handles-visible]="showHandles"
+[cdkDragDisabled]="!showHandles"
 >
-
-  <div
-    *ngIf="getCombinedItemsCached(group)?.length === 0"
-    class="empty-drop-placeholder"
-    (click)="openAddLinkDialog(group.id)"
-    style="cursor: pointer; text-align: center; padding: 12px; font-style: italic; color: white;"
-  >
-    Drop link here or <span style="text-decoration: underline;">click here</span> to add new link.
-  </div>
-
-  <div
-    *ngFor="let item of getCombinedItemsCached(group); trackBy: trackLinkById"
-    cdkDrag
-    [cdkDragData]="item"
-    [class.handles-visible]="showHandles"
-    [cdkDragDisabled]="!showHandles"
-  >
-    <app-ui-list
-      *ngIf="item.type === 'list'"
-      [list]="item"
-      [showHandles]="showHandles"
-      (openList)="openListDialog(item)"
-      (listDeleted)="handleListDeleted(group.id)"
-      [style.--list-bg]="groupBackgroundColor"
-    ></app-ui-list>
-
-    <div *ngIf="item.type === 'link'">
-      <app-ui-link
-        [link]="item"
-        [group]="group"
-        [category]="category"
-        [isLinkDraggable]="isLinkDraggable"
-        [showHandles]="showHandles"
-        [refreshTrigger]="selectedThemeName"
-        (linkDeleted)="handleLinkDeleted(group.id)"
-        (linkUpdated)="handleLinkUpdated(group.id, $event)"
-      ></app-ui-link>
-    </div>
-  </div>
-</div>
-
-
-  <div class="icon-row" [style]="iconRowStyle">
-    <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>
-    <i class="bi bi-sliders" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
-    <i class="bi bi-three-dots-vertical" [matMenuTriggerFor]="groupMenu" title="Menu"></i>
-  </div>
-
-  </div>
-
-  <div
-  class="group-box add-group-box static d-flex align-items-center justify-content-center"
-  (click)="openAddGroupDialog(category.id)">
-  <div style="margin-top: 15%;">
-  <i class="bi bi-plus-circle me-2"></i>Add Group
+<app-ui-list
+*ngIf="item.type === 'list'"
+[list]="item"
+[showHandles]="showHandles"
+(openList)="openListDialog(item)"
+(listDeleted)="handleListDeleted(group.id)"
+[style.--list-bg]="groupBackgroundColor"
+></app-ui-list>
+<div *ngIf="item.type === 'link'">
+   <app-ui-link
+   [link]="item"
+   [group]="group"
+   [category]="category"
+   [isLinkDraggable]="isLinkDraggable"
+   [showHandles]="showHandles"
+   [refreshTrigger]="selectedThemeName"
+   (linkDeleted)="handleLinkDeleted(group.id)"
+   (linkUpdated)="handleLinkUpdated(group.id, $event)"
+   ></app-ui-link>
 </div>
 </div>
-
+</div>
+<div class="icon-row" [style]="iconRowStyle">
+   <i class="bi bi-arrows-move" title="Enable Drag and Drop" (click)="toggleHandles()"></i>
+   <i class="bi bi-sliders" (click)="openEditLinksDialog(category.id, group.id)" title="Edit This Group"></i>
+   <i class="bi bi-three-dots-vertical" [matMenuTriggerFor]="groupMenu" title="Menu"></i>
+</div>
+</div>
+<div
+   class="group-box add-group-box static d-flex align-items-center justify-content-center"
+   (click)="openAddGroupDialog(category.id)">
+   <div style="margin-top: 15%;">
+      <i class="bi bi-plus-circle me-2"></i>Add Group
+   </div>
+</div>
 </div>

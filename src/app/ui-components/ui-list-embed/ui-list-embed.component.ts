@@ -1,36 +1,50 @@
-import { Component, Input, OnInit, ChangeDetectorRef, Output, EventEmitter, viewChild, ViewChild,} from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatTooltipModule } from '@angular/material/tooltip';
-import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem,} from '@angular/cdk/drag-drop';
-import { ListsService } from '../../features/lists/lists.service';
-import { SettingsService } from '../../settings-components/app-settings/settings.service';
-import { MatDialogRef } from '@angular/material/dialog';
-import { DialogListComponent } from '../../dialogs/dialog-list/dialog-list.component';
-import { Optional } from '@angular/core';
-import { ScrollingModule } from '@angular/cdk/scrolling';
-import { ManageCategoriesComponent } from './manage-categories/manage-categories.component';
-import { AddListItemComponent } from './add-list-item/add-list-item.component';
-import { MatMenuModule } from '@angular/material/menu';
-import { AutoLinkPipe } from '../../pipes/pipes/auto-link.pipe';
-import { FilterListComponent } from './filter-list/filter-list.component';
-import { CompletedListItemsComponent } from './completed-list-items/completed-list-items.component';
-import { ExportListComponent } from './export-list/export-list.component';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
-import { UiLoaderComponent } from '../ui-loader/ui-loader.component';
-import { TutorialListComponent } from '../../settings-components/tutorials/tutorial-components/tutorial-list/tutorial-list.component';
+import {
+  Component,
+  Input,
+  OnInit,
+  ChangeDetectorRef,
+  Output,
+  EventEmitter,
+  viewChild,
+  ViewChild,
+} from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatSelectModule } from "@angular/material/select";
+import { MatChipsModule } from "@angular/material/chips";
+import { MatTooltipModule } from "@angular/material/tooltip";
+import {
+  DragDropModule,
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from "@angular/cdk/drag-drop";
+import { ListsService } from "../../features/lists/lists.service";
+import { SettingsService } from "../../settings-components/app-settings/settings.service";
+import { MatDialogRef } from "@angular/material/dialog";
+import { DialogListComponent } from "../../dialogs/dialog-list/dialog-list.component";
+import { Optional } from "@angular/core";
+import { ScrollingModule } from "@angular/cdk/scrolling";
+import { ManageCategoriesComponent } from "./manage-categories/manage-categories.component";
+import { AddListItemComponent } from "./add-list-item/add-list-item.component";
+import { MatMenuModule } from "@angular/material/menu";
+import { AutoLinkPipe } from "../../pipes/pipes/auto-link.pipe";
+import { FilterListComponent } from "./filter-list/filter-list.component";
+import { CompletedListItemsComponent } from "./completed-list-items/completed-list-items.component";
+import { ExportListComponent } from "./export-list/export-list.component";
+import { Router, NavigationEnd } from "@angular/router";
+import { filter } from "rxjs/operators";
+import { UiLoaderComponent } from "../ui-loader/ui-loader.component";
+import { TutorialListComponent } from "../../settings-components/tutorials/tutorial-components/tutorial-list/tutorial-list.component";
 
 interface ListItem {
   id: number;
   title: string;
   description: string;
-  priority: 'High' | 'Medium' | 'Low';
+  priority: "High" | "Medium" | "Low";
   category: { id: number; name: string } | null;
   createdAt: string;
   pinned: boolean;
@@ -38,7 +52,7 @@ interface ListItem {
   isEditing?: boolean;
   tempTitle?: string;
   tempDescription?: string;
-  tempPriority?: 'High' | 'Medium' | 'Low';
+  tempPriority?: "High" | "Medium" | "Low";
   tempCategoryId?: number | null;
 
   showDetails?: boolean;
@@ -60,16 +74,16 @@ interface TestItem {
   categoryName: string;
   pinned: boolean;
   createdAt?: string;
-  priority?: 'High' | 'Medium' | 'Low';
+  priority?: "High" | "Medium" | "Low";
   description?: string;
   isEditing?: boolean;
   tempName?: string;
-  tempPriority?: 'High' | 'Medium' | 'Low';
+  tempPriority?: "High" | "Medium" | "Low";
   tempCategoryName?: string;
   tempDescription?: string;
   showDetails?: boolean;
   highlight?: boolean;
-  highlightClass?: 'highlightA' | 'highlightB';
+  highlightClass?: "highlightA" | "highlightB";
   showPriorityPanel?: boolean;
   categoryId?: number | null;
   confirmingComplete?: boolean;
@@ -77,7 +91,7 @@ interface TestItem {
 // END drag and drop testing
 
 @Component({
-  selector: 'app-ui-list-embed',
+  selector: "app-ui-list-embed",
   standalone: true,
   imports: [
     CommonModule,
@@ -98,16 +112,15 @@ interface TestItem {
     CompletedListItemsComponent,
     ExportListComponent,
     UiLoaderComponent,
-    TutorialListComponent
+    TutorialListComponent,
   ],
-  templateUrl: './ui-list-embed.component.html',
-  styleUrls: ['./ui-list-embed.component.css'],
+  templateUrl: "./ui-list-embed.component.html",
+  styleUrls: ["./ui-list-embed.component.css"],
 })
 export class UiListEmbedComponent implements OnInit {
-
   @Input() listId!: number;
   isExportValid = false;
-  filterText = '';
+  filterText = "";
   filterByName = true;
   filterByDescription = true;
   filterByCategory = true;
@@ -118,10 +131,10 @@ export class UiListEmbedComponent implements OnInit {
   @ViewChild(FilterListComponent)
   filterListComponent!: FilterListComponent;
   public showFilterOptions = false;
-  showExportPanel = false;  
+  showExportPanel = false;
   @ViewChild(ManageCategoriesComponent)
   manageCategoriesComponent!: ManageCategoriesComponent;
-  @ViewChild('addListItemComponent')
+  @ViewChild("addListItemComponent")
   addListItemComponent!: AddListItemComponent;
   @Output() listAdded = new EventEmitter<void>();
   @Input() list: any;
@@ -130,22 +143,22 @@ export class UiListEmbedComponent implements OnInit {
   isMobile = false;
   items: ListItem[] = [];
   loading = true;
-  newTitle = '';
-  newDescription = '';
+  newTitle = "";
+  newDescription = "";
   showNewItemForm = false;
   originalCategoryMap: { [itemId: number]: number } = {};
   isCategoryEditMode = false;
-  newCategoryName = '';
+  newCategoryName = "";
   categories: Category[] = [];
   anyCategoryEditing = false;
-  groupBackgroundColor: string = '';
-  groupFontColor: string = '';
-  newPriority: 'High' | 'Medium' | 'Low' = 'Medium';
+  groupBackgroundColor: string = "";
+  groupFontColor: string = "";
+  newPriority: "High" | "Medium" | "Low" = "Medium";
   styleSettings = {
-    groupBackgroundColor: '',
-    groupFontColor: '',
-    linkBackgroundColor: '',
-    linkFontColor: '',
+    groupBackgroundColor: "",
+    groupFontColor: "",
+    linkBackgroundColor: "",
+    linkFontColor: "",
   };
   showCategoryManager = false;
   selectedCategoryId: number | null = null;
@@ -165,154 +178,160 @@ export class UiListEmbedComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log('📦 testItems categoryIds:', this.testItems.map(i => i.categoryId));
+    console.log(
+      "📦 testItems categoryIds:",
+      this.testItems.map((i) => i.categoryId)
+    );
     this.loadList();
-    this.isFullscreen = this.router.url.includes('/list-full');
+    this.isFullscreen = this.router.url.includes("/list-full");
     this.router.events
-    .pipe(filter(event => event instanceof NavigationEnd))
-    .subscribe((event: NavigationEnd) => {
-      this.isFullscreen = event.urlAfterRedirects.includes('/list-full');
-      this.cdr.detectChanges(); // Trigger UI update
-    });
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.isFullscreen = event.urlAfterRedirects.includes("/list-full");
+        this.cdr.detectChanges(); // Trigger UI update
+      });
     // Drag and drop testing
     this.testItems = this.items.map((item, index) => ({
-  id: item.id,
-  name: item.title || `Item ${index + 1}`,
-  position: index,
-  categoryId: item.category?.id ?? null, // ✅ Needed for counting
-  categoryName: item.category?.name || 'Uncategorized',
-  pinned: item.pinned,
-  createdAt: item.createdAt,
-  priority: item.priority || 'Medium',
-  tempPriority: item.priority || 'Medium',
-  tempDescription: item.description ?? '',
-}));
+      id: item.id,
+      name: item.title || `Item ${index + 1}`,
+      position: index,
+      categoryId: item.category?.id ?? null, // ✅ Needed for counting
+      categoryName: item.category?.name || "Uncategorized",
+      pinned: item.pinned,
+      createdAt: item.createdAt,
+      priority: item.priority || "Medium",
+      tempPriority: item.priority || "Medium",
+      tempDescription: item.description ?? "",
+    }));
     // End drag and drop testing
     this.isMobile = window.innerWidth < 576; // Bootstrap "xs" breakpoint
-    window.addEventListener('resize', this.onResize.bind(this));
+    window.addEventListener("resize", this.onResize.bind(this));
     this.loadItems();
     this.settingsService.loadSettings().subscribe({
       next: (settings) => {
         this.styleSettings.groupBackgroundColor =
-          settings['GROUP_BACKGROUND_COLOR'] || '#2e3a46';
+          settings["GROUP_BACKGROUND_COLOR"] || "#2e3a46";
         this.styleSettings.groupFontColor =
-          settings['GROUP_FONT_COLOR'] || '#ffffff';
+          settings["GROUP_FONT_COLOR"] || "#ffffff";
         this.styleSettings.linkBackgroundColor =
-          settings['LINK_BACKGROUND_COLOR'] || '#3b4d59';
+          settings["LINK_BACKGROUND_COLOR"] || "#3b4d59";
         this.styleSettings.linkFontColor =
-          settings['LINK_FONT_COLOR'] || '#ffffff';
+          settings["LINK_FONT_COLOR"] || "#ffffff";
       },
       error: (err) => {
-        console.error('❌ Failed to load settings:', err);
+        console.error("❌ Failed to load settings:", err);
       },
     });
   }
 
   get isFilterActiveAndEmpty(): boolean {
-  if (!this.filterText.trim()) return false;
+    if (!this.filterText.trim()) return false;
 
-  return Object.keys(this.filteredGroupedTestItems).every(
-    key => !this.filteredGroupedTestItems[key]?.length
-  );
-}
-
-loadList() {
-  const id = this.listId;
-  if (!id) return;
-
-  this.listsService.getListById(id).subscribe({
-    next: (list) => {
-      this.list = list;
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error('❌ Failed to load list details:', err);
-    }
-  });
-}
-
-goToFullscreen(): void {
-  const id = this.list?.id || this.listId;
-  if (!id) {
-    console.warn('⚠️ No list ID found to open fullscreen view.');
-    return;
-  }
-
-  if (this.dialogRef) {
-    this.dialogRef.close();
-    setTimeout(() => {
-      this.router.navigate(['/list-full', id]);
-    }, 100);
-  } else {
-    this.router.navigate(['/list-full', id]);
-  }
-}
-
-goBackHome(): void {
-  this.router.navigate(['/']);
-}
-
-// Priority panel
-togglePriorityPanel(item: TestItem, event: MouseEvent): void {
-  event.stopPropagation();
-  // Close all other panels
-  for (const cat of Object.keys(this.groupedTestItems)) {
-    for (const otherItem of this.groupedTestItems[cat]) {
-      if (otherItem !== item) otherItem.showPriorityPanel = false;
-    }
-  }
-  // Toggle this one
-  item.showPriorityPanel = !item.showPriorityPanel;
-}
-
-  setPriority(item: TestItem, level: 'High' | 'Medium' | 'Low'): void {
-  item.tempPriority = level;
-  item.priority = level;
-  item.showPriorityPanel = false;
-
-  // Optional: persist immediately
-  this.listsService.updateItem(item.id, {
-    priority: level,
-    title: item.name,
-    description: item.tempDescription ?? '',
-    categoryId: this.categories.find(cat => cat.name === item.categoryName)?.id ?? null,
-    pinned: item.pinned
-  }).subscribe({
-    next: () => console.log(`✅ Updated priority to ${level}`),
-    error: (err) => console.error('❌ Failed to update priority:', err)
-  });
-}
-
-// END priority panel
-
-get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
-  if (!this.filterText.trim()) return this.groupedTestItems;
-
-  const lower = this.filterText.toLowerCase();
-  const filtered: { [categoryName: string]: TestItem[] } = {};
-
-  for (const category of Object.keys(this.groupedTestItems)) {
-    const categoryMatches =
-      this.filterByCategory &&
-      category.toLowerCase().includes(lower);
-
-    const matches = this.groupedTestItems[category].filter(item =>
-      (this.filterByName && item.name.toLowerCase().includes(lower)) ||
-      (this.filterByDescription && item.tempDescription?.toLowerCase().includes(lower)) ||
-      categoryMatches
+    return Object.keys(this.filteredGroupedTestItems).every(
+      (key) => !this.filteredGroupedTestItems[key]?.length
     );
+  }
 
-    if (matches.length > 0) {
-      filtered[category] = matches;
+  loadList() {
+    const id = this.listId;
+    if (!id) return;
+
+    this.listsService.getListById(id).subscribe({
+      next: (list) => {
+        this.list = list;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error("❌ Failed to load list details:", err);
+      },
+    });
+  }
+
+  goToFullscreen(): void {
+    const id = this.list?.id || this.listId;
+    if (!id) {
+      console.warn("⚠️ No list ID found to open fullscreen view.");
+      return;
+    }
+
+    if (this.dialogRef) {
+      this.dialogRef.close();
+      setTimeout(() => {
+        this.router.navigate(["/list-full", id]);
+      }, 100);
+    } else {
+      this.router.navigate(["/list-full", id]);
     }
   }
 
-  return filtered;
-}
+  goBackHome(): void {
+    this.router.navigate(["/"]);
+  }
 
+  // Priority panel
+  togglePriorityPanel(item: TestItem, event: MouseEvent): void {
+    event.stopPropagation();
+    // Close all other panels
+    for (const cat of Object.keys(this.groupedTestItems)) {
+      for (const otherItem of this.groupedTestItems[cat]) {
+        if (otherItem !== item) otherItem.showPriorityPanel = false;
+      }
+    }
+    // Toggle this one
+    item.showPriorityPanel = !item.showPriorityPanel;
+  }
 
+  setPriority(item: TestItem, level: "High" | "Medium" | "Low"): void {
+    item.tempPriority = level;
+    item.priority = level;
+    item.showPriorityPanel = false;
 
-// END filter list items
+    // Optional: persist immediately
+    this.listsService
+      .updateItem(item.id, {
+        priority: level,
+        title: item.name,
+        description: item.tempDescription ?? "",
+        categoryId:
+          this.categories.find((cat) => cat.name === item.categoryName)?.id ??
+          null,
+        pinned: item.pinned,
+      })
+      .subscribe({
+        next: () => console.log(`✅ Updated priority to ${level}`),
+        error: (err) => console.error("❌ Failed to update priority:", err),
+      });
+  }
+
+  // END priority panel
+
+  get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
+    if (!this.filterText.trim()) return this.groupedTestItems;
+
+    const lower = this.filterText.toLowerCase();
+    const filtered: { [categoryName: string]: TestItem[] } = {};
+
+    for (const category of Object.keys(this.groupedTestItems)) {
+      const categoryMatches =
+        this.filterByCategory && category.toLowerCase().includes(lower);
+
+      const matches = this.groupedTestItems[category].filter(
+        (item) =>
+          (this.filterByName && item.name.toLowerCase().includes(lower)) ||
+          (this.filterByDescription &&
+            item.tempDescription?.toLowerCase().includes(lower)) ||
+          categoryMatches
+      );
+
+      if (matches.length > 0) {
+        filtered[category] = matches;
+      }
+    }
+
+    return filtered;
+  }
+
+  // END filter list items
 
   // Drag and drop testing
   // Drag and drop testing
@@ -323,18 +342,18 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
   testItems: TestItem[] = [];
 
   getSafeDescription(desc?: string): string {
-    return desc ?? '';
+    return desc ?? "";
   }
 
-toggleDetails(item: TestItem) {
-  if (item.isEditing) return;
-  for (const category of Object.keys(this.groupedTestItems)) {
-    for (const t of this.groupedTestItems[category]) {
-      if (t !== item) t.showDetails = false;
+  toggleDetails(item: TestItem) {
+    if (item.isEditing) return;
+    for (const category of Object.keys(this.groupedTestItems)) {
+      for (const t of this.groupedTestItems[category]) {
+        if (t !== item) t.showDetails = false;
+      }
     }
+    item.showDetails = !item.showDetails;
   }
-  item.showDetails = !item.showDetails;
-}
 
   dropTestItem(event: CdkDragDrop<TestItem[]>) {
     const prevContainer = event.previousContainer;
@@ -360,7 +379,8 @@ toggleDetails(item: TestItem) {
     // ✅ Apply highlight animation
     if (movedItem) {
       // ✅ Force animation restart by toggling highlightClass
-      movedItem.highlightClass = movedItem.highlightClass === 'highlightA' ? 'highlightB' : 'highlightA';
+      movedItem.highlightClass =
+        movedItem.highlightClass === "highlightA" ? "highlightB" : "highlightA";
       this.cdr.detectChanges();
 
       setTimeout(() => {
@@ -376,7 +396,7 @@ toggleDetails(item: TestItem) {
       const items = this.groupedTestItems[category];
       items.forEach((item, index) => {
         item.position = newFlat.length;
-        if (category === 'Pinned') {
+        if (category === "Pinned") {
           item.pinned = true;
         } else {
           item.pinned = false;
@@ -390,7 +410,7 @@ toggleDetails(item: TestItem) {
 
     this.persistTestItemOrder();
 
-    console.log('✅ Updated testItems:', this.testItems);
+    console.log("✅ Updated testItems:", this.testItems);
   }
 
   persistTestItemOrder() {
@@ -414,9 +434,9 @@ toggleDetails(item: TestItem) {
     });
 
     this.listsService.reorderItems(payload).subscribe({
-      next: () => console.log('✅ Persisted reordered testItems to backend'),
+      next: () => console.log("✅ Persisted reordered testItems to backend"),
       error: (err) =>
-        console.error('❌ Failed to persist testItem reorder:', err),
+        console.error("❌ Failed to persist testItem reorder:", err),
     });
   }
 
@@ -440,7 +460,7 @@ toggleDetails(item: TestItem) {
     }
 
     // Move to target group
-    const targetGroup = item.pinned ? 'Pinned' : item.categoryName;
+    const targetGroup = item.pinned ? "Pinned" : item.categoryName;
     if (!this.groupedTestItems[targetGroup]) {
       this.groupedTestItems[targetGroup] = [];
     }
@@ -448,7 +468,7 @@ toggleDetails(item: TestItem) {
 
     // ✅ Use alternating highlight class to force animation restart
     item.highlightClass =
-      item.highlightClass === 'highlightA' ? 'highlightB' : 'highlightA';
+      item.highlightClass === "highlightA" ? "highlightB" : "highlightA";
     this.cdr.detectChanges(); // Ensure Angular applies the new class
 
     // Remove class after animation completes
@@ -465,7 +485,7 @@ toggleDetails(item: TestItem) {
         const items = this.groupedTestItems[category];
         items.forEach((itm, index) => {
           itm.position = newFlat.length;
-          if (category !== 'Pinned') {
+          if (category !== "Pinned") {
             itm.categoryName = category;
             itm.pinned = false;
           } else {
@@ -490,57 +510,57 @@ toggleDetails(item: TestItem) {
 
     item.isEditing = true;
     item.tempName = item.name;
-    item.tempPriority = item.priority || 'Medium';
+    item.tempPriority = item.priority || "Medium";
     item.tempCategoryName = item.categoryName;
-    item.tempDescription = item.tempDescription || '';
+    item.tempDescription = item.tempDescription || "";
   }
 
-onCancelEdit(item: TestItem) {
-  item.isEditing = false;
-  item.showDetails = false;
-  console.log('cancel clicked')
-}
+  onCancelEdit(item: TestItem) {
+    item.isEditing = false;
+    item.showDetails = false;
+    console.log("cancel clicked");
+  }
 
   onSaveEdit(item: TestItem) {
-  item.name = item.tempName || item.name;
-  item.priority = item.tempPriority || 'Medium';
-  item.categoryName = item.tempCategoryName || item.categoryName;
-  item.tempDescription = item.tempDescription || '';
+    item.name = item.tempName || item.name;
+    item.priority = item.tempPriority || "Medium";
+    item.categoryName = item.tempCategoryName || item.categoryName;
+    item.tempDescription = item.tempDescription || "";
 
-  const matchingCategory = this.categories.find(
-    (cat) => cat.name === item.categoryName
-  );
-  const matchingItem = this.items.find((i) => i.id === item.id);
+    const matchingCategory = this.categories.find(
+      (cat) => cat.name === item.categoryName
+    );
+    const matchingItem = this.items.find((i) => i.id === item.id);
 
-  const payload = {
-    title: item.name,
-    description: item.tempDescription,
-    priority: item.priority,
-    categoryId: matchingCategory?.id || matchingItem?.categoryId || null,
-    pinned: item.pinned,
-  };
+    const payload = {
+      title: item.name,
+      description: item.tempDescription,
+      priority: item.priority,
+      categoryId: matchingCategory?.id || matchingItem?.categoryId || null,
+      pinned: item.pinned,
+    };
 
-  this.listsService.updateItem(item.id, payload).subscribe({
-    next: () => {
-      item.isEditing = false;
-      this.loadItems();
+    this.listsService.updateItem(item.id, payload).subscribe({
+      next: () => {
+        item.isEditing = false;
+        this.loadItems();
 
-      // ✅ Restore filter panel if we were filtering before edit
-      if (this.wasFilteringBeforeEdit) {
-        setTimeout(() => {
-          if (this.filterListComponent) {
-            this.filterListComponent.showFilterPanel();
-          }
-          this.wasFilteringBeforeEdit = false; // reset flag
-        });
-      }
-    },
-    error: (err) => {
-      console.error('❌ Failed to update item:', err);
-      alert('Failed to save changes');
-    },
-  });
-}
+        // ✅ Restore filter panel if we were filtering before edit
+        if (this.wasFilteringBeforeEdit) {
+          setTimeout(() => {
+            if (this.filterListComponent) {
+              this.filterListComponent.showFilterPanel();
+            }
+            this.wasFilteringBeforeEdit = false; // reset flag
+          });
+        }
+      },
+      error: (err) => {
+        console.error("❌ Failed to update item:", err);
+        alert("Failed to save changes");
+      },
+    });
+  }
 
   onDeleteItem(item: TestItem, event: MouseEvent) {
     event.preventDefault();
@@ -553,28 +573,28 @@ onCancelEdit(item: TestItem) {
 
     this.listsService.deleteItem(item.id).subscribe({
       next: () => {
-        console.log('🗑️ Deleted item', item.id);
+        console.log("🗑️ Deleted item", item.id);
 
         // ✅ Refresh list after deletion
         this.loadItems();
       },
       error: (err) => {
-        console.error('❌ Failed to delete item:', err);
-        alert('Failed to delete item.');
+        console.error("❌ Failed to delete item:", err);
+        alert("Failed to delete item.");
       },
     });
   }
 
   getPriorityColor(priority: string): string {
-    switch ((priority || '').toLowerCase()) {
-      case 'high':
-        return 'red';
-      case 'medium':
-        return 'gold';
-      case 'low':
-        return 'limegreen';
+    switch ((priority || "").toLowerCase()) {
+      case "high":
+        return "red";
+      case "medium":
+        return "gold";
+      case "low":
+        return "limegreen";
       default:
-        return 'gray';
+        return "gray";
     }
   }
 
@@ -599,7 +619,7 @@ onCancelEdit(item: TestItem) {
   }
 
   ngOnDestroy(): void {
-    window.removeEventListener('resize', this.onResize.bind(this));
+    window.removeEventListener("resize", this.onResize.bind(this));
   }
 
   hideDetails(item: any) {
@@ -621,12 +641,57 @@ onCancelEdit(item: TestItem) {
     }
   }
 
-onCategoryAdded() {
-  // ✅ Call child method to reload categories
-  this.manageCategoriesComponent?.loadCategories();
+  onCategoryAdded() {
+    // ✅ Call child method to reload categories
+    this.manageCategoriesComponent?.loadCategories();
 
-  // ✅ Also re-map groupedTestItems after short delay
-  setTimeout(() => {
+    // ✅ Also re-map groupedTestItems after short delay
+    setTimeout(() => {
+      this.groupedTestItems = {
+        Pinned: [],
+        ...this.categories.reduce((acc, cat) => {
+          acc[cat.name] = [];
+          return acc;
+        }, {} as { [categoryName: string]: TestItem[] }),
+      };
+
+      for (const item of this.testItems) {
+        const key = item.pinned ? "Pinned" : item.categoryName;
+        if (!this.groupedTestItems[key]) {
+          this.groupedTestItems[key] = [];
+        }
+        this.groupedTestItems[key].push(item);
+      }
+
+      this.cdr.detectChanges();
+    }, 100);
+  }
+
+  onCategoriesChanged(updatedCategories: Category[]) {
+    console.log("📬 Parent received updated categories:", updatedCategories);
+
+    // 1. Build a quick lookup map of old category names by ID
+    const oldCategoryMap = new Map(
+      this.categories.map((cat) => [cat.id, cat.name])
+    );
+
+    // 2. Update internal categories reference
+    this.categories = updatedCategories;
+
+    // 3. Update categoryName in each testItem if its category name changed
+    this.testItems.forEach((item) => {
+      const matchingCategory = this.categories.find(
+        (cat) => cat.id === item.categoryId
+      );
+      const oldName = item.categoryName;
+      const newName = matchingCategory?.name;
+
+      if (matchingCategory && newName && newName !== oldName) {
+        item.categoryName = newName;
+      }
+    });
+
+    // 4. Rebuild groupedTestItems using updated category names
     this.groupedTestItems = {
       Pinned: [],
       ...this.categories.reduce((acc, cat) => {
@@ -636,7 +701,7 @@ onCategoryAdded() {
     };
 
     for (const item of this.testItems) {
-      const key = item.pinned ? 'Pinned' : item.categoryName;
+      const key = item.pinned ? "Pinned" : item.categoryName;
       if (!this.groupedTestItems[key]) {
         this.groupedTestItems[key] = [];
       }
@@ -644,122 +709,77 @@ onCategoryAdded() {
     }
 
     this.cdr.detectChanges();
-  }, 100);
-}
-
-onCategoriesChanged(updatedCategories: Category[]) {
-  console.log('📬 Parent received updated categories:', updatedCategories);
-
-  // 1. Build a quick lookup map of old category names by ID
-  const oldCategoryMap = new Map(this.categories.map(cat => [cat.id, cat.name]));
-
-  // 2. Update internal categories reference
-  this.categories = updatedCategories;
-
-  // 3. Update categoryName in each testItem if its category name changed
-  this.testItems.forEach(item => {
-    const matchingCategory = this.categories.find(cat => cat.id === item.categoryId);
-    const oldName = item.categoryName;
-    const newName = matchingCategory?.name;
-
-    if (matchingCategory && newName && newName !== oldName) {
-      item.categoryName = newName;
-    }
-  });
-
-  // 4. Rebuild groupedTestItems using updated category names
-  this.groupedTestItems = {
-    Pinned: [],
-    ...this.categories.reduce((acc, cat) => {
-      acc[cat.name] = [];
-      return acc;
-    }, {} as { [categoryName: string]: TestItem[] }),
-  };
-
-  for (const item of this.testItems) {
-    const key = item.pinned ? 'Pinned' : item.categoryName;
-    if (!this.groupedTestItems[key]) {
-      this.groupedTestItems[key] = [];
-    }
-    this.groupedTestItems[key].push(item);
   }
-
-  this.cdr.detectChanges();
-}
-
-
-
 
   loadItems() {
-  const listId = this.listId || this.list?.id;
-  if (!listId) {
-    console.warn('⚠️ No list ID provided. Cannot load items.');
-    return;
-  }
+    const listId = this.listId || this.list?.id;
+    if (!listId) {
+      console.warn("⚠️ No list ID provided. Cannot load items.");
+      return;
+    }
 
-  this.loading = true;
+    this.loading = true;
 
-  this.listsService.getCategoriesForList(listId).subscribe({
-    next: (categories) => {
-      this.categories = categories.sort((a, b) => a.position - b.position);
-      console.log('✅ Categories loaded:', categories);
+    this.listsService.getCategoriesForList(listId).subscribe({
+      next: (categories) => {
+        this.categories = categories.sort((a, b) => a.position - b.position);
+        console.log("✅ Categories loaded:", categories);
 
-      // Fetch items AFTER categories are known
-      this.listsService.getListItems(listId).subscribe({
-        next: (items) => {
-          console.log('✅ List items loaded:', items);
+        // Fetch items AFTER categories are known
+        this.listsService.getListItems(listId).subscribe({
+          next: (items) => {
+            console.log("✅ List items loaded:", items);
 
-          this.items = items.map((item) => ({
-            ...item,
-            originalCategoryId:
-              item.originalCategoryId ?? item.category?.id ?? null,
-          }));
+            this.items = items.map((item) => ({
+              ...item,
+              originalCategoryId:
+                item.originalCategoryId ?? item.category?.id ?? null,
+            }));
 
-          // Drag and drop transformation
-          this.testItems = this.items.map((item, index) => ({
-            id: item.id,
-            name: item.title || `Item ${index + 1}`,
-            position: index,
-            categoryName: item.category?.name || 'Uncategorized',
-            pinned: item.pinned,
-            createdAt: item.createdAt,
-            priority: item.priority || 'Medium',
-            tempPriority: item.priority || 'Medium',
-            tempDescription: item.description ?? '',
-          }));
+            // Drag and drop transformation
+            this.testItems = this.items.map((item, index) => ({
+              id: item.id,
+              name: item.title || `Item ${index + 1}`,
+              position: index,
+              categoryName: item.category?.name || "Uncategorized",
+              pinned: item.pinned,
+              createdAt: item.createdAt,
+              priority: item.priority || "Medium",
+              tempPriority: item.priority || "Medium",
+              tempDescription: item.description ?? "",
+            }));
 
-          this.groupedTestItems = {
-            Pinned: [],
-            ...this.categories.reduce((acc, cat) => {
-              acc[cat.name] = [];
-              return acc;
-            }, {} as { [categoryName: string]: TestItem[] }),
-          };
+            this.groupedTestItems = {
+              Pinned: [],
+              ...this.categories.reduce((acc, cat) => {
+                acc[cat.name] = [];
+                return acc;
+              }, {} as { [categoryName: string]: TestItem[] }),
+            };
 
-          for (const item of this.testItems) {
-            const key = item.pinned ? 'Pinned' : item.categoryName;
-            if (!this.groupedTestItems[key]) {
-              this.groupedTestItems[key] = [];
+            for (const item of this.testItems) {
+              const key = item.pinned ? "Pinned" : item.categoryName;
+              if (!this.groupedTestItems[key]) {
+                this.groupedTestItems[key] = [];
+              }
+              this.groupedTestItems[key].push(item);
             }
-            this.groupedTestItems[key].push(item);
-          }
 
-          this.groupItemsByCategory(this.items);
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('❌ Failed to load items:', err);
-          this.loading = false;
-        },
-      });
-    },
-    error: (err) => {
-      console.error('❌ Failed to load categories:', err);
-      this.loading = false;
-    },
-  });
-}
-
+            this.groupItemsByCategory(this.items);
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error("❌ Failed to load items:", err);
+            this.loading = false;
+          },
+        });
+      },
+      error: (err) => {
+        console.error("❌ Failed to load categories:", err);
+        this.loading = false;
+      },
+    });
+  }
 
   private groupItemsByCategory(items: ListItem[]) {
     this.groupedItems = { pinned: [] };
@@ -770,9 +790,9 @@ onCategoriesChanged(updatedCategories: Category[]) {
 
     for (const item of items) {
       if (item.pinned) {
-        this.groupedItems['pinned'].push(item);
+        this.groupedItems["pinned"].push(item);
       } else {
-        const key = item.category?.id ?? 'uncategorized';
+        const key = item.category?.id ?? "uncategorized";
         if (!this.groupedItems[key]) this.groupedItems[key] = [];
         this.groupedItems[key].push(item);
       }
@@ -781,7 +801,7 @@ onCategoriesChanged(updatedCategories: Category[]) {
 
   getCategoryNameById(id: string | number): string {
     const found = this.categories.find((c) => c.id === +id);
-    return found?.name || 'Uncategorized';
+    return found?.name || "Uncategorized";
   }
 
   get anyItemEditing(): boolean {
@@ -796,16 +816,16 @@ onCategoriesChanged(updatedCategories: Category[]) {
     this.showCategoryManager = !this.showCategoryManager;
   }
 
-toggleCategoryEditMode() {
-  console.log('toggleCategoryEditMode triggered');
-  this.isCategoryEditMode = !this.isCategoryEditMode;
+  toggleCategoryEditMode() {
+    console.log("toggleCategoryEditMode triggered");
+    this.isCategoryEditMode = !this.isCategoryEditMode;
 
-  if (!this.isCategoryEditMode) {
-    this.newCategoryName = '';
-    this.loadItems();
-    console.log('Categories refreshed');
+    if (!this.isCategoryEditMode) {
+      this.newCategoryName = "";
+      this.loadItems();
+      console.log("Categories refreshed");
+    }
   }
-}
 
   onCategoryAddCompleted() {
     this.isCategoryEditMode = false;
@@ -821,8 +841,8 @@ toggleCategoryEditMode() {
     }));
 
     this.listsService.reorderItems(payload).subscribe({
-      next: () => console.log('✅ Reordered'),
-      error: (err) => console.error('❌ Reorder failed', err),
+      next: () => console.log("✅ Reordered"),
+      error: (err) => console.error("❌ Reorder failed", err),
     });
   }
 
@@ -842,8 +862,8 @@ toggleCategoryEditMode() {
       );
     }
     const prevCategoryIdRaw = event.previousContainer.id.replace(
-      'cdk-drop-',
-      ''
+      "cdk-drop-",
+      ""
     );
     const prevCategoryId = isNaN(+prevCategoryIdRaw)
       ? prevCategoryIdRaw
@@ -869,12 +889,12 @@ toggleCategoryEditMode() {
     }
 
     if (!movedItem) {
-      console.error('❌ movedItem is undefined during drop event');
+      console.error("❌ movedItem is undefined during drop event");
       return;
     }
 
     // ✅ Handle pin toggle
-    const isNowPinned = currCategoryId === 'pinned';
+    const isNowPinned = currCategoryId === "pinned";
     movedItem.pinned = isNowPinned;
 
     if (isNowPinned) {
@@ -888,7 +908,7 @@ toggleCategoryEditMode() {
       movedItem.category = null;
       // DO NOT clear categoryId
     } else if (
-      prevCategoryId === 'pinned' &&
+      prevCategoryId === "pinned" &&
       movedItem.originalCategoryId != null
     ) {
       // Restore category from original
@@ -905,7 +925,7 @@ toggleCategoryEditMode() {
     // Ensure item.categoryId is set correctly before persisting
     if (!movedItem.pinned) {
       // Update the item's categoryId and category object
-      if (typeof currCategoryId === 'number') {
+      if (typeof currCategoryId === "number") {
         const targetCategory = this.categories.find(
           (c) => c.id === currCategoryId
         );
@@ -929,8 +949,8 @@ toggleCategoryEditMode() {
     }));
 
     this.listsService.reorderItems(payload).subscribe({
-      next: () => console.log('✅ Reordered after drop'),
-      error: (err) => console.error('❌ Drop reorder failed', err),
+      next: () => console.log("✅ Reordered after drop"),
+      error: (err) => console.error("❌ Drop reorder failed", err),
     });
 
     this.cdr.detectChanges();
@@ -961,8 +981,8 @@ toggleCategoryEditMode() {
     this.listsService
       .reorderCategoriesForList(this.list.id, payload)
       .subscribe({
-        next: () => console.log('✅ Categories reordered'),
-        error: (err) => console.error('❌ Failed to reorder categories', err),
+        next: () => console.log("✅ Categories reordered"),
+        error: (err) => console.error("❌ Failed to reorder categories", err),
       });
   }
 
@@ -978,9 +998,9 @@ toggleCategoryEditMode() {
       null;
 
     const payload = {
-      title: item.tempTitle?.trim() || '',
-      description: item.tempDescription?.trim() || '',
-      priority: item.tempPriority || 'Medium',
+      title: item.tempTitle?.trim() || "",
+      description: item.tempDescription?.trim() || "",
+      priority: item.tempPriority || "Medium",
       categoryId: preservedCategoryId,
       pinned: item.pinned,
     };
@@ -998,107 +1018,106 @@ toggleCategoryEditMode() {
         this.loadItems(); // reload everything
       },
       error: (err) => {
-        console.error('❌ Failed to update item:', err);
-        alert('Failed to update item');
+        console.error("❌ Failed to update item:", err);
+        alert("Failed to update item");
       },
     });
   }
 
-confirmComplete(item: TestItem, event: Event) {
-  event.stopPropagation();
-  item.confirmingComplete = true;
+  confirmComplete(item: TestItem, event: Event) {
+    event.stopPropagation();
+    item.confirmingComplete = true;
 
-  // Automatically revert if no action is taken within 2 seconds
-  setTimeout(() => {
-    item.confirmingComplete = false;
-  }, 5000);
-}
-
-cancelConfirmComplete(item: TestItem) {
-  item.confirmingComplete = false;
-}
-
-onCompleteItem(item: TestItem, event: Event) {
-  event.stopPropagation();
-
-  item.confirmingComplete = false; // reset state
-
-  this.listsService.completeItem(item.id).subscribe({
-    next: () => {
-      this.loadItems(); // refresh after confirmed completion
-    },
-    error: (err) => {
-      console.error('❌ Failed to complete item:', err);
-      alert('Failed to mark item as complete');
-    }
-  });
-}
-
-setShowNewItemFormWithCategory(categoryName: string) {
-  this.showNewItemForm = true;
-
-  const category = this.categories.find(c => c.name === categoryName);
-  if (category) {
-    this.selectedCategoryId = category.id;
-
-    // If the component is already loaded, set it directly
+    // Automatically revert if no action is taken within 2 seconds
     setTimeout(() => {
-      if (this.addListItemComponent) {
-        this.addListItemComponent.selectedCategoryId = category.id;
-      }
-    });
-  }
-}
-
-
-onItemRestored(item: any) {
-  this.items.push(item);
-
-  const categoryName = item.category?.name || 'Uncategorized';
-
-  const testItem = {
-    id: item.id,
-    name: item.title,
-    position: this.testItems.length,
-    categoryName,
-    pinned: false,
-    createdAt: item.createdAt,
-    priority: item.priority || 'Medium',
-    tempPriority: item.priority || 'Medium',
-    tempDescription: item.description ?? ''
-  };
-
-  if (!this.groupedTestItems[categoryName]) {
-    this.groupedTestItems[categoryName] = [];
+      item.confirmingComplete = false;
+    }, 5000);
   }
 
-  this.groupedTestItems[categoryName].push(testItem);
-  this.testItems.push(testItem);
+  cancelConfirmComplete(item: TestItem) {
+    item.confirmingComplete = false;
+  }
 
-  this.cdr.detectChanges();
-}
+  onCompleteItem(item: TestItem, event: Event) {
+    event.stopPropagation();
 
-onRestoreAllItems() {
-  if (!this.completedListComponent?.items?.length) return;
+    item.confirmingComplete = false; // reset state
 
-  const itemsToRestore = [...this.completedListComponent.items];
-
-  const requests = itemsToRestore.map(item =>
-    this.listsService.uncompleteItem(item.id).toPromise()
-  );
-
-  Promise.all(requests)
-    .then(restored => {
-      restored.forEach(item => this.onItemRestored(item));
-      this.completedListComponent.items = [];
-    })
-    .catch(err => {
-      console.error('❌ Failed to restore all items:', err);
-      alert('Failed to restore all items.');
+    this.listsService.completeItem(item.id).subscribe({
+      next: () => {
+        this.loadItems(); // refresh after confirmed completion
+      },
+      error: (err) => {
+        console.error("❌ Failed to complete item:", err);
+        alert("Failed to mark item as complete");
+      },
     });
-}
+  }
 
-onExportClicked() {
+  setShowNewItemFormWithCategory(categoryName: string) {
+    this.showNewItemForm = true;
+
+    const category = this.categories.find((c) => c.name === categoryName);
+    if (category) {
+      this.selectedCategoryId = category.id;
+
+      // If the component is already loaded, set it directly
+      setTimeout(() => {
+        if (this.addListItemComponent) {
+          this.addListItemComponent.selectedCategoryId = category.id;
+        }
+      });
+    }
+  }
+
+  onItemRestored(item: any) {
+    this.items.push(item);
+
+    const categoryName = item.category?.name || "Uncategorized";
+
+    const testItem = {
+      id: item.id,
+      name: item.title,
+      position: this.testItems.length,
+      categoryName,
+      pinned: false,
+      createdAt: item.createdAt,
+      priority: item.priority || "Medium",
+      tempPriority: item.priority || "Medium",
+      tempDescription: item.description ?? "",
+    };
+
+    if (!this.groupedTestItems[categoryName]) {
+      this.groupedTestItems[categoryName] = [];
+    }
+
+    this.groupedTestItems[categoryName].push(testItem);
+    this.testItems.push(testItem);
+
+    this.cdr.detectChanges();
+  }
+
+  onRestoreAllItems() {
+    if (!this.completedListComponent?.items?.length) return;
+
+    const itemsToRestore = [...this.completedListComponent.items];
+
+    const requests = itemsToRestore.map((item) =>
+      this.listsService.uncompleteItem(item.id).toPromise()
+    );
+
+    Promise.all(requests)
+      .then((restored) => {
+        restored.forEach((item) => this.onItemRestored(item));
+        this.completedListComponent.items = [];
+      })
+      .catch((err) => {
+        console.error("❌ Failed to restore all items:", err);
+        alert("Failed to restore all items.");
+      });
+  }
+
+  onExportClicked() {
     this.showExportPanel = true;
   }
 
@@ -1106,17 +1125,16 @@ onExportClicked() {
     this.showExportPanel = false;
   }
 
-onConfirmExport() {
-  this.exportListComponent?.exportToTxt();
-  this.showExportPanel = false;
-}
+  onConfirmExport() {
+    this.exportListComponent?.exportToTxt();
+    this.showExportPanel = false;
+  }
 
   onExportOptionsValidChange(valid: boolean) {
-  this.isExportValid = valid;
-}
+    this.isExportValid = valid;
+  }
 
-get isFiltering(): boolean {
-  return !!this.filterText.trim();
-}
-
+  get isFiltering(): boolean {
+    return !!this.filterText.trim();
+  }
 }

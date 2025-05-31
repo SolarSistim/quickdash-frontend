@@ -24,7 +24,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: block;
-    max-width: 100%; /* Optional, constrain width if needed */
+    max-width: 100%;
   }
   
   .link-name-container {
@@ -35,7 +35,6 @@
     flex: 1 1 auto;
     min-width: 0;
     cursor: default;
-    /*font-size: 14px; /* or whatever your standard is */
   }
   
   .link-item.cdk-drag-preview .link-name-container,
@@ -69,7 +68,7 @@
   .group-header {
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Ensure space between */
+    justify-content: space-between;
     margin-bottom: 8px;
   }
 
@@ -88,26 +87,25 @@
     color: white;
     flex-grow: 1;
     margin-left: 0px;
-    overflow: hidden; /* Ensure container also respects overflow */
+    overflow: hidden;
   }
   
   .group-name {
-    margin-bottom: 0; /* Remove default margin */
-    white-space: nowrap; /* Prevent line breaks */
-    overflow: hidden; /* Hide overflowing content */
-    text-overflow: ellipsis; /* Show "..." for overflow */
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
     
   .group-box:hover .group-menu-icon {
-    opacity: 1; /* Fade in the menu icon on group-box hover */
+    opacity: 1;
   }
 
   .link-list {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    /* font-size: 13px; */
   }
 
   .group-list {
@@ -125,14 +123,14 @@
     min-height: 100%;
     align-items: center;
     justify-content: center;
-    opacity: 0.5; /* optional: slightly visible */
-    border: 1px dashed #555; /* optional: visual cue */
+    opacity: 0.5;
+    border: 1px dashed #555;
     color: white;
     padding: 10px;
   }
 
   .link-item {
-    position: relative;      /* establish containing block */
+    position: relative;
     padding-left: 24px;
     color: white;
     padding: 4px 6px;
@@ -141,7 +139,7 @@
     cursor: pointer;
     display: flex;
     align-items: center;
-    justify-content: space-between; /* Keep space-between for the outer elements */
+    justify-content: space-between;
     gap: 8px;
   }
 
@@ -163,7 +161,6 @@
     transition: opacity 0.1s ease, transform 0.1s ease;
   }
 
-  /* when the parent has .handles-visible, fade+scale in */
   .handles-visible .link-drag-handle,
   .handles-visible .group-drag-handle {
     opacity: 1;
@@ -172,18 +169,18 @@
   }
 
   .link-name-container {
-    flex-grow: 1; /* Allow the name container to take up available space */
-    text-align: left; /* Align the text within the container to the left */
-    overflow: hidden; /* Optional: for long names */
-    text-overflow: ellipsis; /* Optional: for long names */
+    flex-grow: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
     cursor: pointer !important;
   }
 
   .link-menu-icon {
-    cursor: pointer; /* Indicate it's interactive */
-    font-size: 16px; /* Adjust size as needed */
-    color: #888; /* Adjust color as needed */
-    opacity: 0; /* Initially hide the menu icon */
+    cursor: pointer;
+    font-size: 16px;
+    color: #888;
+    opacity: 0;
     transition: opacity 0.2s ease-in-out;
   }
   
@@ -192,13 +189,13 @@
   }
   
   .link-item:hover .link-menu-icon {
-    opacity: 1; /* Fade in the menu icon on link-item hover */
+    opacity: 1;
   }
 
   .add-group-box {
     cursor: pointer;
-    border: 2px dashed #888; /* Dashed border */
-    background-color: transparent; /* Transparent background */
+    border: 2px dashed #888;
+    background-color: transparent;
     min-height: 100px;
     display: flex;
     align-items: center;
@@ -211,8 +208,8 @@
   }
   
   .add-group-box:hover {
-    background-color: rgba(255, 255, 255, 0.05); /* Subtle hover effect */
-    border-color: #ccc; /* Lighten dashed border on hover */
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #ccc;
     color: #aaa;
   }
   
@@ -225,8 +222,8 @@
     cursor: pointer;
     font-size: 18px;
     color: #888;
-    opacity: 0; /* Initially hide the menu icon */
-    transition: opacity 0.2s ease-in-out; /* Add a smooth fade transition */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
   }
   
   .group-menu-icon:hover {
@@ -236,7 +233,7 @@
   .link-item {
     display: flex;
     align-items: center;
-    gap: 6px;  /* space between icon & name */
+    gap: 6px;
   }
   
   .link-icon {

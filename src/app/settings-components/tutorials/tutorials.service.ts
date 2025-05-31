@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../environment/environment'; // ✅ adjust path if needed
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable } from "rxjs";
+import { environment } from "../../../environment/environment";
 
 export interface Tutorial {
   id: number;
@@ -10,10 +10,10 @@ export interface Tutorial {
 }
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class TutorialsService {
-  private readonly API_URL = `${environment.apiUrl}/tutorials`; // ✅ now uses correct backend base URL
+  private readonly API_URL = `${environment.apiUrl}/tutorials`;
 
   constructor(private http: HttpClient) {}
 
@@ -26,11 +26,12 @@ export class TutorialsService {
   }
 
   updateDisplay(id: number, display: boolean): Observable<any> {
-    return this.http.post(`${this.API_URL}/toggle-display/${id}`, { display }); // ✅ matches your backend logic
+    return this.http.post(`${this.API_URL}/toggle-display/${id}`, { display });
   }
 
   toggleAllTutorials(display: boolean) {
-  return this.http.patch(`${environment.apiUrl}/tutorials/toggle-all`, { display });
-}
-
+    return this.http.patch(`${environment.apiUrl}/tutorials/toggle-all`, {
+      display,
+    });
+  }
 }

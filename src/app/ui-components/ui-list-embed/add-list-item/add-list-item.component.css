@@ -1,6 +1,6 @@
 .priority-dot {
   display: inline-block;
-  width: 15px;         /* 150% of original 10px */
+  width: 15px;
   height: 15px;
   border-radius: 50%;
   margin-right: 8px;
@@ -8,7 +8,7 @@
 }
 
 mat-select-trigger .priority-dot {
-  top: -1px;            /* Higher for the selected item */
+  top: -1px;
 }
 
 .priority-dot.high {

@@ -1,7 +1,7 @@
-import { environment } from '../../../environment/environment';
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, shareReplay } from 'rxjs';
+import { environment } from "../../../environment/environment";
+import { Injectable } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { Observable, map, shareReplay } from "rxjs";
 
 export interface Setting {
   id: number;
@@ -10,20 +10,18 @@ export interface Setting {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class SettingsService {
-
   private settingsUrl = `${environment.apiUrl}/settings`;
   private settingsCache$: Observable<Record<string, string>> | undefined;
 
   constructor(private http: HttpClient) {}
 
-  // Load all settings and cache them
   loadSettings(): Observable<Record<string, string>> {
     if (!this.settingsCache$) {
       this.settingsCache$ = this.http.get<Setting[]>(this.settingsUrl).pipe(
-        map(settings =>
+        map((settings) =>
           settings.reduce((acc, s) => {
             acc[s.key] = s.value;
             return acc;
@@ -35,23 +33,25 @@ export class SettingsService {
     return this.settingsCache$;
   }
 
-  // Optionally get a single setting by key
   getSettingByKey(key: string): Observable<string | undefined> {
-    return this.loadSettings().pipe(map(all => all[key]));
+    return this.loadSettings().pipe(map((all) => all[key]));
   }
 
-  // Optional method to force refresh
   clearCache(): void {
     this.settingsCache$ = undefined!;
   }
 
   saveSetting(key: string, value: string): Observable<any> {
-    const url = `${this.settingsUrl}?key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`;
+    const url = `${this.settingsUrl}?key=${encodeURIComponent(
+      key
+    )}&value=${encodeURIComponent(value)}`;
     return this.http.post(url, null);
   }
 
   uploadImage(formData: FormData): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/settings/upload-image`, formData);
+    return this.http.post(
+      `${environment.apiUrl}/settings/upload-image`,
+      formData
+    );
   }
-  
 }

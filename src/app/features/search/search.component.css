@@ -1,9 +1,9 @@
 .custom-mat-card {
-    background-color: #3b4d59;
-    padding: 15px;
+	background-color: #3b4d59;
+	padding: 15px;
 }
 
 .filter-checkboxes label {
-  color: var(--group-font-color);
-  cursor: pointer;
+	color: var(--group-font-color);
+	cursor: pointer;
 }
