@@ -65,6 +65,7 @@ export class FilterListComponent {
       (this.filterByName || this.filterByDescription || this.filterByCategory)
     );
   }
+  
   get allFiltersSelected(): boolean {
     return (
       this.filterByName && this.filterByDescription && this.filterByCategory

@@ -459,6 +459,9 @@ export class ThemesComponent {
       "LINK_BORDER_CORNER_RADIUS",
       "GROUP_BORDER_CORNER_RADIUS",
       "SEARCH_FEATURE_CORNER_RADIUS",
+      "SEARCH_FEATURE_BORDER_COLOR",
+      "SEARCH_FEATURE_FONT_COLOR",
+      "SEARCH_FEATURE_BORDER_WIDTH"
     ];
 
     const data = Object.fromEntries(
@@ -525,6 +528,9 @@ export class ThemesComponent {
       "LINK_BORDER_CORNER_RADIUS",
       "GROUP_BORDER_CORNER_RADIUS",
       "SEARCH_FEATURE_CORNER_RADIUS",
+      "SEARCH_FEATURE_BORDER_COLOR",
+      "SEARCH_FEATURE_FONT_COLOR",
+      "SEARCH_FEATURE_BORDER_WIDTH"
     ];
 
     const themeOnly = Object.fromEntries(
@@ -613,6 +619,9 @@ export class ThemesComponent {
         "LINK_BORDER_CORNER_RADIUS",
         "GROUP_BORDER_CORNER_RADIUS",
         "SEARCH_FEATURE_CORNER_RADIUS",
+        "SEARCH_FEATURE_BORDER_COLOR",
+        "SEARCH_FEATURE_FONT_COLOR",
+      "SEARCH_FEATURE_BORDER_WIDTH"
       ];
 
       const data = Object.fromEntries(

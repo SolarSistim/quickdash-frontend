@@ -57,7 +57,7 @@ interface ListItem {
 
   showDetails?: boolean;
   originalCategoryId?: number | null;
-  categoryId?: number | null; // ✅ <-- Add this line
+  categoryId?: number | null;
 }
 
 interface Category {
@@ -88,7 +88,6 @@ interface TestItem {
   categoryId?: number | null;
   confirmingComplete?: boolean;
 }
-// END drag and drop testing
 
 @Component({
   selector: "app-ui-list-embed",
@@ -118,9 +117,11 @@ interface TestItem {
   styleUrls: ["./ui-list-embed.component.css"],
 })
 export class UiListEmbedComponent implements OnInit {
+
+  
   @Input() listId!: number;
   isExportValid = false;
-  filterText = "";
+  filterText: string = '';
   filterByName = true;
   filterByDescription = true;
   filterByCategory = true;
@@ -188,14 +189,14 @@ export class UiListEmbedComponent implements OnInit {
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.isFullscreen = event.urlAfterRedirects.includes("/list-full");
-        this.cdr.detectChanges(); // Trigger UI update
+        this.cdr.detectChanges();
       });
-    // Drag and drop testing
+
     this.testItems = this.items.map((item, index) => ({
       id: item.id,
       name: item.title || `Item ${index + 1}`,
       position: index,
-      categoryId: item.category?.id ?? null, // ✅ Needed for counting
+      categoryId: item.category?.id ?? null,
       categoryName: item.category?.name || "Uncategorized",
       pinned: item.pinned,
       createdAt: item.createdAt,
@@ -203,8 +204,7 @@ export class UiListEmbedComponent implements OnInit {
       tempPriority: item.priority || "Medium",
       tempDescription: item.description ?? "",
     }));
-    // End drag and drop testing
-    this.isMobile = window.innerWidth < 576; // Bootstrap "xs" breakpoint
+    this.isMobile = window.innerWidth < 576;
     window.addEventListener("resize", this.onResize.bind(this));
     this.loadItems();
     this.settingsService.loadSettings().subscribe({
@@ -268,16 +268,13 @@ export class UiListEmbedComponent implements OnInit {
     this.router.navigate(["/"]);
   }
 
-  // Priority panel
   togglePriorityPanel(item: TestItem, event: MouseEvent): void {
     event.stopPropagation();
-    // Close all other panels
     for (const cat of Object.keys(this.groupedTestItems)) {
       for (const otherItem of this.groupedTestItems[cat]) {
         if (otherItem !== item) otherItem.showPriorityPanel = false;
       }
     }
-    // Toggle this one
     item.showPriorityPanel = !item.showPriorityPanel;
   }
 
@@ -286,7 +283,6 @@ export class UiListEmbedComponent implements OnInit {
     item.priority = level;
     item.showPriorityPanel = false;
 
-    // Optional: persist immediately
     this.listsService
       .updateItem(item.id, {
         priority: level,
@@ -303,39 +299,64 @@ export class UiListEmbedComponent implements OnInit {
       });
   }
 
-  // END priority panel
 
-  get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
-    if (!this.filterText.trim()) return this.groupedTestItems;
-
-    const lower = this.filterText.toLowerCase();
-    const filtered: { [categoryName: string]: TestItem[] } = {};
-
-    for (const category of Object.keys(this.groupedTestItems)) {
-      const categoryMatches =
-        this.filterByCategory && category.toLowerCase().includes(lower);
-
-      const matches = this.groupedTestItems[category].filter(
-        (item) =>
-          (this.filterByName && item.name.toLowerCase().includes(lower)) ||
-          (this.filterByDescription &&
-            item.tempDescription?.toLowerCase().includes(lower)) ||
-          categoryMatches
-      );
-
-      if (matches.length > 0) {
-        filtered[category] = matches;
+get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
+  if (!this.filterText.trim()) {
+    const allGrouped: { [categoryName: string]: TestItem[] } = {
+      Pinned: [],
+      ...this.categories.reduce((acc, cat) => {
+        acc[cat.name] = [];
+        return acc;
+      }, {} as { [categoryName: string]: TestItem[] }),
+    };
+    for (const categoryName in this.groupedTestItems) {
+      if (this.groupedTestItems.hasOwnProperty(categoryName)) {
+        allGrouped[categoryName] = this.groupedTestItems[categoryName];
       }
     }
-
-    return filtered;
+    return allGrouped;
   }
 
-  // END filter list items
+  const lower = this.filterText.toLowerCase();
+  const filtered: { [categoryName: string]: TestItem[] } = {};
 
-  // Drag and drop testing
-  // Drag and drop testing
-  // Drag and drop testing
+  if (this.groupedTestItems['Pinned']) {
+    filtered['Pinned'] = [];
+  }
+  for (const category of this.categories) {
+    filtered[category.name] = [];
+  }
+
+
+  for (const category of Object.keys(this.groupedTestItems)) {
+    const categoryMatches =
+      this.filterByCategory && category.toLowerCase().includes(lower);
+
+    const matches = this.groupedTestItems[category].filter(
+      (item) =>
+        (this.filterByName && item.name.toLowerCase().includes(lower)) ||
+        (this.filterByDescription &&
+          item.tempDescription?.toLowerCase().includes(lower)) ||
+        categoryMatches
+    );
+
+    if (matches.length > 0 || categoryMatches) {
+        if (!filtered[category]) {
+            filtered[category] = [];
+        }
+        filtered[category] = matches;
+    }
+  }
+
+  for (const categoryName of Object.keys(this.groupedTestItems)) {
+    if (!filtered[categoryName]) {
+      filtered[categoryName] = [];
+    }
+  }
+
+
+  return filtered;
+}
 
   groupedTestItems: { [categoryName: string]: TestItem[] } = {};
 
@@ -376,9 +397,7 @@ export class UiListEmbedComponent implements OnInit {
       movedItem = currContainer.data[currIndex];
     }
 
-    // ✅ Apply highlight animation
     if (movedItem) {
-      // ✅ Force animation restart by toggling highlightClass
       movedItem.highlightClass =
         movedItem.highlightClass === "highlightA" ? "highlightB" : "highlightA";
       this.cdr.detectChanges();
@@ -389,7 +408,6 @@ export class UiListEmbedComponent implements OnInit {
       }, 1000);
     }
 
-    // 🔁 Rebuild flat testItems array from groupedTestItems
     const newFlat: TestItem[] = [];
 
     for (const category of this.objectKeys(this.groupedTestItems)) {
@@ -426,7 +444,7 @@ export class UiListEmbedComponent implements OnInit {
       return {
         id: item.id,
         position: item.position,
-        pinned: item.pinned, // ✅ use actual pinned status
+        pinned: item.pinned,
         categoryId: item.pinned
           ? originalCategoryId
           : matchingCategory?.id ?? originalCategoryId,
@@ -449,35 +467,29 @@ export class UiListEmbedComponent implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
-    // Toggle pin status
     item.pinned = !item.pinned;
 
-    // Remove from all groups
     for (const category of this.objectKeys(this.groupedTestItems)) {
       this.groupedTestItems[category] = this.groupedTestItems[category].filter(
         (i) => i.id !== item.id
       );
     }
 
-    // Move to target group
     const targetGroup = item.pinned ? "Pinned" : item.categoryName;
     if (!this.groupedTestItems[targetGroup]) {
       this.groupedTestItems[targetGroup] = [];
     }
     this.groupedTestItems[targetGroup].push(item);
 
-    // ✅ Use alternating highlight class to force animation restart
     item.highlightClass =
       item.highlightClass === "highlightA" ? "highlightB" : "highlightA";
-    this.cdr.detectChanges(); // Ensure Angular applies the new class
+    this.cdr.detectChanges();
 
-    // Remove class after animation completes
     setTimeout(() => {
       item.highlightClass = undefined;
       this.cdr.detectChanges();
-    }, 1000); // Match animation duration
+    }, 1000);
 
-    // Slight delay before rebuilding flat list
     requestAnimationFrame(() => {
       const newFlat: TestItem[] = [];
 
@@ -505,7 +517,6 @@ export class UiListEmbedComponent implements OnInit {
     event.stopPropagation();
     event.preventDefault();
 
-    // Save whether we were filtering when entering edit mode
     this.wasFilteringBeforeEdit = !!this.filterText.trim();
 
     item.isEditing = true;
@@ -545,13 +556,12 @@ export class UiListEmbedComponent implements OnInit {
         item.isEditing = false;
         this.loadItems();
 
-        // ✅ Restore filter panel if we were filtering before edit
         if (this.wasFilteringBeforeEdit) {
           setTimeout(() => {
             if (this.filterListComponent) {
               this.filterListComponent.showFilterPanel();
             }
-            this.wasFilteringBeforeEdit = false; // reset flag
+            this.wasFilteringBeforeEdit = false;
           });
         }
       },
@@ -575,7 +585,6 @@ export class UiListEmbedComponent implements OnInit {
       next: () => {
         console.log("🗑️ Deleted item", item.id);
 
-        // ✅ Refresh list after deletion
         this.loadItems();
       },
       error: (err) => {
@@ -598,9 +607,6 @@ export class UiListEmbedComponent implements OnInit {
     }
   }
 
-  // End drag and drop testing
-  // End drag and drop testing
-  // End drag and drop testing
 
   trackById(index: number, item: ListItem): number {
     return item.id;
@@ -635,17 +641,14 @@ export class UiListEmbedComponent implements OnInit {
   setShowNewItemForm(value: boolean) {
     this.showNewItemForm = value;
 
-    // 👇 Auto-select the first category when opening the form
     if (value && this.categories.length > 0) {
       this.selectedCategoryId = this.categories[0].id;
     }
   }
 
   onCategoryAdded() {
-    // ✅ Call child method to reload categories
     this.manageCategoriesComponent?.loadCategories();
 
-    // ✅ Also re-map groupedTestItems after short delay
     setTimeout(() => {
       this.groupedTestItems = {
         Pinned: [],
@@ -670,15 +673,12 @@ export class UiListEmbedComponent implements OnInit {
   onCategoriesChanged(updatedCategories: Category[]) {
     console.log("📬 Parent received updated categories:", updatedCategories);
 
-    // 1. Build a quick lookup map of old category names by ID
     const oldCategoryMap = new Map(
       this.categories.map((cat) => [cat.id, cat.name])
     );
 
-    // 2. Update internal categories reference
     this.categories = updatedCategories;
 
-    // 3. Update categoryName in each testItem if its category name changed
     this.testItems.forEach((item) => {
       const matchingCategory = this.categories.find(
         (cat) => cat.id === item.categoryId
@@ -691,7 +691,6 @@ export class UiListEmbedComponent implements OnInit {
       }
     });
 
-    // 4. Rebuild groupedTestItems using updated category names
     this.groupedTestItems = {
       Pinned: [],
       ...this.categories.reduce((acc, cat) => {
@@ -725,7 +724,6 @@ export class UiListEmbedComponent implements OnInit {
         this.categories = categories.sort((a, b) => a.position - b.position);
         console.log("✅ Categories loaded:", categories);
 
-        // Fetch items AFTER categories are known
         this.listsService.getListItems(listId).subscribe({
           next: (items) => {
             console.log("✅ List items loaded:", items);
@@ -736,7 +734,6 @@ export class UiListEmbedComponent implements OnInit {
                 item.originalCategoryId ?? item.category?.id ?? null,
             }));
 
-            // Drag and drop transformation
             this.testItems = this.items.map((item, index) => ({
               id: item.id,
               name: item.title || `Item ${index + 1}`,
@@ -837,7 +834,7 @@ export class UiListEmbedComponent implements OnInit {
       id: item.id,
       position: index,
       pinned: item.pinned,
-      categoryId: item.category?.id ?? null, // ✅ Preserve category ID
+      categoryId: item.category?.id ?? null,
     }));
 
     this.listsService.reorderItems(payload).subscribe({
@@ -893,25 +890,20 @@ export class UiListEmbedComponent implements OnInit {
       return;
     }
 
-    // ✅ Handle pin toggle
     const isNowPinned = currCategoryId === "pinned";
     movedItem.pinned = isNowPinned;
 
     if (isNowPinned) {
-      // Save original category ID
       if (movedItem.originalCategoryId == null) {
         movedItem.originalCategoryId =
           movedItem.category?.id ?? movedItem.categoryId ?? null;
       }
 
-      // Remove visual category, but preserve ID
       movedItem.category = null;
-      // DO NOT clear categoryId
     } else if (
       prevCategoryId === "pinned" &&
       movedItem.originalCategoryId != null
     ) {
-      // Restore category from original
       const targetCat = this.categories.find(
         (cat) => cat.id === movedItem.originalCategoryId
       );
@@ -922,9 +914,7 @@ export class UiListEmbedComponent implements OnInit {
       }
     }
 
-    // Ensure item.categoryId is set correctly before persisting
     if (!movedItem.pinned) {
-      // Update the item's categoryId and category object
       if (typeof currCategoryId === "number") {
         const targetCategory = this.categories.find(
           (c) => c.id === currCategoryId
@@ -989,8 +979,6 @@ export class UiListEmbedComponent implements OnInit {
   saveItemEdit(item: ListItem) {
     const listId = this.list?.id;
     if (!listId) return;
-
-    // ✅ Determine correct category ID
     const preservedCategoryId =
       item.originalCategoryId ??
       item.tempCategoryId ??
@@ -1010,12 +998,11 @@ export class UiListEmbedComponent implements OnInit {
         item.isEditing = false;
         item.showDetails = false;
 
-        // ✅ Persist originalCategoryId for unpinning
         if (item.pinned) {
           item.originalCategoryId = preservedCategoryId;
         }
 
-        this.loadItems(); // reload everything
+        this.loadItems();
       },
       error: (err) => {
         console.error("❌ Failed to update item:", err);
@@ -1028,7 +1015,6 @@ export class UiListEmbedComponent implements OnInit {
     event.stopPropagation();
     item.confirmingComplete = true;
 
-    // Automatically revert if no action is taken within 2 seconds
     setTimeout(() => {
       item.confirmingComplete = false;
     }, 5000);
@@ -1041,11 +1027,11 @@ export class UiListEmbedComponent implements OnInit {
   onCompleteItem(item: TestItem, event: Event) {
     event.stopPropagation();
 
-    item.confirmingComplete = false; // reset state
+    item.confirmingComplete = false;
 
     this.listsService.completeItem(item.id).subscribe({
       next: () => {
-        this.loadItems(); // refresh after confirmed completion
+        this.loadItems();
       },
       error: (err) => {
         console.error("❌ Failed to complete item:", err);
@@ -1061,7 +1047,6 @@ export class UiListEmbedComponent implements OnInit {
     if (category) {
       this.selectedCategoryId = category.id;
 
-      // If the component is already loaded, set it directly
       setTimeout(() => {
         if (this.addListItemComponent) {
           this.addListItemComponent.selectedCategoryId = category.id;
@@ -1134,7 +1119,8 @@ export class UiListEmbedComponent implements OnInit {
     this.isExportValid = valid;
   }
 
-  get isFiltering(): boolean {
-    return !!this.filterText.trim();
-  }
+get isFiltering(): boolean {
+  return !!(this.filterText ?? '').trim();
+}
+
 }
