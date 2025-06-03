@@ -170,7 +170,6 @@ button[mat-icon-button] {
 
 .cdk-drag-preview {
 	height: 36px;
-	background-color: #3b4d59;
 	color: white;
 	border-radius: 4px;
 	padding: 6px 10px;
@@ -239,7 +238,6 @@ button[mat-icon-button] {
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 	border-radius: 4px;
 	padding: 6px 10px;
-	background-color: #3b4d59;
 	color: white;
 }
 
@@ -293,14 +291,14 @@ button[mat-icon-button] {
 	width: 100%;
 	box-sizing: border-box;
 }
-
+/*here*/
 @keyframes flashHighlight {
 	0% {
 		background-color: yellow;
 	}
 
 	100% {
-		background-color: var(--link-bg-color, #3b4d59);
+		background-color: var(--link-bg-color);
 	}
 }
 
@@ -308,24 +306,24 @@ button[mat-icon-button] {
 	animation: flashHighlight 2s ease;
 }
 
-
+/*here*/
 @keyframes flashHighlightA {
 	0% {
 		background-color: yellow;
 	}
 
 	100% {
-		background-color: var(--link-bg-color, #3b4d59);
+		background-color: var(--LINK_BACKGROUND_COLOR);
 	}
 }
-
+/*here*/
 @keyframes flashHighlightB {
 	0% {
 		background-color: yellow;
 	}
 
 	100% {
-		background-color: var(--link-bg-color, #3b4d59);
+		background-color: var(--link-bg-color);
 	}
 }
 
@@ -467,4 +465,16 @@ button[mat-icon-button] {
 
 .item-name-hover:hover {
 	text-decoration: underline;
+}
+
+@media (max-width: 990px) {
+  .hide-on-mobile-ipad {
+    display: none !important;
+  }
+}
+
+@media (min-width: 991px) {
+  .hide-on-desktop-ipad-up {
+    display: none !important; /* Using !important to ensure it overrides other display properties */
+  }
 }

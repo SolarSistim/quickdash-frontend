@@ -161,6 +161,56 @@
          </ng-template>
       </div>
    </mat-card>
+
+   <app-small-title title="Logo"></app-small-title>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Logo Height in Pixels</h4>
+      <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
+    </div>
+    <div style="display: flex; align-items: center; margin-left: 16px;">
+      
+   <mat-form-field appearance="fill" class="hex-output-field" style="width: 120px;">
+   <mat-label>Pixels</mat-label>
+   <input
+      matInput
+      type="text"
+      [(ngModel)]="formValues['LOGO_HEIGHT_PX']"
+      (ngModelChange)="onValueChange()"
+      placeholder="Pixels"
+   />
+   </mat-form-field>
+
+    </div>
+  </div>
+</mat-card>
+
+<mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+    <div style="color: white;">
+      <h4 style="margin: 0;">Logo Width in Pixels</h4>
+      <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
+    </div>
+    <div style="display: flex; align-items: center; margin-left: 16px;">
+      
+   <mat-form-field appearance="fill" class="hex-output-field" style="width: 120px;">
+   <mat-label>Pixels</mat-label>
+   <input
+      matInput
+      type="text"
+      [(ngModel)]="formValues['LOGO_WIDTH_PX']"
+      (ngModelChange)="onValueChange()"
+      placeholder="Pixels"
+   />
+   </mat-form-field>
+
+    </div>
+  </div>
+</mat-card>
+
+
    <!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field -->
    <!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field -->
    <!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field --><!-- Search Field -->
@@ -643,6 +693,36 @@
          </mat-form-field>
       </div>
    </mat-card>
+
+      <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">Group Icon Color</h4>
+            <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
+         </div>
+         <div style="display: flex; align-items: center; margin-left: 16px;">
+            <input
+            [(colorPicker)]="formValues['GROUP_ICON_COLOR']"
+            [style.background]="formValues['GROUP_ICON_COLOR']"
+            [cpOutputFormat]="'hex'"
+            [cpAlphaChannel]="'disabled'"
+            [cpPosition]="'left'"
+            [cpDialogDisplay]="'popup'"
+            (colorPickerChange)="onValueChange()"
+            class="color-picker-field"
+            />
+            <mat-form-field appearance="fill" class="hex-output-field">
+               <mat-label>HEX</mat-label>
+               <input
+               matInput
+               type="text"
+               [(ngModel)]="formValues['GROUP_ICON_COLOR']"
+               (ngModelChange)="onValueChange()" />
+            </mat-form-field>
+         </div>
+      </div>
+   </mat-card>
+
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
          <div style="color: white;">
@@ -671,6 +751,7 @@
          </div>
       </div>
    </mat-card>
+
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
          <div style="color: white;">
@@ -940,6 +1021,36 @@
          </mat-form-field>
       </div>
    </mat-card>
+
+      <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
+      <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+         <div style="color: white;">
+            <h4 style="margin: 0;">List Icon Color</h4>
+            <small style="color: #ccc;">Pick a color or enter a custom HEX code.</small>
+         </div>
+         <div style="display: flex; align-items: center; margin-left: 16px;">
+            <input
+            [(colorPicker)]="formValues['LIST_ICON_COLOR']"
+            [style.background]="formValues['LIST_ICON_COLOR']"
+            [cpOutputFormat]="'hex'"
+            [cpAlphaChannel]="'disabled'"
+            [cpPosition]="'left'"
+            [cpDialogDisplay]="'popup'"
+            (colorPickerChange)="onValueChange()"
+            class="color-picker-field"
+            />
+            <mat-form-field appearance="fill" class="hex-output-field">
+               <mat-label>HEX</mat-label>
+               <input
+               matInput
+               type="text"
+               [(ngModel)]="formValues['LIST_ICON_COLOR']"
+               (ngModelChange)="onValueChange()" />
+            </mat-form-field>
+         </div>
+      </div>
+   </mat-card>
+
    <mat-card style="background-color: #2e3a46; padding: 16px;" class="mt-2 mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
          <div style="color: white;">

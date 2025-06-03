@@ -461,7 +461,11 @@ export class ThemesComponent {
       "SEARCH_FEATURE_CORNER_RADIUS",
       "SEARCH_FEATURE_BORDER_COLOR",
       "SEARCH_FEATURE_FONT_COLOR",
-      "SEARCH_FEATURE_BORDER_WIDTH"
+      "SEARCH_FEATURE_BORDER_WIDTH",
+      "GROUP_ICON_COLOR",
+      "LIST_ICON_COLOR",
+      "LOGO_HEIGHT_PX",
+      "LOGO_WIDTH_PX"
     ];
 
     const data = Object.fromEntries(
@@ -530,7 +534,11 @@ export class ThemesComponent {
       "SEARCH_FEATURE_CORNER_RADIUS",
       "SEARCH_FEATURE_BORDER_COLOR",
       "SEARCH_FEATURE_FONT_COLOR",
-      "SEARCH_FEATURE_BORDER_WIDTH"
+      "SEARCH_FEATURE_BORDER_WIDTH",
+      "GROUP_ICON_COLOR",
+      "LIST_ICON_COLOR",
+      "LOGO_HEIGHT_PX",
+      "LOGO_WIDTH_PX"
     ];
 
     const themeOnly = Object.fromEntries(
@@ -621,7 +629,11 @@ export class ThemesComponent {
         "SEARCH_FEATURE_CORNER_RADIUS",
         "SEARCH_FEATURE_BORDER_COLOR",
         "SEARCH_FEATURE_FONT_COLOR",
-      "SEARCH_FEATURE_BORDER_WIDTH"
+        "SEARCH_FEATURE_BORDER_WIDTH",
+        "GROUP_ICON_COLOR",
+        "LIST_ICON_COLOR",
+        "LOGO_HEIGHT_PX",
+        "LOGO_WIDTH_PX"
       ];
 
       const data = Object.fromEntries(

@@ -206,7 +206,7 @@
 	opacity: 0.2
 }
 
-.add-group-box {
+/* .add-group-box {
 	cursor: pointer;
 	min-height: 100px;
 	display: flex;
@@ -219,7 +219,7 @@
 	font-weight: 500;
 	opacity: 0.2;
 	transition: background-color 0.2s, border-color 0.2s;
-}
+} */
 
 .add-group-box:hover {
 	background-color: rgba(255, 255, 255, 0.05);
@@ -289,4 +289,8 @@
 		opacity: 1 !important;
 		pointer-events: auto !important;
 	}
+}
+
+.custom-mat-add-button {
+	scale: 0.75;
 }

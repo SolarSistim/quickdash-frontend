@@ -29,6 +29,31 @@
                   </span>
                </ng-container>
                <ng-template #normalTitle>
+                        
+                                                      <i
+                           [style.color]="groupBackgroundColor"
+                           *ngIf="dialogRef"
+                           class="bi bi-x-lg hide-on-desktop-ipad-up"
+                           style="margin-left: 5px; cursor: pointer;"
+                           title="Close"
+                           (click)="closeDialog()"
+                           ></i>
+
+                            <i
+                           [style.color]="groupBackgroundColor"
+                           *ngIf="!isFullscreen"
+                           class="bi bi-fullscreen hide-on-desktop-ipad-up"
+                           style="margin-left: 5px; cursor: pointer;"
+                           (click)="goToFullscreen()"
+                           ></i>
+
+                           <i
+                           *ngIf="isFullscreen"
+                           class="bi bi-arrow-left hide-on-desktop-ipad-up"
+                           title="Return home"
+                           (click)="goBackHome()"
+                           ></i>
+
                   <ng-container *ngIf="list?.name; else fallbackListId">
                      List "<span style="font-weight: 500;">{{ list.name }}</span>" 
                      <i class="bi bi-arrow-up-right-square"
@@ -36,6 +61,7 @@
                         style="cursor: pointer; font-size: 1.4rem;"
                         (click)="onExportClicked()"></i>
                   </ng-container>
+
                   <ng-template #fallbackListId>
                      List #{{ listId }}
                   </ng-template>
@@ -45,32 +71,39 @@
                         {{ items.length }} {{ items.length === 1 ? 'list item' : 'list items' }}
                      </ng-container>
                      <ng-template #noActive><i>No items</i></ng-template>
+
+
+
                   </span>
                </ng-template>
             </ng-container>
          </ng-template>
       </h3>
+
       <i
       [style.color]="groupBackgroundColor"
       *ngIf="!isFullscreen"
-      class="bi bi-fullscreen"
+      class="bi bi-fullscreen mobile-only-icon-styles hide-on-mobile-ipad"
       style="position: relative; top: -12px; left: -25px; cursor: pointer;"
       (click)="goToFullscreen()"
       ></i>
+
       <i
       *ngIf="isFullscreen"
-      class="bi bi-arrow-left"
+      class="bi bi-arrow-left hide-on-mobile-ipad"
       title="Return home"
       style="position: relative; top: -12px; left: -25px; cursor: pointer; scale: 1.8;"
       (click)="goBackHome()"
       ></i>
+
       <i
       [style.color]="groupBackgroundColor"
       *ngIf="dialogRef"
-      class="bi bi-x-lg close-icon"
+      class="bi bi-x-lg close-icon mobile-only-icon-styles hide-on-mobile-ipad"
       title="Close"
       (click)="closeDialog()"
       ></i>
+
    </div>
    <app-export-list
    *ngIf="showExportPanel"
@@ -190,6 +223,7 @@ class="bi bi-check-circle check-complete-icon"
 (click)="confirmComplete(item, $event)"
 title="Mark as complete"
 ></i>
+
 <i
 *ngIf="item.confirmingComplete"
 class="bi bi-question-lg check-confirm-icon"
@@ -197,19 +231,25 @@ class="bi bi-question-lg check-confirm-icon"
 title="Really complete item?"
 style="color: orange; cursor: pointer;"
 ></i>
+
 </div>
-<span class="badge bg-info" style="font-size: 0.75rem;" style="position: relative; margin-right: 5px;">
+
+<span class="badge bg-info hide-on-mobile-ipad" style="font-size: 0.75rem;" style="position: relative; margin-right: 5px;">
 <span class="text-light" title="Pinned item number" style="font-weight: 500; color: rgb(51, 51, 51) !important;">1.{{ itemIndex + 1 }}</span>
 </span>
+
+
 <div style="flex: 1; display: flex; align-items: center; gap: 10px; overflow: hidden;">
-<span class="badge bg-secondary" style="font-size: 0.75rem;"
+<span class="badge bg-secondary hide-on-mobile-ipad" style="font-size: 0.75rem;"
    style="cursor: default !important;"
    title="Date created.">
 {{ item.createdAt | date: 'shortDate' }}
 </span>
+
+
 <span
 (click)="togglePriorityPanel(item, $event); $event.stopPropagation()"
-class="priority-dot-main"
+class="priority-dot-main hide-on-mobile-ipad"
 [ngStyle]="{
 'background-color': getPriorityColor(item.tempPriority || '') || 'gray',
 'border-radius': '50%',
@@ -221,6 +261,24 @@ class="priority-dot-main"
 }"
 [title]="'Priority: ' + item.priority + '. Click to change priority'"
 ></span>
+
+<span
+(click)="togglePriorityPanel(item, $event); $event.stopPropagation()"
+class="priority-dot-main hide-on-desktop-ipad-up"
+style="position: relative; right: -2px !important;"
+[ngStyle]="{
+'background-color': getPriorityColor(item.tempPriority || '') || 'gray',
+'border-radius': '50%',
+'width': '10px',
+'height': '10px',
+'display': 'inline-block',
+'flex-shrink': '0',
+'cursor': 'pointer'
+}"
+[title]="'Priority: ' + item.priority + '. Click to change priority'"
+></span>
+
+
 <span
    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: inline-block; max-width: 100%; cursor: pointer !important;"
    >
@@ -235,20 +293,27 @@ style="margin-right: 10px; color: #ccc; cursor: pointer;"
 </span>
 </div>
 <div style="display: flex; align-items: center; gap: 4px;">
+
+
+
 <div
-class="pin-icon-wrapper"
+class="pin-icon-wrapper hide-on-mobile-ipad"
 (click)="onPinIconClick(item, $event)"
 [style.--group-background-color]="styleSettings.groupBackgroundColor"
 >
 <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'" style="cursor: pointer;"></i>
 </div>
+
 <div
-class="pin-icon-wrapper"
+class="pin-icon-wrapper hide-on-mobile-ipad"
 (click)="onEditItem(item, $event)"
 [style.--group-background-color]="styleSettings.groupBackgroundColor"
 >
 <i class="bi bi-pen" style="cursor: pointer;"></i>
 </div>
+
+
+
 <div
 class="pin-icon-wrapper"
 (click)="onDeleteItem(item, $event)"
@@ -294,7 +359,33 @@ style="margin-top: 8px; display: flex; gap: 8px;"
 style="margin-top: 10px; padding: 10px; border: 1px dotted white; border-radius: 4px; background-color: rgba(255,255,255,0.05); color: white; width: 100%; cursor: default !important;"
 (click)="$event.stopPropagation()">
 <strong>Title:</strong>&nbsp;
-<span style="white-space: pre-line;">{{ item.name }}</span>
+
+
+
+<span style="white-space: pre-line;">{{ item.name }}</span><br/>
+
+<strong>Date</strong>: <span class="badge bg-secondary" style="font-size: 0.75rem;"
+   style="cursor: default !important;"
+   title="Date created.">
+{{ item.createdAt | date: 'shortDate' }}
+</span><br/>
+
+
+<span
+class="pin-icon-wrapper hide-on-desktop-ipad-up"
+(click)="onPinIconClick(item, $event)"
+[style.--group-background-color]="styleSettings.groupBackgroundColor"
+>
+<i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'" style="cursor: pointer;"></i> Pin 
+</span>
+<span
+class="pin-icon-wrapper hide-on-desktop-ipad-up"
+(click)="onEditItem(item, $event)"
+[style.--group-background-color]="styleSettings.groupBackgroundColor"
+>
+<i class="bi bi-pen" style="cursor: pointer;"></i> Edit
+</span>
+
 <hr style="margin-top: 8px; margin-bottom: 5px;">
 <strong>Description:</strong>&nbsp;
 <span style="white-space: pre-line;" *ngIf="!item.tempDescription"><i>No description
@@ -383,18 +474,21 @@ title="Really complete item?"
 style="color: orange; cursor: pointer;"
 ></i>
 </div>
-<span class="badge bg-info" style="font-size: 0.75rem;" style="position: relative; margin-right: 5px;">
+<span class="badge bg-info hide-on-mobile-ipad" style="font-size: 0.75rem;" style="position: relative; margin-right: 5px;">
 <span class="text-light" title="List item number" style="font-weight: 500; color: rgb(51, 51, 51) !important;">{{ catIndex }}.{{ itemIndex + 1 }}</span>
 </span>
 <div style="flex: 1; display: flex; align-items: center; gap: 10px; overflow: hidden;">
-<span class="badge bg-secondary" style="font-size: 0.75rem;"
+<span class="badge bg-secondary hide-on-mobile-ipad" style="font-size: 0.75rem;"
    style="cursor: default !important;"
    title="Date created.">
 {{ item.createdAt | date: 'shortDate' }}
 </span>
+
+
+
 <span
 (click)="togglePriorityPanel(item, $event)"
-class="priority-dot-main"
+class="priority-dot-main hide-on-mobile-ipad"
 [ngStyle]="{
 'background-color': getPriorityColor(item.tempPriority || '') || 'gray',
 'border-radius': '50%',
@@ -406,6 +500,23 @@ class="priority-dot-main"
 }"
 title="Click to change priority"
 ></span>
+
+<span
+(click)="togglePriorityPanel(item, $event)"
+class="priority-dot-main hide-on-desktop-ipad-up"
+style="position: relative; right: -3px;"
+[ngStyle]="{
+'background-color': getPriorityColor(item.tempPriority || '') || 'gray',
+'border-radius': '50%',
+'width': '10px',
+'height': '10px',
+'display': 'inline-block',
+'flex-shrink': '0',
+'cursor': 'pointer'
+}"
+title="Click to change priority"
+></span>
+
 <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer !important;">
 <i
 *ngIf="item.tempDescription"
@@ -418,20 +529,24 @@ style="margin-right: 10px; color: #ccc; cursor: pointer;"
 </span>
 </div>
 <div style="display: flex; align-items: center; gap: 4px;">
+
+
 <div
-class="pin-icon-wrapper"
+class="pin-icon-wrapper hide-on-mobile-ipad"
 (click)="onPinIconClick(item, $event)"
 [style.--group-background-color]="styleSettings.groupBackgroundColor"
 >
 <i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'" style="cursor: pointer;"></i>
 </div>
 <div
-class="pin-icon-wrapper"
+class="pin-icon-wrapper hide-on-mobile-ipad"
 (click)="onEditItem(item, $event)"
 [style.--group-background-color]="styleSettings.groupBackgroundColor"
 >
 <i class="bi bi-pen" style="cursor: pointer;"></i>
 </div>
+
+
 <div
 class="pin-icon-wrapper"
 (click)="onDeleteItem(item, $event)"
@@ -477,7 +592,32 @@ style="margin-top: 8px; display: flex; gap: 8px;"
 style="margin-top: 10px; padding: 10px; border: 1px dotted white; border-radius: 4px; background-color: rgba(255,255,255,0.05); color: white; width: 100%; cursor: default !important;"
 (click)="$event.stopPropagation()">
 <strong>Title:</strong>&nbsp;
-<span style="white-space: pre-line;">{{ item.name }}</span>
+
+
+<span style="white-space: pre-line;">{{ item.name }}</span><br/>
+
+<strong>Date</strong>: <span class="badge bg-secondary" style="font-size: 0.75rem;"
+   style="cursor: default !important;"
+   title="Date created.">
+{{ item.createdAt | date: 'shortDate' }}
+</span><br/>
+
+<span
+class="pin-icon-wrapper hide-on-desktop-ipad-up"
+
+(click)="onPinIconClick(item, $event)"
+[style.--group-background-color]="styleSettings.groupBackgroundColor"
+>
+<i [ngClass]="item.pinned ? 'bi bi-pin-angle' : 'bi bi-pin'" style="cursor: pointer;"></i> Pin 
+</span>
+<span
+class="pin-icon-wrapper hide-on-desktop-ipad-up"
+(click)="onEditItem(item, $event)"
+[style.--group-background-color]="styleSettings.groupBackgroundColor"
+>
+<i class="bi bi-pen" style="cursor: pointer;"></i> Edit
+</span>
+
 <hr style="margin-top: 8px; margin-bottom: 5px;">
 <strong>Description:</strong>&nbsp;
 <span style="white-space: pre-line;" *ngIf="!item.tempDescription"><i>No description

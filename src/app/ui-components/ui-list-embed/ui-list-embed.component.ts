@@ -179,10 +179,6 @@ export class UiListEmbedComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(
-      "📦 testItems categoryIds:",
-      this.testItems.map((i) => i.categoryId)
-    );
     this.loadList();
     this.isFullscreen = this.router.url.includes("/list-full");
     this.router.events
@@ -294,7 +290,6 @@ export class UiListEmbedComponent implements OnInit {
         pinned: item.pinned,
       })
       .subscribe({
-        next: () => console.log(`✅ Updated priority to ${level}`),
         error: (err) => console.error("❌ Failed to update priority:", err),
       });
   }
@@ -428,7 +423,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
 
     this.persistTestItemOrder();
 
-    console.log("✅ Updated testItems:", this.testItems);
   }
 
   persistTestItemOrder() {
@@ -452,7 +446,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
     });
 
     this.listsService.reorderItems(payload).subscribe({
-      next: () => console.log("✅ Persisted reordered testItems to backend"),
       error: (err) =>
         console.error("❌ Failed to persist testItem reorder:", err),
     });
@@ -529,7 +522,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
   onCancelEdit(item: TestItem) {
     item.isEditing = false;
     item.showDetails = false;
-    console.log("cancel clicked");
   }
 
   onSaveEdit(item: TestItem) {
@@ -583,8 +575,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
 
     this.listsService.deleteItem(item.id).subscribe({
       next: () => {
-        console.log("🗑️ Deleted item", item.id);
-
         this.loadItems();
       },
       error: (err) => {
@@ -671,7 +661,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
   }
 
   onCategoriesChanged(updatedCategories: Category[]) {
-    console.log("📬 Parent received updated categories:", updatedCategories);
 
     const oldCategoryMap = new Map(
       this.categories.map((cat) => [cat.id, cat.name])
@@ -722,12 +711,9 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
     this.listsService.getCategoriesForList(listId).subscribe({
       next: (categories) => {
         this.categories = categories.sort((a, b) => a.position - b.position);
-        console.log("✅ Categories loaded:", categories);
 
         this.listsService.getListItems(listId).subscribe({
           next: (items) => {
-            console.log("✅ List items loaded:", items);
-
             this.items = items.map((item) => ({
               ...item,
               originalCategoryId:
@@ -814,13 +800,11 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
   }
 
   toggleCategoryEditMode() {
-    console.log("toggleCategoryEditMode triggered");
     this.isCategoryEditMode = !this.isCategoryEditMode;
 
     if (!this.isCategoryEditMode) {
       this.newCategoryName = "";
       this.loadItems();
-      console.log("Categories refreshed");
     }
   }
 
@@ -838,7 +822,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
     }));
 
     this.listsService.reorderItems(payload).subscribe({
-      next: () => console.log("✅ Reordered"),
       error: (err) => console.error("❌ Reorder failed", err),
     });
   }
@@ -939,7 +922,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
     }));
 
     this.listsService.reorderItems(payload).subscribe({
-      next: () => console.log("✅ Reordered after drop"),
       error: (err) => console.error("❌ Drop reorder failed", err),
     });
 
@@ -971,7 +953,6 @@ get filteredGroupedTestItems(): { [categoryName: string]: TestItem[] } {
     this.listsService
       .reorderCategoriesForList(this.list.id, payload)
       .subscribe({
-        next: () => console.log("✅ Categories reordered"),
         error: (err) => console.error("❌ Failed to reorder categories", err),
       });
   }

@@ -22,7 +22,7 @@ style="border-radius: 10px;"
    cdkDragHandle
    title="Drag List"
    ></i>
-<i class="bi bi-list-columns-reverse"></i>
+<i class="bi bi-list-columns-reverse" [ngStyle]="{ 'color': listStyles.listIconColor }"></i>
 <div class="list-name">
    <span class="list-hover">{{ list.name }}</span>
 </div>

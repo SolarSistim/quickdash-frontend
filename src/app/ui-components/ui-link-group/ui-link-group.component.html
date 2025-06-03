@@ -19,7 +19,7 @@
       title="Drag group"
       (mouseover)="allowGroupDrag()"
       (mouseout)="preventGroupDrag()"></i>
-      <i class="bi bi-box-seam" style="color: white; margin-right: 8px;" [style]="groupFontStyle"></i>
+      <i class="bi bi-box-seam" style="margin-right: 8px;" [style]="groupIconStyle"></i>
       <div class="group-name-container d-flex align-items-center" #groupNameContainer>
          <div class="group-name" [style]="groupFontStyle">{{ group.name }}</div>
       </div>
@@ -64,10 +64,14 @@
    <div
    *ngIf="getCombinedItemsCached(group)?.length === 0"
    class="empty-drop-placeholder"
-   (click)="openAddLinkDialog(group.id)"
    style="cursor: pointer; text-align: center; padding: 12px; font-style: italic; color: white;"
    >
-   Drop link here or <span style="text-decoration: underline;">click here</span> to add new link.
+      Drop link here or add: <br/>
+   <button mat-raised-button class="custom-mat-add-button mt-2" (click)="openAddLinkDialog(group.id)"><i class="bi bi-plus-lg"></i> Add Link</button>
+   <button mat-raised-button class="custom-mat-add-button" (click)="openAddListDialog(group.id)"><i class="bi bi-plus-lg"></i> Add List</button>
+
+   
+
 </div>
 <div
 *ngFor="let item of getCombinedItemsCached(group); trackBy: trackLinkById"

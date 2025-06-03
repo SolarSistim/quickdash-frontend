@@ -14,9 +14,11 @@ import { SettingsService } from "../../settings-components/app-settings/settings
   styleUrl: "./ui-list.component.css",
 })
 export class UiListComponent {
+  
   listStyles: {
     backgroundColor: string;
     fontColor: string;
+    listIconColor: string;
     fontWeight: string;
     fontSize: number;
     borderColor: string;
@@ -25,6 +27,7 @@ export class UiListComponent {
   } = {
     backgroundColor: "rgba(0, 0, 0, 0.2)",
     fontColor: "#ffffff",
+    listIconColor: "",
     fontWeight: "400",
     fontSize: 13,
     borderColor: "#ffffff",
@@ -54,6 +57,10 @@ export class UiListComponent {
       this.listStyles.backgroundColor = `rgba(${r}, ${g}, ${b}, ${opacity})`;
 
       this.listStyles.fontColor = settings["LIST_FONT_COLOR"] || "#ffffff";
+
+      // Here
+      this.listStyles.listIconColor = settings["LIST_ICON_COLOR"] || "#ffffff";
+
       this.listStyles.fontWeight = settings["LIST_FONT_WEIGHT"] || "400";
       this.listStyles.fontSize = parseInt(
         settings["LIST_FONT_SIZE"] || "13",

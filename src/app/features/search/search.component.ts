@@ -39,7 +39,7 @@ import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
     MatAutocompleteTrigger,
   ],
   templateUrl: "./search.component.html",
-  styleUrls: ["./search.component.css"],
+  styleUrls: ["./search.component.scss"],
 })
 export class SearchComponent implements OnInit, AfterViewInit {
   
@@ -72,6 +72,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   searchBackgroundColor = "#000000";
   searchBackgroundOpacity = 0.4;
   searchCornerRadius: any;
+  allCategories: any[] = [];
 
   constructor(
     private dashboardService: DashboardDropService,
@@ -93,6 +94,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
     this.dashboardService.getAllLinks().subscribe((links) => {
       this.allLinks = links;
+    });
+
+    this.dashboardService.getFullDashboard().subscribe((categories) => {
+      this.allCategories = categories;
     });
 
     this.listsService.getAllLists().subscribe((lists) => {
@@ -129,54 +134,75 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
 
     this.searchControl.valueChanges
-      .pipe(
-        debounceTime(150),
-        startWith(""),
-        map((value) => {
-          if (typeof value === "string") {
-            this.rawSearchQuery = value;
-            return value.toLowerCase();
-          }
-          return "";
-        })
-      )
-      .subscribe((query) => {
-        const lowerQuery = query.toLowerCase();
+  .pipe(
+    debounceTime(150),
+    startWith(""),
+    map((value) => {
+      if (typeof value === "string") {
+        this.rawSearchQuery = value;
+        return value.toLowerCase();
+      }
+      return "";
+    })
+  )
+  .subscribe((query) => {
+    const lowerQuery = query.toLowerCase();
 
-        const seenLinks = new Set<string>();
-        this.filteredLinks = this.allLinks
-          .filter((link) => {
-            const nameMatch =
-              this.filterByName &&
-              link.name?.toLowerCase().includes(lowerQuery);
-            const descMatch =
-              this.filterByDescription &&
-              link.description?.toLowerCase().includes(lowerQuery);
-            return nameMatch || descMatch;
-          })
-          .filter((link) => {
-            const lowerName = link.name.toLowerCase();
-            if (seenLinks.has(lowerName)) return false;
-            seenLinks.add(lowerName);
-            return true;
-          });
-
-        this.filteredListItems = this.filterByListItem
-          ? this.allListItems.filter((item) => {
-              const titleMatch = item.title?.toLowerCase().includes(lowerQuery);
-              const descMatch = item.description
-                ?.toLowerCase()
-                .includes(lowerQuery);
-              return titleMatch || descMatch;
-            })
-          : [];
-
-        this.filteredLists = this.filterByListName
-          ? this.allLists.filter((list) =>
-              list.name?.toLowerCase().includes(lowerQuery)
-            )
-          : [];
+    const seenLinks = new Set<string>();
+    this.filteredLinks = this.allLinks
+      .filter((link) => {
+        const nameMatch =
+          this.filterByName &&
+          link.name?.toLowerCase().includes(lowerQuery);
+        const descMatch =
+          this.filterByDescription &&
+          link.description?.toLowerCase().includes(lowerQuery);
+        return nameMatch || descMatch;
+      })
+      .filter((link) => {
+        const lowerName = link.name.toLowerCase();
+        if (seenLinks.has(lowerName)) return false;
+        seenLinks.add(lowerName);
+        return true;
       });
+
+    this.filteredListItems = this.filterByListItem
+      ? this.allListItems.filter((item) => {
+          const titleMatch = item.title?.toLowerCase().includes(lowerQuery);
+          const descMatch = item.description
+            ?.toLowerCase()
+            .includes(lowerQuery);
+          return titleMatch || descMatch;
+        })
+      : [];
+
+    this.filteredLists = this.filterByListName
+      ? this.allLists.filter((list) =>
+          list.name?.toLowerCase().includes(lowerQuery)
+        )
+      : [];
+
+    // ✅ New: Filter groups that match the query and collect their links and lists
+    this.filteredGroupsWithItems = [];
+    if (query && this.allCategories?.length > 0) {
+      for (const category of this.allCategories) {
+        for (const group of category.groups || []) {
+          const groupMatch = group.name?.toLowerCase().includes(lowerQuery);
+          if (groupMatch) {
+            this.filteredGroupsWithItems.push({
+              groupName: group.name,
+              groupId: group.id,
+              links: group.links || [],
+              lists: group.lists || [],
+            });
+          }
+        }
+      }
+    }
+  });
+    document.documentElement.style.setProperty('--optgroup-bg', this.searchBackgroundColor);
+    document.documentElement.style.setProperty('--optgroup-color', this.searchFontColor);
+
   }
 
   onListSelected(list: any): void {
@@ -335,4 +361,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
       this.searchExternal();
     }, 0);
   }
+
+    filteredGroupsWithItems: {
+      groupName: string;
+      groupId: number;
+      links: any[];
+      lists: any[];
+    }[] = [];
+
 }

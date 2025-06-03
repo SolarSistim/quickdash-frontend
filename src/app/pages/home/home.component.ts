@@ -29,9 +29,12 @@ import { UiLoaderComponent } from "../../ui-components/ui-loader/ui-loader.compo
   styleUrls: ["./home.component.css"],
 })
 export class HomeComponent implements OnInit {
+
   showLogo = false;
   searchFeature = false;
   backgroundColor = "#212529";
+  logoHeight = '';
+  logoWidth = '';
 
   constructor(
     private statusService: StatusMessageService,
@@ -43,6 +46,8 @@ export class HomeComponent implements OnInit {
     this.settingsService.loadSettings().subscribe((settings) => {
       this.showLogo = settings["LOGO_ENABLE"] !== "FALSE";
       this.searchFeature = settings["SEARCH_FEATURE"] !== "FALSE";
+      this.logoHeight = settings['LOGO_HEIGHT_PX'];
+      this.logoWidth = settings['LOGO_WIDTH_PX'];
     });
   }
 

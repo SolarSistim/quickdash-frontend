@@ -144,7 +144,7 @@
          <div style="color: white;">
             <h4 style="margin: 0;" *ngIf="searchFeature">Search Feature: <span style="color: #4CAF50;">Enabled</span></h4>
             <h4 style="margin: 0;" *ngIf="!searchFeature">Search Feature: <span style="color: #FF5252;">Disabled</span></h4>
-            <small style="color: #ccc;">Enable or disable the search bar on your Quickdash dashboard.</small>
+            <small style="color: #ccc;">Enable or disable the search bar on your Remembr dashboard.</small>
          </div>
          <mat-form-field appearance="fill" style="max-width: 300px; min-width: 200px; margin-left: 16px;">
             <mat-label>Search Feature</mat-label>
@@ -207,11 +207,11 @@
          </mat-form-field>
       </div>
    </mat-card>
-   <mat-card *ngIf="formValues['BASE_URL'] !== '\\'" style="background-color: #2e3a46; padding: 16px;" class="mb-2">
+   <!-- <mat-card *ngIf="formValues['BASE_URL'] !== '\\'" style="background-color: #2e3a46; padding: 16px;" class="mb-2">
       <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
          <div style="color: white;">
             <h4 style="margin: 0;">Subfolder</h4>
-            <small style="color: #ccc;">Enter the subfolder where Quickdash is installed (e.g. /quickdash).</small>
+            <small style="color: #ccc;">Enter the subfolder where Remembr is installed (e.g. /quickdash).</small>
          </div>
          <mat-form-field appearance="fill" style="width: 500px; min-width: 200px; margin-left: 16px;">
             <mat-label>Subfolder</mat-label>
@@ -222,7 +222,7 @@
             (ngModelChange)="onValueChange()" />
          </mat-form-field>
       </div>
-   </mat-card>
+   </mat-card> -->
    <div class="mat-card button-panel mt-2 mb-4">
       <div class="row">
          <div class="col-lg-6 d-flex align-items-center">

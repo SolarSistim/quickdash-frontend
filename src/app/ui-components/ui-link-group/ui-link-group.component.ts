@@ -28,6 +28,7 @@ import { UiListComponent } from "../ui-list/ui-list.component";
 import { DialogAddListComponent } from "../../dialogs/dialog-add-list/dialog-add-list.component";
 import { DialogListComponent } from "../../dialogs/dialog-list/dialog-list.component";
 import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
+import { MatButtonModule } from "@angular/material/button";
 
 @Component({
   selector: "app-ui-link-group",
@@ -38,6 +39,7 @@ import { BreakpointObserver, Breakpoints } from "@angular/cdk/layout";
     MatMenuModule,
     UiLinkComponent,
     UiListComponent,
+    MatButtonModule
   ],
   templateUrl: "./ui-link-group.component.html",
   styleUrls: ["./ui-link-group.component.css"],
@@ -58,10 +60,12 @@ export class UiLinkGroupComponent {
   combinedItemsMap = new Map<number, any[]>();
   showHandles = false;
   groupBoxStyle: SafeStyle = "";
+  groupIconStyle: SafeStyle = "";
   iconRowStyle: SafeStyle = "";
   groupFontStyle: SafeStyle = "";
   groupBackgroundColor: string = "";
   isSmallScreen = false;
+  groupIconColor: string = ""; 
 
   constructor(
     private dropService: DashboardDropService,
@@ -83,6 +87,7 @@ export class UiLinkGroupComponent {
       const fontWeight = settings["GROUP_FONT_WEIGHT"] || "400";
       const fontSize = settings["GROUP_FONT_SIZE"] || "14";
       const iconColor = settings["GROUP_FOOTER_ICON_COLOR"] || "#000000";
+      const groupIconColor = settings["GROUP_ICON_COLOR"] || "#000000";
       const footerBgHex =
         settings["GROUP_FOOTER_BACKGROUND_COLOR"] || "#2e3a46";
       const footerOpacity = parseFloat(
@@ -96,23 +101,30 @@ export class UiLinkGroupComponent {
       this.groupBackgroundColor = rgba;
 
       this.groupBoxStyle = this.sanitizer.bypassSecurityTrustStyle(`
-      background-color: ${rgba};
-      border: ${borderWidth}px solid ${borderColor};
-      border-radius: ${borderRadius}px;
-    `);
+        background-color: ${rgba};
+        border: ${borderWidth}px solid ${borderColor};
+        border-radius: ${borderRadius}px;
+      `);
 
       this.iconRowStyle = this.sanitizer.bypassSecurityTrustStyle(`
-      background-color: ${footerBgRgba};
-      color: ${iconColor};
-      border-bottom-left-radius: ${borderRadius}px;
-      border-bottom-right-radius: ${borderRadius}px;
-    `);
+        background-color: ${footerBgRgba};
+        color: ${iconColor};
+        border-bottom-left-radius: ${borderRadius}px;
+        border-bottom-right-radius: ${borderRadius}px;
+      `);
 
       this.groupFontStyle = this.sanitizer.bypassSecurityTrustStyle(`
-      color: ${fontColor};
-      font-weight: ${fontWeight};
-      font-size: ${fontSize}px;
-    `);
+        color: ${fontColor};
+        font-weight: ${fontWeight};
+        font-size: ${fontSize}px;
+      `);
+
+      this.groupIconStyle = this.sanitizer.bypassSecurityTrustStyle(`
+        color: ${groupIconColor};
+        font-weight: ${fontWeight};
+        font-size: ${fontSize}px;
+      `);
+
     });
     this.breakpointObserver
       .observe([Breakpoints.Tablet, Breakpoints.Handset])

@@ -179,7 +179,6 @@ export class IconManagerComponent {
     if (confirmDelete) {
       this.iconService.deleteIcon(icon.id).subscribe({
         next: (res: any) => {
-          return;
           this.fetchIcons();
         },
         error: (err) => {
